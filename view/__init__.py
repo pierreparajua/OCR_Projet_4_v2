@@ -1,1 +1,1 @@
-import view.v_player
+import view.view
