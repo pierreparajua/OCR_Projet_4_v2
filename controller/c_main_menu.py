@@ -1,33 +1,36 @@
 from view.view import View_menu
-from utils.util import Menu
 
-main_menu = View_menu(Menu(title="Menu principal: ",
-                           add_info="(Tapez le chiffre correspondant à votre choix)",
-                           items=["Gestion des joueurs",
-                                  "Gestion des tournois",
-                                  "Quitter"]), "")
+main_menu = View_menu(title="Menu principal: ",
+                      add_info="(Tapez le chiffre correspondant à votre choix)",
+                      items=["Gestion des joueurs",
+                             "Gestion des tournois",
+                             "Quitter"],
+                      choice="")
 
-player_menu = View_menu(Menu(title="Menu de gestion des joueurs: ",
-                             add_info="(Tapez le chiffre correspondant à votre choix ou 'm' pour retourner au menu "
-                                      "précédent: )",
-                             items=["Ajouter un joueur",
-                                    "Afficher les joueurs",
-                                    "Modifier un joueurs",
-                                    "Supprimer un joueur"]), "")
+player_menu = View_menu(title="Menu de gestion des joueurs: ",
+                        add_info="(Tapez le chiffre correspondant à votre choix ou 'm' pour retourner au menu "
+                                 "précédent: )",
+                        items=["Ajouter un joueur",
+                               "Afficher les joueurs",
+                               "Modifier un joueurs",
+                               "Supprimer un joueur"],
+                        choice="")
 
-tournament_menu = View_menu(Menu(title="Menu de gestion des tournois: ",
-                                 add_info="(Tapez le chiffre correspondant à votre choix ou 'm' pour retourner au menu "
-                                          "précédent: )",
-                                 items=["Ajouter un tournois",
-                                        "Reprendre un tournois",
-                                        "Supprimer un tournois",
-                                        "Afficher les rapports de tournois"]), "")
+tournament_menu = View_menu(title="Menu de gestion des tournois: ",
+                            add_info="(Tapez le chiffre correspondant à votre choix ou 'm' pour retourner au menu "
+                                     "précédent: )",
+                            items=["Ajouter un tournois",
+                                   "Reprendre un tournois",
+                                   "Supprimer un tournois",
+                                   "Afficher les rapports de tournois"],
+                            choice="")
 
-report_menu = View_menu(Menu(title="Rapport des tournois: ",
-                             add_info="(Tapez le chiffre correspondant à votre choix ou 'm' pour retourner au menu "
-                                      "précédent: )",
-                             items=["Tournois en cours",
-                                    "Tournois terminés"]), "")
+report_menu = View_menu(title="Rapport des tournois: ",
+                        add_info="(Tapez le chiffre correspondant à votre choix ou 'm' pour retourner au menu "
+                                 "précédent: )",
+                        items=["Tournois en cours",
+                               "Tournois terminés"],
+                        choice="")
 
 
 class Manage_menu:
