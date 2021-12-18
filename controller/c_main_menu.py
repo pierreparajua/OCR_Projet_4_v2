@@ -1,4 +1,5 @@
 from view.view import View_menu
+from controller.c_player import player_controller
 
 main_menu = View_menu(title="Menu principal: ",
                       add_info="(Tapez le chiffre correspondant à votre choix)",
@@ -54,15 +55,19 @@ class Manage_menu:
         self.menu.display_menu()
         self.choice = self.menu.get_choices()
         if self.choice == "1":
-            print("add player")
+            player_controller.add_player()
+            self.player_manager()
         elif self.choice == "2":
-            print("display player")
+            player_controller.display_all_players()
+            self.player_manager()
         elif self.choice == "3":
-            print("update player")
+            player_controller.update_player()
+            self.player_manager()
         elif self.choice == "4":
             print("delete player")
         elif self.choice == "m":
-            self.main_manager()
+            player_controller.delete_player()
+            self.player_manager()
 
     def tournament_manager(self):
         self.menu = tournament_menu
@@ -89,3 +94,6 @@ class Manage_menu:
             print("Rapport tournois terminé")
         elif self.choice == "m":
             self.tournament_manager()
+
+
+manage_menu = Manage_menu(main_menu, "")
