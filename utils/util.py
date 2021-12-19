@@ -4,18 +4,6 @@ from dateutil.parser import parse
 init(autoreset=True)
 
 
-class Menu:
-    def __init__(self, title, add_info, items):
-        self.title: str = title
-        self.add_info: str = add_info
-        self.items: list = items
-
-    def display(self):
-        print(Fore.LIGHTMAGENTA_EX + f"\n{self.title}:" + Fore.LIGHTWHITE_EX + f" {self.add_info}")
-        for i, item in enumerate(self.items):
-            print(f"{i + 1}: {item} ")
-
-
 def check_date_format(date: str) -> bool:
     """Check if the date is in DD/MM/YYYY.
     Args:
@@ -74,8 +62,25 @@ def check_ranking_format(ranking: str) -> bool:
     return True
 
 
-def display_instance(instance):
-    print(instance)
+def check_name(name):
+    if name:
+        while not check_name_format(name):
+            name = wrong_entry(name)
+    return name
+
+
+def check_date(date):
+    if date:
+        while not check_date_format(date):
+            date = wrong_entry(date)
+    return date
+
+
+def check_ranking(ranking):
+    if ranking:
+        while not check_ranking_format(ranking):
+            ranking = wrong_entry(ranking)
+    return ranking
 
 
 def get_choice(choices: list) -> str:
@@ -89,8 +94,7 @@ def get_choice(choices: list) -> str:
         """
     choice = input(Fore.LIGHTBLUE_EX + "Choix: ").lower()
     while choice not in choices:
-        wrong_entry(choice)
-        choice = input(Fore.LIGHTBLUE_EX + "Choix: ").lower()
+        choice = wrong_entry(choice)
 
     return choice
 
@@ -120,5 +124,6 @@ def replace_for_date(date):
 
 def wrong_entry(choice: str):
     """ Display error message"""
-    print(Fore.LIGHTRED_EX + f"{choice} : n' est pas un choix valide.\n"
-                             f"Veuillez ressaisir votre choix: \n")
+    value = input(Fore.LIGHTRED_EX + f"{choice} : n' est pas un choix valide.\n"
+                                     f"Veuillez ressaisir votre choix: \n")
+    return value

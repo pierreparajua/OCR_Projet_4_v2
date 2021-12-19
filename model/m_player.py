@@ -59,11 +59,9 @@ class PlayerDB(Player_storage):
                 Returns:
                     player_id(str): id from database
                 """
-        print(player.first_name.lower())
         q_player = Query()
         db_player = db_players.get((q_player.fragment({"first_name": player.first_name.lower(),
                                                        "last_name": player.last_name.lower()})))
-        print(db_player)
         player_id = db_player.doc_id
         return player_id
 
@@ -95,5 +93,18 @@ class PlayerDB(Player_storage):
                            "sex": new_player.sex,
                            "ranking": new_player.ranking}, doc_ids=player_id)
 
-
-storage = PlayerDB()
+    def delete_player(self, player):
+        player_id = self.get_id(player)
+        db_players.remove(doc_ids=[player_id])
+        """
+        not_player_in_tournament = True
+        tournaments = Tournament.load_all_tournaments()
+        for tournament in tournaments:
+            all_players = [player for player in tournament.players]
+            if player_id in all_players:
+                not_player_in_tournament = False
+                return not_player_in_tournament
+        if not_player_in_tournament:
+            database_players.remove(doc_ids=[player_id])
+            return True
+        """

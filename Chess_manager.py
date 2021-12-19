@@ -1,4 +1,4 @@
-from controller.c_main_menu import manage_menu
+from controller.c_main_menu import Manage_menu
 
-
-manage_menu.main_manager()
+manage_app = Manage_menu("", "", "", "")
+manage_app.main_manager()

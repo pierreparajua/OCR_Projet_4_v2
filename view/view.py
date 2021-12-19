@@ -10,6 +10,34 @@ init(autoreset=True)
 
 SOURCE_DIR = Path(__file__).resolve().parent.parent
 JSON_PATH = SOURCE_DIR / "Chess_manager_text.json"
+DICT_TEXT = json.load(open(JSON_PATH, 'r', encoding='utf8'))
+
+
+class View:
+    def __init__(self, dict_text):
+        self.dict_text = dict_text
+
+    @staticmethod
+    def display_instance(instance):
+        print(instance)
+
+    @staticmethod
+    def display_players(players, name_item, select=False):
+        print(f"Liste des {name_item} en base de donnée:")
+        if select:
+            print(f"Sélectionnez le {name_item[:-1]}: ")
+        for i, player in enumerate(players):
+            print(f"{i + 1}: {player}")
+
+    def display_text(self, key):
+        print(self.dict_text[key])
+
+    def select_item(self, items):
+        choice = utils.util.get_choice(list(map(str, list(range(1, len(items) + 1)))))
+        self.display_text("selected_player")
+        old_player = items[int(choice) - 1]
+        self.display_instance(old_player)
+        return old_player
 
 
 class View_menu:
@@ -34,203 +62,107 @@ class View_menu:
         return self.choice
 
 
-class View_player:
-    def __init__(self, dict_text, player=Player("", "", "", "")):
-        self.dict_text: dict = dict_text
-        self.player: Player = player
+class Get_info_player:
+    def __init__(self):
+        self.first_name = "",
+        self.last_name = "",
+        self.date_of_birth = "",
+        self.sex = "",
+        self.ranking = 1000
 
-    def display_text(self, key):
-        with open(JSON_PATH, 'r', encoding='utf8') as fp:
-            self.dict_text = json.load(fp)
-        print(self.dict_text[key])
+    def get_first_name(self, old_player, update=False):
+        if update:
+            name = input(Fore.LIGHTBLUE_EX + f"{'  Prénom '}"
+                         + Fore.LIGHTWHITE_EX + f"({old_player.first_name}): ").lower()
+            value = utils.util.check_name(name) or old_player.first_name
+            return value
+        self.first_name = input("  Prénom: ").lower()
+        while not utils.util.check_name_format(self.first_name):
+            self.first_name = utils.util.wrong_entry(self.first_name)
+        return self.first_name
 
-    def display_players(self, players):
-        for i, player in enumerate(players):
-            self.player = player
-            print(f"{i + 1}: {self.player}")
+    def get_last_name(self, old_player, update=False):
+        if update:
+            name = input(Fore.LIGHTBLUE_EX + f"{'  Nom '}"
+                         + Fore.LIGHTWHITE_EX + f"({old_player.last_name}): ").lower()
+            value = utils.util.check_name(name) or old_player.last_name
+            return value
+        self.last_name = input("  Nom: ").lower()
+        while not utils.util.check_name_format(self.last_name):
+            self.last_name = utils.util.wrong_entry(self.last_name).lower()
+        return self.last_name
 
-    def get_first_name(self):
-        first_name: str = input("  Prénom: ").lower()
-        while not utils.util.check_name_format(first_name):
-            utils.util.wrong_entry(first_name)
-            first_name = input("  Prénom: ").lower()
-        self.player.first_name = first_name
-        return self.player.first_name
+    def get_player_date_of_birth(self, old_player, update=False):
+        if update:
+            date = input(Fore.LIGHTBLUE_EX + f"{'  Date de naissance: '}"
+                         + Fore.LIGHTWHITE_EX + f"({old_player.date_of_birth}): ").lower()
+            value = utils.util.check_date(utils.util.replace_for_date(date)) or old_player.last_name
+            return value
+        self.date_of_birth = utils.util.replace_for_date(input("  Date de naissance(DD/MM/YYYY): "))
+        while not utils.util.check_date_format(self.date_of_birth):
+            self.date_of_birth = utils.util.replace_for_date(utils.util.wrong_entry(self.date_of_birth).lower())
+        return self.date_of_birth
 
-    def get_last_name(self):
-        last_name: str = input("  Nom: ").lower()
-        while not utils.util.check_name_format(last_name):
-            utils.util.wrong_entry(last_name)
-            last_name = input("  Nom: ").lower()
-        self.player.last_name = last_name
-        return self.player.last_name
-
-    def get_player_date_of_birth(self):
-        """
-        Gets player's date of birth and return it.
-        Returns:
-            date_of_birth(str): Player's date of birth.
-        """
-        date_of_birth: str = utils.util.replace_for_date(input("  Date de naissance(DD/MM/YYYY): "))
-        while not utils.util.check_date_format(date_of_birth):
-            utils.util.wrong_entry(date_of_birth)
-            date_of_birth = utils.util.replace_for_date(input("  Date de naissance(DD/MM/YYYY): "))
-        self.player.date_of_birth = date_of_birth
-        return self.player.date_of_birth
-
-    def get_player_sex(self):
+    def get_player_sex(self, old_player, update=False):
         """
         Get player's sex and return it.
         Returns:
             sex(str): Player's sex.
         """
-        sex: str = input("  Sexe (tapez : 'f' pour femme ou 'h' pour homme): ").lower()
-        while sex not in ["h", "f"]:
-            utils.util.wrong_entry(sex)
-            sex = input("  Sexe(tapez : 'f' pour femme ou 'h' pour homme): ").lower()
-        if sex == "f":
-            sex = "femme"
-        elif sex == "h":
-            sex = "homme"
-        self.player.sex = sex
-        return self.player.sex
+        if update:
+            sex = input(Fore.LIGHTBLUE_EX + "  Sexe "
+                        + Fore.LIGHTWHITE_EX + f"({old_player.sex}) (tapez : 'f'  ou 'h'): ").lower()
+            if sex == "f":
+                sex = "femme"
+            elif sex == "h":
+                sex = "homme"
+            value = utils.util.check_name(sex) or old_player.last_name
+            return value
+        self.sex = input("  Sexe (tapez : 'f' pour femme ou 'h' pour homme): ").lower()
+        while self.sex not in ["h", "f"]:
+            self.sex = utils.util.wrong_entry(self.sex).lower()
+        if self.sex == "f":
+            self.sex = "femme"
+        elif self.sex == "h":
+            self.sex = "homme"
+        return self.sex
 
-    def get_player_ranking(self):
+    def get_player_ranking(self, old_player, update=False):
         """
         Gets player's ranking and return it.
         Returns:
             ranking(str): Player's ranking.
         """
-        ranking = input("  Classement: ")
-        while not utils.util.check_ranking_format(ranking):
-            utils.util.wrong_entry(ranking)
-            ranking = input("  Classement: ")
-        ranking = int(ranking)
-        self.player.ranking = ranking
-        print("\n")
-        return self.player.ranking
-
-    def update_player_first_name(self, old_player, new_player):
-        """
-         Update item from "old_player" if necessary, and return an updated player.
-         Args:
-             old_player(Player): Base for updating.
-             new_player(Player): Player to update.
-         Returns:
-             new_player.first_name(str): First name updated.
-         """
-        first_name = input(
-            Fore.LIGHTBLUE_EX + f"{'  Prénom '}" + Fore.LIGHTWHITE_EX + f"({old_player.first_name}): ").lower()
-        if first_name:
-            while not utils.util.check_name_format(first_name):
-                utils.util.wrong_entry(first_name)
-                first_name = input(Fore.LIGHTBLUE_EX + f"{'  Prénom '}" + Fore.LIGHTWHITE_EX
-                                   + f"({old_player.first_name}): ").lower()
-            new_player.first_name = first_name
-        else:
-            new_player.first_name = old_player.first_name
-        self.player.first_name = new_player.first_name
-        return self.player.first_name
-
-    def update_player_last_name(self, old_player, new_player):
-        """
-        Update item from "old_player" if necessary, and return an updated player.
-        Args:
-            old_player(Player): Base for updating.
-            new_player(Player): Player to update.
-        Returns:
-            new_player.last_name(str): Last name updated.
-        """
-        last_name = input(Fore.LIGHTBLUE_EX + "  Nom " + Fore.LIGHTWHITE_EX + f"({old_player.last_name}): ").lower()
-        if last_name:
-            while not utils.util.check_name_format(last_name):
-                utils.util.wrong_entry(last_name)
-                last_name = input(Fore.LIGHTBLUE_EX + "  Nom "
-                                  + Fore.LIGHTWHITE_EX + f"({old_player.last_name}): ").lower()
-            new_player.last_name = last_name
-        else:
-            new_player.last_name = old_player.last_name
-        self.player.last_name = new_player.last_name
-        return self.player.last_name
-
-    def update_player_date_of_birth(self, old_player, new_player):
-        """
-        Update item from "old_player" if necessary, and return an updated player.
-        Args:
-            old_player(Player): Base for updating.
-            new_player(Player): Player to update.
-        Returns:
-            new_player.date_of_birth(str): Date_of_birth updated.
-        """
-        date_of_birth = utils.util.replace_for_date(input(Fore.LIGHTBLUE_EX + "  Date de naissance "
-                                                          + Fore.LIGHTWHITE_EX + f"({old_player.date_of_birth}) : "))
-        if date_of_birth:
-            while not utils.util.check_date_format(date_of_birth):
-                utils.util.wrong_entry(date_of_birth)
-                date_of_birth = utils.util.replace_for_date(input(Fore.LIGHTBLUE_EX + "  Date de naissance "
-                                                                  + Fore.LIGHTWHITE_EX
-                                                                  + f"({old_player.date_of_birth}) : "))
-                if not date_of_birth:
-                    break
-            new_player.date_of_birth = date_of_birth
-        else:
-            new_player.date_of_birth = old_player.date_of_birth
-        self.player.date_of_birth = new_player.date_of_birth
-        return self.player.date_of_birth
-
-    def update_player_sex(self, old_player, new_player):
-        """
-           Update item from "old_player" if necessary, and return an updated player.
-           Args:
-               old_player(Player): Base for updating.
-               new_player(Player): Player to update.
-           Returns:
-               new_player.sex(str): Sex updated.
-           """
-        sex = input(Fore.LIGHTBLUE_EX + "  Sexe "
-                    + Fore.LIGHTWHITE_EX + f"({old_player.sex}) (tapez : 'f' pour femme ou 'h' pour homme): ").lower()
-        if sex:
-            while sex not in ["h", "f"]:
-                utils.util.wrong_entry(sex)
-                sex = input(Fore.LIGHTBLUE_EX + "  Sexe "
-                            + Fore.LIGHTWHITE_EX
-                            + f"({old_player.sex}) (tapez : 'f' pour femme ou 'h' pour homme): ").lower()
-                if not sex:
-                    break
-            if sex == "f":
-                sex = "femme"
-            elif sex == "h":
-                sex = "homme"
-            new_player.sex = sex
-        else:
-            new_player.sex = old_player.sex
-
-        self.player.sex = new_player.sex
-        return self.player.sex
-
-    def update_player_ranking(self, old_player, new_player):
-        """
-           Update item from "old_player" if necessary, and return an updated player.
-           Args:
-               old_player(Player): Base for updating.
-               new_player(Player): Player to update.
-           Returns:
-               new_player.ranking(int): Ranking updated.
-           """
-        ranking = input(Fore.LIGHTBLUE_EX + "  Classement " + Fore.LIGHTWHITE_EX + f"({old_player.ranking}): ")
-        while not utils.util.check_ranking_format(ranking):
-            utils.util.wrong_entry(ranking)
+        if update:
             ranking = input(Fore.LIGHTBLUE_EX + "  Classement " + Fore.LIGHTWHITE_EX + f"({old_player.ranking}): ")
-        if ranking:
-            ranking = int(ranking)
-            new_player.ranking = ranking
-        else:
-            new_player.ranking = old_player.ranking
-        self.player.ranking = new_player.ranking
-        return self.player.ranking
+            value = utils.util.check_ranking(ranking) or old_player.ranking
+            return value
+        self.ranking = input("  Classement: ")
+        while not utils.util.check_ranking_format(self.ranking):
+            self.ranking = utils.util.wrong_entry(self.ranking)
+        print("\n")
+        return int(self.ranking)
+
+    def create_player(self):
+        player = Player(self.get_first_name(old_player=""),
+                        self.get_last_name(old_player=""),
+                        self.get_player_date_of_birth(old_player=""),
+                        self.get_player_sex(old_player=""),
+                        self.get_player_ranking(old_player=""))
+        return player
+
+    def update_player(self, old_player):
+        player = Player(self.get_first_name(old_player, update=True),
+                        self.get_last_name(old_player, update=True),
+                        self.get_player_date_of_birth(old_player, update=True),
+                        self.get_player_sex(old_player, update=True),
+                        self.get_player_ranking(old_player, update=True))
+        return player
+
 
 
 if __name__ == "__main__":
+    pass
     """
     dict_chess_manager_text: dict = {
         "add_player_again": "Souhaitez vous ajouter un autre joueur(Tapez : 'o' ou 'n')",
@@ -294,4 +226,13 @@ if __name__ == "__main__":
         json.dump(dict_chess_manager_text, fp, indent=4)
     with open(JSON_PATH, 'r', encoding='utf8') as fp:
         data = json.load(fp)
-    print(data)"""
+    print(data)
+    
+
+    old_name = "Yves"
+    new_name = input(Fore.LIGHTBLUE_EX + f"{'  Prénom '}"
+                                       + Fore.LIGHTWHITE_EX + f"({old_name}): ").lower()
+    value = check_name(new_name) or old_name
+    print(value)
+    print(old_name)
+    print(new_name)"""

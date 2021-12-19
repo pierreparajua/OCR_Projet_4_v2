@@ -1,5 +1,6 @@
-from view.view import View_menu
-from controller.c_player import player_controller
+from view.view import View_menu, View
+from controller.c_player import Player_controller
+from view.view import Get_info_player
 
 main_menu = View_menu(title="Menu principal: ",
                       add_info="(Tapez le chiffre correspondant à votre choix)",
@@ -33,67 +34,66 @@ report_menu = View_menu(title="Rapport des tournois: ",
                                "Tournois terminés"],
                         choice="")
 
+player_controller = Player_controller()
+
 
 class Manage_menu:
-    def __init__(self, menu, choice):
-        self.menu: View_menu = menu
-        self.choice: str = choice
+    def __init__(self, title, add_info, items, choice):
+        self.menu = View_menu(title, add_info, items, choice)
 
     def main_manager(self):
         self.menu = main_menu
         self.menu.display_menu()
-        self.choice = self.menu.get_choices()
-        if self.choice == "1":
+        self.menu.choice = self.menu.get_choices()
+        if self.menu.choice == "1":
             self.player_manager()
-        elif self.choice == "2":
+        elif self.menu.choice == "2":
             self.tournament_manager()
-        elif self.choice == "3":
+        elif self.menu.choice == "3":
             pass
 
     def player_manager(self):
         self.menu = player_menu
         self.menu.display_menu()
-        self.choice = self.menu.get_choices()
-        if self.choice == "1":
+        self.menu.choice = self.menu.get_choices()
+        if self.menu.choice == "1":
             player_controller.add_player()
             self.player_manager()
-        elif self.choice == "2":
+        elif self.menu.choice == "2":
             player_controller.display_all_players()
             self.player_manager()
-        elif self.choice == "3":
+        elif self.menu.choice == "3":
             player_controller.update_player()
             self.player_manager()
-        elif self.choice == "4":
-            print("delete player")
-        elif self.choice == "m":
+        elif self.menu.choice == "4":
             player_controller.delete_player()
             self.player_manager()
+        elif self.menu.choice == "m":
+            player_controller.delete_player()
+            self.main_manager()
 
     def tournament_manager(self):
         self.menu = tournament_menu
         self.menu.display_menu()
-        self.choice = self.menu.get_choices()
-        if self.choice == "1":
+        self.menu.choice = self.menu.get_choices()
+        if self.menu.choice == "1":
             print("add tournament")
-        elif self.choice == "2":
+        elif self.menu.choice == "2":
             print("reprendre tournament")
-        elif self.choice == "3":
+        elif self.menu.choice == "3":
             print("delete tournament")
-        elif self.choice == "4":
+        elif self.menu.choice == "4":
             self.report_manager()
-        elif self.choice == "m":
+        elif self.menu.choice == "m":
             self.main_manager()
 
     def report_manager(self):
         self.menu = report_menu
         self.menu.display_menu()
-        self.choice = self.menu.get_choices()
-        if self.choice == "1":
+        self.menu.choice = self.menu.get_choices()
+        if self.menu.choice == "1":
             print("Rapport tournois en cours")
-        elif self.choice == "2":
+        elif self.menu.choice == "2":
             print("Rapport tournois terminé")
-        elif self.choice == "m":
+        elif self.menu.choice == "m":
             self.tournament_manager()
-
-
-manage_menu = Manage_menu(main_menu, "")
