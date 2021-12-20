@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from pathlib import Path
-
 from tinydb import TinyDB, Query
+
+from pathlib import Path
 
 SOURCE_DIR = Path(__file__).resolve().parent.parent
 DB_DIR = SOURCE_DIR / "database.json"
@@ -28,21 +28,52 @@ class Player:
         return self.ranking > other.ranking
 
 
-class Player_storage(ABC):
+class Storage(ABC):
     @abstractmethod
-    def save(self, player):
+    def delete(self, item):
         pass
 
-    def get_id(self, player):
+    @abstractmethod
+    def deserialize(self, item_dict):
         pass
 
-    def deserialize_player(self, player_dict):
+    @abstractmethod
+    def get_id(self, item):
+        pass
+
+    @abstractmethod
+    def load_all(self):
+        pass
+
+    @abstractmethod
+    def save(self, item):
+        pass
+
+    @abstractmethod
+    def update(self, old_item, new_item):
         pass
 
 
-class PlayerDB(Player_storage):
+class Player_tiny_db(Storage):
     """Storage player by Tinydb"""
-    def deserialize_player(self, player_dict):
+
+    def delete(self, player):
+        player_id = self.get_id(player)
+        db_players.remove(doc_ids=[player_id])
+        """
+        not_player_in_tournament = True
+        tournaments = Tournament.load_all_tournaments()
+        for tournament in tournaments:
+            all_players = [player for player in tournament.players]
+            if player_id in all_players:
+                not_player_in_tournament = False
+                return not_player_in_tournament
+        if not_player_in_tournament:
+            database_players.remove(doc_ids=[player_id])
+            return True
+        """
+
+    def deserialize(self, player_dict):
         """ This function deserialize a dict to create an instance of Player"""
         player = Player(player_dict["first_name"],
                         player_dict["last_name"],
@@ -63,21 +94,21 @@ class PlayerDB(Player_storage):
         player_id = db_player.doc_id
         return player_id
 
-    def load_players(self):
+    def load_all(self):
         """
         Load and deserialize  all players from database.
         Returns:
             players(list): list containing instances of all players from the database.
         """
         all_players = db_players.all()
-        players = [self.deserialize_player(player_dict) for player_dict in all_players]
+        players = [self.deserialize(player_dict) for player_dict in all_players]
         return players
 
     def save(self, player):
         """ This function serialize and  add a player to database. """
         db_players.insert(player.__dict__)
 
-    def update_player(self, old_player, new_player):
+    def update(self, old_player, new_player):
         """
         Update all items for a player
         Args:
@@ -90,19 +121,3 @@ class PlayerDB(Player_storage):
                            "date_of_birth": new_player.date_of_birth,
                            "sex": new_player.sex,
                            "ranking": new_player.ranking}, doc_ids=player_id)
-
-    def delete_player(self, player):
-        player_id = self.get_id(player)
-        db_players.remove(doc_ids=[player_id])
-        """
-        not_player_in_tournament = True
-        tournaments = Tournament.load_all_tournaments()
-        for tournament in tournaments:
-            all_players = [player for player in tournament.players]
-            if player_id in all_players:
-                not_player_in_tournament = False
-                return not_player_in_tournament
-        if not_player_in_tournament:
-            database_players.remove(doc_ids=[player_id])
-            return True
-        """

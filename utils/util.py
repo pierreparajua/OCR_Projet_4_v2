@@ -1,5 +1,8 @@
+
 from colorama import Fore, init
 from dateutil.parser import parse
+
+import datetime
 
 init(autoreset=True)
 
@@ -97,6 +100,12 @@ def get_choice(choices: list) -> str:
         choice = wrong_entry(choice)
 
     return choice
+
+
+def get_date_now():
+    """ Gets the date and hour and return """
+    date = datetime.datetime.now().strftime("%d/%m/%Y %H:%M")
+    return date
 
 
 def is_date(string: str, fuzzy=False) -> bool:

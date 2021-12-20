@@ -1,0 +1,113 @@
+from abc import ABC
+
+from colorama import Fore
+from model.m_player import Storage, db
+
+db_tournaments = db.table("Database_tournaments")
+
+
+class Tournament:
+    def __init__(self, name, place, date, rondes, players, time, description, nbr_of_rounds=4):
+        self.name = name
+        self.place = place
+        self.date = date
+        self.rondes = rondes
+        self.players = players
+        self.time = time
+        self.description = description
+        self.nbr_of_rounds = nbr_of_rounds
+
+    def __str__(self):
+        return (Fore.LIGHTWHITE_EX + "Tournois: " + Fore.RESET + f"{self.name}\n"
+                + Fore.LIGHTWHITE_EX + "Lieu: " + Fore.RESET + f"{self.place}\n"
+                + Fore.LIGHTWHITE_EX + "Date: " + Fore.RESET + f"{self.date}\n"
+                + Fore.LIGHTWHITE_EX + "Nombre de tours: " + Fore.RESET + f"{self.nbr_of_rounds}\n"
+                + Fore.LIGHTWHITE_EX + "Liste des rondes: " + Fore.RESET + f"Nombre de rondes deja joués: "
+                                                                           f"{len(self.rondes)}\n"
+                + Fore.LIGHTWHITE_EX + "Système de contrôle du temps: " + Fore.RESET + f"{self.time}\n"
+                + Fore.LIGHTWHITE_EX + "Remarque du directeur de tournois: " + Fore.RESET + f"{self.description}\n")
+
+    def __lt__(self, other):
+        return self.date > other.date
+
+
+class Ronde:
+    def __init__(self, number, date_start, date_end, matches):
+        self.number = number
+        self.date_start = date_start
+        self.date_end = date_end
+        self.matches = matches
+
+    def __str__(self):
+        return f"number: {self.number}\n" \
+               f"date de début: {self.date_start}\n" \
+               f"date de fin: {self.date_end}\n" \
+               f"matchs: {self.matches}"
+
+    def add_opponent(self):
+        """ Save in  the Chess_player the players already met."""
+        for match in self.matches:
+            match[0].opponent.append(match[1].id)
+            match[1].opponent.append(match[0].id)
+
+    def compute_score(self):
+        """ Compute the total score"""
+        for match in self.matches:
+            match[0].add_score()
+            match[1].add_score()
+
+    def serialize_ronde(self) -> dict:
+        """
+        Serialize a Ronde instance.
+        Returns
+            dict_ronde(dict): dict from Ronde' s instance
+        """
+        dict_match = []
+        for match in self.matches:
+            dict_match.append([match[0].serialize(), match[1].serialize()])
+        dict_ronde = {"number": self.number,
+                      "date_start": self.date_start,
+                      "date_end": self.date_end,
+                      "matches": dict_match}
+        return dict_ronde
+
+    @staticmethod
+    def serialize_rondes(rondes: list) -> list:
+        """Return a list with all rondes to save in database."""
+        dict_rondes = [ronde.serialize_ronde() for ronde in rondes]
+        return dict_rondes
+
+
+class Tournament_tiny_db(Storage):
+    """Storage player by Tinydb"""
+
+    def save(self, tournament):
+        """ This function serialize and  add a tournament to database. """
+        print("coucou")
+        print(tournament.name)
+        players_to_db = tournament.players
+        rondes_to_db = Ronde.serialize_rondes(tournament.rondes)
+        dict_t = {"name": tournament.name,
+                  "place": tournament.place,
+                  "date": tournament.date,
+                  "nbr_of_rounds": tournament.nbr_of_rounds,
+                  "rondes": rondes_to_db,
+                  "players": players_to_db,
+                  "time": tournament.time,
+                  "description": tournament.description}
+        db_tournaments.insert(dict_t)
+
+    def delete(self, player):
+        pass
+
+    def deserialize(self, item_dict):
+        pass
+
+    def get_id(self, item):
+        pass
+
+    def load_all(self):
+        pass
+
+    def update(self, old_item, new_item):
+        pass

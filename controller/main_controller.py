@@ -1,5 +1,8 @@
+import utils
 from view.view import View_menu
 from controller.c_player import Player_controller
+from controller.c_tournament import Tournament_controller
+from model.m_tournament import Tournament_tiny_db
 
 
 main_menu = View_menu(title="Menu principal: ",
@@ -35,6 +38,8 @@ report_menu = View_menu(title="Rapport des tournois: ",
                         choice="")
 
 player_controller = Player_controller()
+tournament_controller = Tournament_controller()
+storage_t = Tournament_tiny_db()
 
 
 class Manage_menu:
@@ -80,7 +85,11 @@ class Manage_menu:
         self.menu.display_menu()
         self.menu.choice = self.menu.get_choices()
         if self.menu.choice == "1":
-            print("add tournament")
+            tournament = tournament_controller.prepare_tournament()
+            choice: str = utils.util.get_choice(["1", "2"])
+            if choice == "1":
+                storage_t.save(tournament)
+
         elif self.menu.choice == "2":
             print("reprendre tournament")
         elif self.menu.choice == "3":

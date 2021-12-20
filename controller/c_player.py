@@ -1,10 +1,10 @@
 from colorama import Fore
 
 from view.view import View, DICT_TEXT
-from model.m_player import Player, PlayerDB
+from model.m_player import Player, Player_tiny_db
 import utils
 
-storage = PlayerDB()
+storage = Player_tiny_db()
 
 
 class Player_controller:
@@ -28,11 +28,11 @@ class Player_controller:
 
     def display_all_players(self):
         """Display the list of players save in database."""
-        self.view.display_items(storage.load_players(), "joueurs")
+        self.view.display_items(storage.load_all(), "joueurs")
 
     def update_player(self):
         """Update a player in the database."""
-        players = storage.load_players()
+        players = storage.load_all()
         self.view.display_items(players, "joueurs", select=True)
         old_player = self.view.select_item(players)
         self.view.display_text("updating_player")
@@ -41,23 +41,25 @@ class Player_controller:
         self.view.display_text("confirm_update")
         choice: str = utils.util.get_choice(["o", "n"])
         if choice == "o":
-            storage.update_player(old_player, new_player)
+            storage.update(old_player, new_player)
             self.view.display_text("confirm_updated")
         else:
             self.view.display_text("cancel-action")
 
     def delete_player(self):
         """Delete a player."""
-        players = storage.load_players()
+        players = storage.load_all()
         self.view.display_items(players, "joueurs", select=True)
         player = self.view.select_item(players)
         self.view.display_text("confirm_delete")
         choice = utils.util.get_choice(["o", "n"])
         if choice == "o":
-            storage.delete_player(player)
+            storage.delete(player)
             self.view.display_text("confirm_deleted")
         else:
             self.view.display_text("cancel-action")
+
+
 
 
 class Get_info_player:

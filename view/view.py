@@ -21,23 +21,26 @@ class View:
         print(instance)
 
     @staticmethod
-    def display_items(items, name_item, select=False):
+    def display_items(items, name_items, select=False):
         items.sort()
-        print(f"Liste des {name_item} en base de donnée:")
+        print(f"Liste des {name_items}: ")
         if select:
-            print(f"Sélectionnez le {name_item[:-1]}: ")
+            print(f"Sélectionnez un {name_items[:-1]}: ")
         for i, player in enumerate(items):
             print(f"{i + 1}: {player}")
 
-    def display_text(self, key):
-        print(self.dict_text[key])
+    def display_text(self, key, center=False):
+        if center:
+            print(f"   ----------{self.dict_text[key]}----------")
+        else:
+            print(self.dict_text[key])
 
     def select_item(self, items):
         choice = utils.util.get_choice(list(map(str, list(range(1, len(items) + 1)))))
         self.display_text("selected_player")
-        old_player = items[int(choice) - 1]
-        self.display_instance(old_player)
-        return old_player
+        item = items[int(choice) - 1]
+        self.display_instance(item)
+        return item
 
 
 class View_menu:
@@ -60,7 +63,3 @@ class View_menu:
     def get_choices(self):
         self.choice = utils.util.get_choice(self.get_choice_list())
         return self.choice
-
-
-
-
