@@ -11,11 +11,7 @@ db_players = db.table("Database_players")
 
 
 class Player:
-    def __init__(self, first_name: str,
-                 last_name: str,
-                 date_of_birth: str,
-                 sex: str,
-                 ranking: int = 1000):
+    def __init__(self, first_name: str, last_name: str, date_of_birth: str, sex: str, ranking: int = 1000):
         self.first_name = first_name
         self.last_name = last_name
         self.date_of_birth = date_of_birth
@@ -23,10 +19,12 @@ class Player:
         self.ranking = ranking
 
     def __str__(self):
+        """Display player's attributes."""
         return f"{self.first_name: <8} - {self.last_name: ^10} - {self.date_of_birth: ^10} - {self.sex: ^8} -" \
                f" {self.ranking: >3}"
 
     def __lt__(self, other):
+        """Sort the Players by ranking"""
         return self.ranking > other.ranking
 
 
@@ -43,7 +41,7 @@ class Player_storage(ABC):
 
 
 class PlayerDB(Player_storage):
-
+    """Storage player by Tinydb"""
     def deserialize_player(self, player_dict):
         """ This function deserialize a dict to create an instance of Player"""
         player = Player(player_dict["first_name"],
@@ -55,10 +53,10 @@ class PlayerDB(Player_storage):
 
     def get_id(self, player):
         """
-                Return the id number from the database.
-                Returns:
-                    player_id(str): id from database
-                """
+        Return the id number from the database.
+        Returns:
+            player_id(str): id from database
+        """
         q_player = Query()
         db_player = db_players.get((q_player.fragment({"first_name": player.first_name.lower(),
                                                        "last_name": player.last_name.lower()})))

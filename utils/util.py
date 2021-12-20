@@ -71,7 +71,7 @@ def check_name(name):
 
 def check_date(date):
     if date:
-        while not check_date_format(date):
+        while not check_date_format(replace_for_date(date)):
             date = wrong_entry(date)
     return date
 
