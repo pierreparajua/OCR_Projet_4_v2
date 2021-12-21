@@ -1,13 +1,10 @@
-from abc import ABC
 
 from colorama import Fore
-from model.m_player import Storage, db
-
-db_tournaments = db.table("Database_tournaments")
 
 
 class Tournament:
-    def __init__(self, name, place, date, rondes, players, time, description, nbr_of_rounds=4):
+    def __init__(self, name: str, place: str, date: str, rondes: list, players: list, time: str, description: str,
+                 id_db: int, nbr_of_rounds=4):
         self.name = name
         self.place = place
         self.date = date
@@ -15,6 +12,7 @@ class Tournament:
         self.players = players
         self.time = time
         self.description = description
+        self.id_db = id_db
         self.nbr_of_rounds = nbr_of_rounds
 
     def __str__(self):
@@ -78,36 +76,20 @@ class Ronde:
         return dict_rondes
 
 
-class Tournament_tiny_db(Storage):
-    """Storage player by Tinydb"""
+class Player:
+    def __init__(self, first_name: str, last_name: str, date_of_birth: str, sex: str, id_db: int, ranking: int = 1000):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.date_of_birth = date_of_birth
+        self.sex = sex
+        self.id_db = id_db
+        self.ranking = ranking
 
-    def save(self, tournament):
-        """ This function serialize and  add a tournament to database. """
-        print("coucou")
-        print(tournament.name)
-        players_to_db = tournament.players
-        rondes_to_db = Ronde.serialize_rondes(tournament.rondes)
-        dict_t = {"name": tournament.name,
-                  "place": tournament.place,
-                  "date": tournament.date,
-                  "nbr_of_rounds": tournament.nbr_of_rounds,
-                  "rondes": rondes_to_db,
-                  "players": players_to_db,
-                  "time": tournament.time,
-                  "description": tournament.description}
-        db_tournaments.insert(dict_t)
+    def __str__(self):
+        """Display player's attributes."""
+        return f"{self.first_name: <8} - {self.last_name: ^10} - {self.date_of_birth: ^10} - {self.sex: ^8} -" \
+               f" {self.ranking: >3}"
 
-    def delete(self, player):
-        pass
-
-    def deserialize(self, item_dict):
-        pass
-
-    def get_id(self, item):
-        pass
-
-    def load_all(self):
-        pass
-
-    def update(self, old_item, new_item):
-        pass
+    def __lt__(self, other):
+        """Sort the Players by ranking"""
+        return self.ranking > other.ranking

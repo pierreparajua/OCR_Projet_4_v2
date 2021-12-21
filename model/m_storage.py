@@ -1,31 +1,16 @@
 from abc import ABC, abstractmethod
-from tinydb import TinyDB, Query
+from tinydb import TinyDB, Query, where
 
 from pathlib import Path
+
+from model.main_model import Player, Ronde
 
 SOURCE_DIR = Path(__file__).resolve().parent.parent
 DB_DIR = SOURCE_DIR / "database.json"
 
 db = TinyDB(DB_DIR, indent=4)
 db_players = db.table("Database_players")
-
-
-class Player:
-    def __init__(self, first_name: str, last_name: str, date_of_birth: str, sex: str, ranking: int = 1000):
-        self.first_name = first_name
-        self.last_name = last_name
-        self.date_of_birth = date_of_birth
-        self.sex = sex
-        self.ranking = ranking
-
-    def __str__(self):
-        """Display player's attributes."""
-        return f"{self.first_name: <8} - {self.last_name: ^10} - {self.date_of_birth: ^10} - {self.sex: ^8} -" \
-               f" {self.ranking: >3}"
-
-    def __lt__(self, other):
-        """Sort the Players by ranking"""
-        return self.ranking > other.ranking
+db_tournaments = db.table("Database_tournaments")
 
 
 class Storage(ABC):
@@ -35,10 +20,6 @@ class Storage(ABC):
 
     @abstractmethod
     def deserialize(self, item_dict):
-        pass
-
-    @abstractmethod
-    def get_id(self, item):
         pass
 
     @abstractmethod
@@ -54,12 +35,12 @@ class Storage(ABC):
         pass
 
 
-class Player_tiny_db(Storage):
+class PlayerTinydb(Storage):
     """Storage player by Tinydb"""
 
     def delete(self, player):
-        player_id = self.get_id(player)
-        db_players.remove(doc_ids=[player_id])
+        print(player)
+        db_players.remove(where('id_db') == player.id_db)
         """
         not_player_in_tournament = True
         tournaments = Tournament.load_all_tournaments()
@@ -79,20 +60,9 @@ class Player_tiny_db(Storage):
                         player_dict["last_name"],
                         player_dict["date_of_birth"],
                         player_dict["sex"],
+                        player_dict["id_db"],
                         player_dict["ranking"])
         return player
-
-    def get_id(self, player):
-        """
-        Return the id number from the database.
-        Returns:
-            player_id(str): id from database
-        """
-        q_player = Query()
-        db_player = db_players.get((q_player.fragment({"first_name": player.first_name.lower(),
-                                                       "last_name": player.last_name.lower()})))
-        player_id = db_player.doc_id
-        return player_id
 
     def load_all(self):
         """
@@ -106,7 +76,10 @@ class Player_tiny_db(Storage):
 
     def save(self, player):
         """ This function serialize and  add a player to database. """
-        db_players.insert(player.__dict__)
+        player.id_db = int(db_players.insert(player.__dict__))
+        q_player = Query()
+        db_players.update({"id_db": player.id_db}, q_player.fragment({"first_name": player.first_name,
+                                                                      "last_name": player.last_name}))
 
     def update(self, old_player, new_player):
         """
@@ -115,9 +88,45 @@ class Player_tiny_db(Storage):
             old_player(Player): player to update
             new_player(Player): player updated
         """
-        player_id = [self.get_id(old_player)]
+        q_player = Query()
         db_players.update({"first_name": new_player.first_name,
                            "last_name": new_player.last_name,
                            "date_of_birth": new_player.date_of_birth,
                            "sex": new_player.sex,
-                           "ranking": new_player.ranking}, doc_ids=player_id)
+                           "id_db": new_player.id_db,
+                           "ranking": new_player.ranking}, q_player.fragment({"first_name": old_player.first_name,
+                                                                              "last_name": old_player.last_name}))
+
+
+class TournamentTinydb(Storage):
+    """Storage player by Tinydb"""
+
+    def save(self, tournament):
+        """ This function serialize and  add a tournament to database. """
+        print("coucou")
+        print(tournament.name)
+        players_to_db = tournament.players
+        rondes_to_db = Ronde.serialize_rondes(tournament.rondes)
+        dict_t = {"name": tournament.name,
+                  "place": tournament.place,
+                  "date": tournament.date,
+                  "nbr_of_rounds": tournament.nbr_of_rounds,
+                  "rondes": rondes_to_db,
+                  "players": players_to_db,
+                  "time": tournament.time,
+                  "description": tournament.description,
+                  "id_bd": tournament.id_db}
+        tournament.id_db = int(db_tournaments.insert(dict_t))
+        db_tournaments.update({"id_db": tournament.id_db})
+
+    def delete(self, player):
+        pass
+
+    def deserialize(self, item_dict):
+        pass
+
+    def load_all(self):
+        pass
+
+    def update(self, old_item, new_item):
+        pass

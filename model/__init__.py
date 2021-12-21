@@ -1,6 +1,6 @@
 
-import model.m_player
-import model.m_tournament
+import model.m_storage
+import model.main_model
 
 
 

@@ -1,51 +1,51 @@
 import utils
-from view.view import View_menu
-from controller.c_player import Player_controller
-from controller.c_tournament import Tournament_controller
-from model.m_tournament import Tournament_tiny_db
+from utils.util import Menu
+from controller.c_player import PlayerController
+from controller.c_tournament import TournamentController
+from model.m_storage import TournamentTinydb
+
+main_menu = Menu(title="Menu principal: ",
+                 add_info="(Tapez le chiffre correspondant à votre choix)",
+                 items=["Gestion des joueurs",
+                        "Gestion des tournois",
+                        "Quitter"],
+                 choice="")
+
+player_menu = Menu(title="Menu de gestion des joueurs: ",
+                   add_info="(Tapez le chiffre correspondant à votre choix ou 'm' pour retourner au menu "
+                            "précédent: )",
+                   items=["Ajouter un joueur",
+                          "Afficher les joueurs",
+                          "Modifier un joueurs",
+                          "Supprimer un joueur"],
+                   choice="")
+
+tournament_menu = Menu(title="Menu de gestion des tournois: ",
+                       add_info="(Tapez le chiffre correspondant à votre choix ou 'm' pour retourner au menu "
+                                "précédent: )",
+                       items=["Ajouter un tournois",
+                              "Reprendre un tournois",
+                              "Supprimer un tournois",
+                              "Afficher les rapports de tournois"],
+                       choice="")
+
+report_menu = Menu(title="Rapport des tournois: ",
+                   add_info="(Tapez le chiffre correspondant à votre choix ou 'm' pour retourner au menu "
+                            "précédent: )",
+                   items=["Tournois en cours",
+                          "Tournois terminés"],
+                   choice="")
+
+player_controller = PlayerController()
+tournament_controller = TournamentController()
+storage_t = TournamentTinydb()
 
 
-main_menu = View_menu(title="Menu principal: ",
-                      add_info="(Tapez le chiffre correspondant à votre choix)",
-                      items=["Gestion des joueurs",
-                             "Gestion des tournois",
-                             "Quitter"],
-                      choice="")
-
-player_menu = View_menu(title="Menu de gestion des joueurs: ",
-                        add_info="(Tapez le chiffre correspondant à votre choix ou 'm' pour retourner au menu "
-                                 "précédent: )",
-                        items=["Ajouter un joueur",
-                               "Afficher les joueurs",
-                               "Modifier un joueurs",
-                               "Supprimer un joueur"],
-                        choice="")
-
-tournament_menu = View_menu(title="Menu de gestion des tournois: ",
-                            add_info="(Tapez le chiffre correspondant à votre choix ou 'm' pour retourner au menu "
-                                     "précédent: )",
-                            items=["Ajouter un tournois",
-                                   "Reprendre un tournois",
-                                   "Supprimer un tournois",
-                                   "Afficher les rapports de tournois"],
-                            choice="")
-
-report_menu = View_menu(title="Rapport des tournois: ",
-                        add_info="(Tapez le chiffre correspondant à votre choix ou 'm' pour retourner au menu "
-                                 "précédent: )",
-                        items=["Tournois en cours",
-                               "Tournois terminés"],
-                        choice="")
-
-player_controller = Player_controller()
-tournament_controller = Tournament_controller()
-storage_t = Tournament_tiny_db()
-
-
-class Manage_menu:
+class ManageMenu:
     """Manage the navigation inside the programme."""
+
     def __init__(self, title, add_info, items, choice):
-        self.menu = View_menu(title, add_info, items, choice)
+        self.menu = Menu(title, add_info, items, choice)
 
     def main_manager(self):
         """Manage the main menu"""
