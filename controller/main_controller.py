@@ -1,8 +1,7 @@
-import utils
+
 from utils.util import Menu
 from controller.c_player import PlayerController
-from controller.c_tournament import TournamentController
-from model.m_storage import TournamentTinydb
+
 
 main_menu = Menu(title="Menu principal: ",
                  add_info="(Tapez le chiffre correspondant à votre choix)",
@@ -37,8 +36,7 @@ report_menu = Menu(title="Rapport des tournois: ",
                    choice="")
 
 player_controller = PlayerController()
-tournament_controller = TournamentController()
-storage_t = TournamentTinydb()
+
 
 
 class ManageMenu:
@@ -55,7 +53,8 @@ class ManageMenu:
         if self.menu.choice == "1":
             self.player_manager()
         elif self.menu.choice == "2":
-            self.tournament_manager()
+            # self.tournament_manager()
+            pass
         elif self.menu.choice == "3":
             pass
 
@@ -79,8 +78,8 @@ class ManageMenu:
         elif self.menu.choice == "m":
             self.main_manager()
 
+    """
     def tournament_manager(self):
-        """Manage the tournament menu"""
         self.menu = tournament_menu
         self.menu.display_menu()
         self.menu.choice = self.menu.get_choices()
@@ -100,7 +99,6 @@ class ManageMenu:
             self.main_manager()
 
     def report_manager(self):
-        """Manage the report menu"""
         self.menu = report_menu
         self.menu.display_menu()
         self.menu.choice = self.menu.get_choices()
@@ -110,3 +108,4 @@ class ManageMenu:
             print("Rapport tournois terminé")
         elif self.menu.choice == "m":
             self.tournament_manager()
+    """

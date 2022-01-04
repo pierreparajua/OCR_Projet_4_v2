@@ -10,7 +10,7 @@
     "player_to_update": "Quel joueur de la liste souhaitez vous modifier: ",
     "selected_player": "Vous avez s\u00e9lectionn\u00e9: ",
     "updating_player": "\nModifier, si vous souhaitez, l' item entre parenth\u00e8se ou tapez 'Entrez' pour passer \u00e0 l' item suivant: ",
-    "confirm_update": "Confirmez la modification( 'o' ou 'n'):",
+    "confirm_update": "\nConfirmez la modification( 'o' ou 'n'):",
     "confirm_updated": "Le joueur \u00e0 \u00e9t\u00e9 modifi\u00e9 dans la base de donn\u00e9e\n",
     "cancel-action": "action non ex\u00e9cut\u00e9e - retour au menu",
     "delete_player": "Quel joueur souhaitez vous supprim\u00e9: ",

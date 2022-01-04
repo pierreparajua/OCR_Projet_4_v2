@@ -76,20 +76,3 @@ class Ronde:
         return dict_rondes
 
 
-class Player:
-    def __init__(self, first_name: str, last_name: str, date_of_birth: str, sex: str, id_db: int, ranking: int = 1000):
-        self.first_name = first_name
-        self.last_name = last_name
-        self.date_of_birth = date_of_birth
-        self.sex = sex
-        self.id_db = id_db
-        self.ranking = ranking
-
-    def __str__(self):
-        """Display player's attributes."""
-        return f"{self.first_name: <8} - {self.last_name: ^10} - {self.date_of_birth: ^10} - {self.sex: ^8} -" \
-               f" {self.ranking: >3}"
-
-    def __lt__(self, other):
-        """Sort the Players by ranking"""
-        return self.ranking > other.ranking

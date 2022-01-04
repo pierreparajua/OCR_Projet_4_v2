@@ -1,28 +1,22 @@
-import utils
-from controller.c_get_data import GetDataTournament
-from view.view import View, DICT_TEXT
-from utils.util import Menu
+
 from controller.c_player import PlayerController
-from model.m_storage import PlayerTinydb, TournamentTinydb
+from model.m_storage import PlayerTinydb
 
 NB_PLAYER_MAX = 20
 NB_player = list(map(str, list(range(1, (NB_PLAYER_MAX + 1)))))[1::2]
 
 player_controller = PlayerController()
-storage_t = TournamentTinydb()
 storage_p = PlayerTinydb()
 
-got_tournament = GetDataTournament("", "", "", "", "", "", "", "")
-
-
+"""
 class TournamentController:
-    """Controls the tournament"""
+
 
     def __init__(self, ):
         self.view: View = View(DICT_TEXT)
 
     def prepare_tournament(self):
-        """Gets all informations needed to start a tournament"""
+
         self.view.display_text("ask_for_player")
         choice: str = utils.util.get_choice(["o", "n"])
         while choice == "o":
@@ -39,7 +33,6 @@ class TournamentController:
         return tournament
 
     def select_player(self, nb_round: int) -> list:
-        """This function manage the player's selection for a new tournament."""
         players_selected = []
         self.view.display_text("nb_player")
         nb_players = int(utils.util.get_choice(NB_player))  # Check if the number of players is even
@@ -58,3 +51,4 @@ class TournamentController:
                 i += 1
         players_selected.sort()
         return players_selected
+"""
