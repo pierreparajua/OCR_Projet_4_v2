@@ -2,9 +2,6 @@ from typing import Protocol
 from tinydb import TinyDB, where
 from pathlib import Path
 
-from model.m_player import Player
-
-
 SOURCE_DIR = Path(__file__).resolve().parent.parent
 DB_DIR = SOURCE_DIR / "database.json"
 

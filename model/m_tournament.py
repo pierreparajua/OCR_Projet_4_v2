@@ -1,4 +1,3 @@
-
 from colorama import Fore
 
 import utils
@@ -25,7 +24,7 @@ class Tournament:
                 + Fore.LIGHTWHITE_EX + "Liste des rondes: " + Fore.RESET + f"Nombre de rondes deja joués: "
                                                                            f"{len(self.rondes)}\n"
                 + Fore.LIGHTWHITE_EX + "Système de contrôle du temps: " + Fore.RESET + f"{self.time}\n"
-                + Fore.LIGHTWHITE_EX + "Remarque du directeur de tournois: " + Fore.RESET + f"{self.description}\n")
+                + Fore.LIGHTWHITE_EX + "Remarque du directeur de tournois: " + Fore.RESET + f"{self.description}")
 
     def __lt__(self, other):
         return self.date > other.date
@@ -81,8 +80,18 @@ class Tournament:
     def description(self, value):
         self._description = value.lower()
 
-
-
+    def serialize(self) -> dict:
+        """Serialize an instance of tournament"""
+        dict_tournament = {"name": self.name,
+                           "place": self.place,
+                           "date": self.date,
+                           "rondes": self.rondes,
+                           "players": [player.__dict__ for player in self.players],
+                           "time": self.time,
+                           "description": self.description,
+                           "id_db": self.id_db,
+                           "nbr_of-rounds": self.nbr_of_rounds}
+        return dict_tournament
 
 
 class Ronde:

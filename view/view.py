@@ -20,6 +20,7 @@ class View:
     def display_instance(instance):
         """Display the requested instance"""
         print(instance)
+        print("\n")
 
     @staticmethod
     def display_items(items, name_items, select=False):

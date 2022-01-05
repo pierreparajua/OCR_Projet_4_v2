@@ -1,5 +1,10 @@
+import utils
+from controller.c_tournament import TournamentController
+from model.m_storage import Tinydb, db_tournaments
+from model.m_tournament import Tournament
 from utils.util import Menu
 from controller.c_player import PlayerController
+from view.view import View, DICT_TEXT
 
 main_menu = Menu(title="Menu principal: ",
                  add_info="(Tapez le chiffre correspondant à votre choix)",
@@ -34,7 +39,9 @@ report_menu = Menu(title="Rapport des tournois: ",
                    choice="")
 
 player_controller = PlayerController()
-
+tournament_controller = TournamentController()
+storage_t = Tinydb(db_tournaments, Tournament("", "", "", [], [], "", ""))
+view = View(DICT_TEXT)
 
 class ManageMenu:
     """Manage the navigation inside the programme."""
@@ -50,8 +57,7 @@ class ManageMenu:
         if self.menu.choice == "1":
             self.player_manager()
         elif self.menu.choice == "2":
-            # self.tournament_manager()
-            pass
+            self.tournament_manager()
         elif self.menu.choice == "3":
             pass
 
@@ -81,9 +87,7 @@ class ManageMenu:
         self.menu.choice = self.menu.get_choices()
         if self.menu.choice == "1":
             tournament = tournament_controller.prepare_tournament()
-            choice: str = utils.util.get_choice(["1", "2"])
-            if choice == "1":
-                storage_t.save(tournament)
+            self.save_or_quit(tournament)
 
         elif self.menu.choice == "2":
             print("reprendre tournament")
@@ -103,5 +107,18 @@ class ManageMenu:
         elif self.menu.choice == "2":
             print("Rapport tournois terminé")
         elif self.menu.choice == "m":
+            self.tournament_manager()
+
+    def save_or_quit(self, tournament):
+        view.display_text("save_or_quit")
+        choice = utils.util.get_choice(["1", "2"])
+        if choice == "1":
+            storage_t.item = tournament
+            storage_t.save()
+            storage_t.update()
+        elif choice == "2":
+            storage_t.item = tournament
+            storage_t.save()
+            storage_t.update()
             self.tournament_manager()
 
