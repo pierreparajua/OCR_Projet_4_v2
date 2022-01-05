@@ -1,7 +1,5 @@
-
 from utils.util import Menu
 from controller.c_player import PlayerController
-
 
 main_menu = Menu(title="Menu principal: ",
                  add_info="(Tapez le chiffre correspondant à votre choix)",
@@ -36,7 +34,6 @@ report_menu = Menu(title="Rapport des tournois: ",
                    choice="")
 
 player_controller = PlayerController()
-
 
 
 class ManageMenu:

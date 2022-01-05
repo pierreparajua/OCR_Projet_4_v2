@@ -36,7 +36,7 @@ class PlayerTinydb(Storage):
         self.item = Player("", "", "", "")
 
     def delete(self):
-        db_players.remove(where('id_db') == self.item.id_db)
+        self.table.remove(where('id_db') == self.item.id_db)
 
     def load_all(self):
         return self.table.all()
