@@ -75,7 +75,6 @@ class ManageMenu:
         elif self.menu.choice == "m":
             self.main_manager()
 
-    """
     def tournament_manager(self):
         self.menu = tournament_menu
         self.menu.display_menu()
@@ -105,4 +104,4 @@ class ManageMenu:
             print("Rapport tournois terminé")
         elif self.menu.choice == "m":
             self.tournament_manager()
-    """
+

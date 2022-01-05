@@ -1,10 +1,12 @@
 
 from colorama import Fore
 
+import utils
+
 
 class Tournament:
     def __init__(self, name: str, place: str, date: str, rondes: list, players: list, time: str, description: str,
-                 id_db: int, nbr_of_rounds=4):
+                 id_db: int = 1, nbr_of_rounds=4):
         self.name = name
         self.place = place
         self.date = date
@@ -27,6 +29,60 @@ class Tournament:
 
     def __lt__(self, other):
         return self.date > other.date
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = utils.util.check_name(value).lower()
+
+    @property
+    def place(self):
+        return self._place
+
+    @place.setter
+    def place(self, value):
+        self._place = utils.util.check_name(value).lower()
+
+    @property
+    def date(self):
+        return self._date
+
+    @date.setter
+    def date(self, value):
+        self._date = utils.util.check_date(value).lower()
+
+    @property
+    def nbr_of_rounds(self):
+        return self._nbr_of_rounds
+
+    @nbr_of_rounds.setter
+    def nbr_of_rounds(self, value):
+        if value:
+            self._nbr_of_rounds = utils.util.check_ranking(value)
+        else:
+            self._nbr_of_rounds = 4
+
+    @property
+    def time(self):
+        return self._time
+
+    @time.setter
+    def time(self, value):
+        self._time = utils.util.check_name(value).lower()
+
+    @property
+    def description(self):
+        return self._description
+
+    @description.setter
+    def description(self, value):
+        self._description = value.lower()
+
+
+
 
 
 class Ronde:
@@ -74,5 +130,3 @@ class Ronde:
         """Return a list with all rondes to save in database."""
         dict_rondes = [ronde.serialize_ronde() for ronde in rondes]
         return dict_rondes
-
-

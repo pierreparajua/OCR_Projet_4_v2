@@ -3,10 +3,6 @@ from colorama import Fore
 from utils.util import Menu
 from model.m_player import Player
 
-time_control_menu = Menu(title="  Choisissez le système de contrôle du temps:",
-                         add_info="",
-                         items=["Bullet", "Blitz", "Coup rapide"],
-                         choice="")
 update_player_menu = Menu(title="Quel attribut souhaitez vous modifier: ",
                           add_info="(Tapez 'm' pour sortir)",
                           items=["Prénom", "Nom", "date de naissance", "sexe", "classement"],

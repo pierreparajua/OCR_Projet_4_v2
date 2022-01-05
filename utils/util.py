@@ -93,6 +93,10 @@ def get_date_now():
 
 def wrong_entry(choice: str):
     """ Display error message"""
-    value = input(Fore.LIGHTGREEN_EX + f"{choice}" + Fore.LIGHTRED_EX + " : n' est pas un choix valide.\n"
-                                                                        f"Veuillez ressaisir votre choix: \n")
+    value = input(Fore.LIGHTGREEN_EX + f"{choice}"
+                  + Fore.LIGHTRED_EX + " : n' est pas un choix valide.\n Veuillez ressaisir votre choix: \n")
     return value
+
+if __name__ == "__main__":
+    print(check_ranking("1"))
+    print(type(check_ranking(1)))

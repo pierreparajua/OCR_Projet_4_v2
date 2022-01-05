@@ -2,7 +2,7 @@ from tinydb import TinyDB
 from pathlib import Path
 
 from model.m_player import Player
-from model.m_storage import PlayerTinydb
+from model.m_storage import Tinydb
 
 SOURCE_DIR = Path(__file__).resolve().parent.parent
 DB_DIR = SOURCE_DIR / "database_test.json"
@@ -11,7 +11,7 @@ db = TinyDB(DB_DIR, indent=4)
 db_test = db.table("Database_test")
 
 pierre = Player("caroline", "sejil", "08/02/1984", "femme", 1, 1230)
-storage = PlayerTinydb()
+storage = Tinydb()
 storage.table = db_test
 storage.item = pierre
 

@@ -28,12 +28,12 @@ class Storage(Protocol):
         ...
 
 
-class PlayerTinydb(Storage):
+class Tinydb(Storage):
     """Storage player by Tinydb"""
 
-    def __init__(self):
-        self.table = db_players
-        self.item = Player("", "", "", "")
+    def __init__(self, table, item):
+        self.table = table
+        self.item = item
 
     def delete(self):
         self.table.remove(where('id_db') == self.item.id_db)
