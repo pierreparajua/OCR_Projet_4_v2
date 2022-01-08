@@ -1,4 +1,7 @@
 import utils
+from model.m_storage import Tinydb, db_players
+
+storage_p = Tinydb(db_players)
 
 
 class Player:
@@ -19,6 +22,9 @@ class Player:
     def __lt__(self, other):
         """Sort the Players by ranking"""
         return self.ranking > other.ranking
+
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}"
 
     @property
     def first_name(self):
@@ -68,18 +74,13 @@ class Player:
                         player_dict["_date_of_birth"],
                         player_dict["_sex"],
                         player_dict["id_db"],
-                        player_dict["_ranking"])
+                        player_dict["_ranking"],
+                        )
         return player
 
     def serialize(self):
         """ This function serialize an instance of Player"""
         return self.__dict__
 
-
-if __name__ == "__main__":
-    pierre = Player("pierre", "parajua", "20/06/1986", "")
-
-    pierre.ranking = input("entrer le prénom:")
-
-    print(pierre)
-    print(type(pierre.ranking))
+    def player_from_id(self, table, id_db):
+        return self.deserialize(table.load(id_db))

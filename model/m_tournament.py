@@ -1,16 +1,22 @@
+from dataclasses import dataclass
+
 from colorama import Fore
 
 import utils
+from model.m_storage import Tinydb, db_tournaments
+
+storage_t = Tinydb(db_tournaments)
+
 
 
 class Tournament:
-    def __init__(self, name: str, place: str, date: str, rondes: list, players: list, time: str, description: str,
+    def __init__(self, name: str, place: str, date: str, rondes: list, chess_players: list, time: str, description: str,
                  id_db: int = 1, nbr_of_rounds=4):
         self.name = name
         self.place = place
         self.date = date
         self.rondes = rondes
-        self.players = players
+        self.chess_players = chess_players
         self.time = time
         self.description = description
         self.id_db = id_db
@@ -80,17 +86,32 @@ class Tournament:
     def description(self, value):
         self._description = value.lower()
 
+    @staticmethod
+    def deserialize(tournament_dict: dict):
+        """Create an instance of Tournament."""
+        tournament = Tournament(tournament_dict["name"],
+                                tournament_dict["place"],
+                                tournament_dict["date"],
+                                tournament_dict["rondes"],
+                                tournament_dict["chess_players"],
+                                tournament_dict["time"],
+                                tournament_dict["description"],
+                                tournament_dict["id_db"],
+                                tournament_dict["nbr_of_rounds"])
+
+        return tournament
+
     def serialize(self) -> dict:
         """Serialize an instance of tournament"""
         dict_tournament = {"name": self.name,
                            "place": self.place,
                            "date": self.date,
-                           "rondes": self.rondes,
-                           "players": [player.__dict__ for player in self.players],
+                           "rondes": Ronde.serialize_rondes(self.rondes),
+                           "chess_players": [ChessPlayer.serialize(player) for player in self.chess_players],
                            "time": self.time,
                            "description": self.description,
                            "id_db": self.id_db,
-                           "nbr_of-rounds": self.nbr_of_rounds}
+                           "nbr_of_rounds": self.nbr_of_rounds}
         return dict_tournament
 
 
@@ -107,12 +128,6 @@ class Ronde:
                f"date de fin: {self.date_end}\n" \
                f"matchs: {self.matches}"
 
-    def add_opponent(self):
-        """ Save in  the Chess_player the players already met."""
-        for match in self.matches:
-            match[0].opponent.append(match[1].id)
-            match[1].opponent.append(match[0].id)
-
     def compute_score(self):
         """ Compute the total score"""
         for match in self.matches:
@@ -120,22 +135,62 @@ class Ronde:
             match[1].add_score()
 
     def serialize_ronde(self) -> dict:
-        """
-        Serialize a Ronde instance.
-        Returns
-            dict_ronde(dict): dict from Ronde' s instance
-        """
-        dict_match = []
-        for match in self.matches:
-            dict_match.append([match[0].serialize(), match[1].serialize()])
+        """Serialize a Ronde instance"""
         dict_ronde = {"number": self.number,
                       "date_start": self.date_start,
                       "date_end": self.date_end,
-                      "matches": dict_match}
+                      "matches": self.matches}
         return dict_ronde
 
     @staticmethod
     def serialize_rondes(rondes: list) -> list:
-        """Return a list with all rondes to save in database."""
         dict_rondes = [ronde.serialize_ronde() for ronde in rondes]
         return dict_rondes
+
+    @staticmethod
+    def add_opponents(players, matches):
+        for match in matches:
+            ChessPlayer.chess_player_from_id(players, match[0]).opponents\
+                .append(ChessPlayer.chess_player_from_id(players, match[1]).id_player)
+            ChessPlayer.chess_player_from_id(players, match[1]).opponents\
+                .append(ChessPlayer.chess_player_from_id(players, match[0]).id_player)
+        return players
+
+
+@dataclass
+class ChessPlayer:
+    id_player: int
+    score: float
+    score_tot: float
+    opponents: list
+
+    def __lt__(self, other):
+        return self.score_tot > other.score_tot
+
+    def create_chess_player(self, player):
+        self.id_player = player.id_db
+        chess_player = ChessPlayer(self.id_player,
+                                   score=0,
+                                   score_tot=0,
+                                   opponents=[]
+                                   )
+        return chess_player
+
+    @staticmethod
+    def chess_player_from_id(players, id_player):
+        return next(x for x in players if x.id_player == id_player)
+
+    @staticmethod
+    def deserialize(chess_player_dict):
+        chess_player = ChessPlayer(chess_player_dict["id_player"],
+                                   chess_player_dict["score"],
+                                   chess_player_dict["score_tot"],
+                                   chess_player_dict["opponents"])
+        return chess_player
+
+    def serialize(self):
+        dict_chess_player = {"id_player": self.id_player,
+                             "score": self.score,
+                             "score_tot": self.score_tot,
+                             "opponents": self.opponents}
+        return dict_chess_player

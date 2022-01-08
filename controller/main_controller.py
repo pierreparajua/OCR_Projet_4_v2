@@ -1,7 +1,6 @@
 import utils
 from controller.c_tournament import TournamentController
 from model.m_storage import Tinydb, db_tournaments
-from model.m_tournament import Tournament
 from utils.util import Menu
 from controller.c_player import PlayerController
 from view.view import View, DICT_TEXT
@@ -40,8 +39,9 @@ report_menu = Menu(title="Rapport des tournois: ",
 
 player_controller = PlayerController()
 tournament_controller = TournamentController()
-storage_t = Tinydb(db_tournaments, Tournament("", "", "", [], [], "", ""))
+storage_t = Tinydb(db_tournaments)
 view = View(DICT_TEXT)
+
 
 class ManageMenu:
     """Manage the navigation inside the programme."""
@@ -87,6 +87,8 @@ class ManageMenu:
         self.menu.choice = self.menu.get_choices()
         if self.menu.choice == "1":
             tournament = tournament_controller.prepare_tournament()
+            self.save_or_quit(tournament, update=False)
+            tournament = tournament_controller.round1(tournament)
             self.save_or_quit(tournament)
 
         elif self.menu.choice == "2":
@@ -109,16 +111,35 @@ class ManageMenu:
         elif self.menu.choice == "m":
             self.tournament_manager()
 
-    def save_or_quit(self, tournament):
+    def save_or_quit(self, tournament, update=True):
         view.display_text("save_or_quit")
         choice = utils.util.get_choice(["1", "2"])
         if choice == "1":
-            storage_t.item = tournament
-            storage_t.save()
-            storage_t.update()
+            if not update:
+                tournament.id_db = storage_t.save(tournament)
+            storage_t.update(tournament)
         elif choice == "2":
-            storage_t.item = tournament
-            storage_t.save()
-            storage_t.update()
+            if not update:
+                tournament.id_db = storage_t.save(tournament)
+            storage_t.update(tournament)
             self.tournament_manager()
 
+
+if __name__ == "__main__":
+    """
+    test = TournamentController()
+
+    caroline = Player("caroline", "sejil", "12/02/1984", "femme", 1, 1230)
+    damien = Player("damien", "parajua", "08/05/1984", "femme", 2, 1130)
+    pierre = Player("pierre", "yves", "08/02/1989", "homme", 3, 1250)
+    eddy = Player("eddy", "sejil", "08/02/1984", "homme", 4, 1098)
+    players = [caroline, damien, pierre, eddy]
+
+    tournament = Tournament("master", "lyon", "05/02/2002", [], players, "Blitz", "test", 1, 4)
+    test.view.display_instance(tournament)
+    storage_t.item = tournament
+    tournament = Tournament.deserialize(storage_t.load())
+    tournament = test.round1(tournament)
+    storage_t.item = tournament
+    storage_t.update()
+    """

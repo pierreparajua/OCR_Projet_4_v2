@@ -1,10 +1,11 @@
 from model.m_player import Player
 from view.v_get_data_player import GetDataPlayer
-from view.view import View, DICT_TEXT
 from model.m_storage import Tinydb, db_players
+from view.view import View, DICT_TEXT
+
 import utils
 
-storage_p = Tinydb(db_players, Player("", "", "", ""))
+storage_p = Tinydb(db_players)
 got_player = GetDataPlayer("", "", "", "")
 
 
@@ -22,9 +23,8 @@ class PlayerController:
         self.view.display_text("confirm-add-player")
         choice = utils.util.get_choice(["o", "n"])
         if choice == "o":
-            storage_p.item = player
-            storage_p.save()
-            storage_p.update()
+            player.id_db = storage_p.save(player)
+            storage_p.update(player)
             self.view.display_text("added_player")
         else:
             self.view.display_text("no_action")
@@ -47,8 +47,7 @@ class PlayerController:
         self.view.display_instance(new_player)
         choice: str = utils.util.get_choice(["o", "n"])
         if choice == "o":
-            storage_p.item = new_player
-            storage_p.update()
+            storage_p.update(new_player)
             self.view.display_text("confirm_updated")
         else:
             self.view.display_text("cancel-action")
@@ -61,19 +60,18 @@ class PlayerController:
         self.view.display_text("confirm_delete")
         choice = utils.util.get_choice(["o", "n"])
         if choice == "o":
-            storage_p.item = player
-            storage_p.delete()
+            storage_p.delete(player)
             self.view.display_text("confirm_deleted")
         else:
             self.view.display_text("cancel-action")
 
 
 if __name__ == "__main__":
-
+    """
     pierre = Player("caroline", "parajua", "08/02/1984", "femme", 1, 1230)
     storage_p.item = pierre
     storage_p.save()
     storage_p.update()
     test = PlayerController()
     test.update_player()
-
+    """

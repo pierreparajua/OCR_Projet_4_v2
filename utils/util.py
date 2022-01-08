@@ -1,4 +1,3 @@
-
 from colorama import Fore, init
 
 import datetime
@@ -10,6 +9,7 @@ init(autoreset=True)
 
 class Menu:
     """Create a menu"""
+
     def __init__(self, title, add_info, items, choice):
         self.title: str = title
         self.add_info: str = add_info
@@ -91,11 +91,26 @@ def get_date_now():
     return date
 
 
+def split_players(players: list) -> tuple:
+    """
+    Split the main list in 2, according with the tournament's rules.
+    Args:
+        players(list): List of players.
+    Returns:
+        players_split1, players_split2(tuple): The 2 lists in a tuple
+    """
+    nb = int(len(players) / 2)
+    players_split1 = players[0: nb]
+    players_split2 = players[nb: int(nb * 2)]
+    return players_split1, players_split2
+
+
 def wrong_entry(choice: str):
     """ Display error message"""
     value = input(Fore.LIGHTGREEN_EX + f"{choice}"
                   + Fore.LIGHTRED_EX + " : n' est pas un choix valide.\n Veuillez ressaisir votre choix: \n")
     return value
+
 
 if __name__ == "__main__":
     print(check_ranking("1"))

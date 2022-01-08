@@ -12,37 +12,45 @@ db_tournaments = db.table("Database_tournaments")
 
 class Storage(Protocol):
 
-    def delete(self):
+    def delete(self, item):
         ...
 
     def load_all(self):
         return ...
 
-    def save(self):
+    def load(self, item):
+        return ...
+
+    def save(self, item):
         ...
 
-    def update(self):
+    def update(self, item):
         ...
 
 
 class Tinydb(Storage):
     """Storage player by Tinydb"""
 
-    def __init__(self, table, item):
+    def __init__(self, table):
         self.table = table
-        self.item = item
 
-    def delete(self):
-        self.table.remove(where('id_db') == self.item.id_db)
+    def delete(self, item):
+        self.table.remove(where('id_db') == item.id_db)
 
     def load_all(self):
         return self.table.all()
 
-    def save(self):
-        self.item.id_db = self.table.insert(self.item.serialize())
+    def load(self, item):
+        if isinstance(item, int):
+            return self.table.get(doc_id=item)
+        else:
+            return self.table.get(doc_id=item.id_db)
 
-    def update(self):
-        self.table.update(self.item.serialize(), doc_ids=[self.item.id_db])
+    def save(self, item):
+        return self.table.insert(item.serialize())
+
+    def update(self, item):
+        self.table.update(item.serialize(), doc_ids=[item.id_db])
 
 
 """
@@ -80,4 +88,10 @@ class TournamentTinydb:
 """
 
 if __name__ == "__main__":
-    pass
+    storage_t = Tinydb(db_tournaments)
+    matches = [[1, 5], [2, 6], [3, 7], [4, 8]]
+
+
+
+
+
