@@ -8,7 +8,6 @@ from model.m_storage import Tinydb, db_tournaments
 storage_t = Tinydb(db_tournaments)
 
 
-
 class Tournament:
     def __init__(self, name: str, place: str, date: str, rondes: list, chess_players: list, time: str, description: str,
                  id_db: int = 1, nbr_of_rounds=4):
@@ -127,14 +126,28 @@ class Ronde:
                f"date de début: {self.date_start}\n" \
                f"date de fin: {self.date_end}\n" \
                f"matchs: {self.matches}"
-
+    """
     def compute_score(self):
-        """ Compute the total score"""
         for match in self.matches:
             match[0].add_score()
             match[1].add_score()
+    """
 
-    def serialize_ronde(self) -> dict:
+    @staticmethod
+    def serialize_rondes(rondes: list) -> list:
+        dict_rondes = [ronde.serialize() for ronde in rondes]
+        return dict_rondes
+
+    @staticmethod
+    def add_opponents(players, matches):
+        for match in matches:
+            ChessPlayer.chess_player_from_id(players, match[0]).opponents \
+                .append(ChessPlayer.chess_player_from_id(players, match[1]).id_player)
+            ChessPlayer.chess_player_from_id(players, match[1]).opponents \
+                .append(ChessPlayer.chess_player_from_id(players, match[0]).id_player)
+        return players
+
+    def serialize(self) -> dict:
         """Serialize a Ronde instance"""
         dict_ronde = {"number": self.number,
                       "date_start": self.date_start,
@@ -142,19 +155,7 @@ class Ronde:
                       "matches": self.matches}
         return dict_ronde
 
-    @staticmethod
-    def serialize_rondes(rondes: list) -> list:
-        dict_rondes = [ronde.serialize_ronde() for ronde in rondes]
-        return dict_rondes
 
-    @staticmethod
-    def add_opponents(players, matches):
-        for match in matches:
-            ChessPlayer.chess_player_from_id(players, match[0]).opponents\
-                .append(ChessPlayer.chess_player_from_id(players, match[1]).id_player)
-            ChessPlayer.chess_player_from_id(players, match[1]).opponents\
-                .append(ChessPlayer.chess_player_from_id(players, match[0]).id_player)
-        return players
 
 
 @dataclass

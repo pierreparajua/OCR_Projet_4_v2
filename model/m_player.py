@@ -23,8 +23,7 @@ class Player:
         """Sort the Players by ranking"""
         return self.ranking > other.ranking
 
-    def full_name(self):
-        return f"{self.first_name} {self.last_name}"
+
 
     @property
     def first_name(self):
@@ -78,9 +77,13 @@ class Player:
                         )
         return player
 
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}"
+
     def serialize(self):
         """ This function serialize an instance of Player"""
         return self.__dict__
-
+    """"
     def player_from_id(self, table, id_db):
         return self.deserialize(table.load(id_db))
+    """

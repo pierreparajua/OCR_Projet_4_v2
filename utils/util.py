@@ -30,7 +30,9 @@ class Menu:
 
     def get_choices(self):
         """Gets et returns the user's choice"""
-        self.choice = utils.util.get_choice(self.get_choice_list())
+        self.choice = input(Fore.LIGHTBLUE_EX + "Choix: ").lower()
+        while self.choice not in self.get_choice_list():
+            self.choice = wrong_entry(self.choice)
         return self.choice
 
 
@@ -75,14 +77,6 @@ def check_sex(sex):
         elif sex in ["h", "H"]:
             return "homme"
     return sex
-
-
-def get_choice(choices: list) -> str:
-    """Gets a choice and check it and return it"""
-    choice = input(Fore.LIGHTBLUE_EX + "Choix: ").lower()
-    while choice not in choices:
-        choice = wrong_entry(choice)
-    return choice
 
 
 def get_date_now():

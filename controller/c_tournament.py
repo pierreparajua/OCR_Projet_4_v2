@@ -29,14 +29,14 @@ class TournamentController:
         self.view.display_text("new_tournament", center=True)
         self.view.display_text("fill_items")
         tournament = got_tournament.create_tournament()
-        players = self.select_player(tournament.nbr_of_rounds)
+        players = self.select_players(tournament.nbr_of_rounds)
         self.view.display_text("resume_tournament", center=True)
         self.view.display_instance(tournament)
         self.view.display_items(players, "joueurs sélectionnés")
         tournament.chess_players = [chess_player.create_chess_player(player) for player in players]
         return tournament
 
-    def select_player(self, nb_round: int) -> list:
+    def select_players(self, nb_round: int) -> list:
         players_selected = []
         self.view.display_text("nb_player")
         nb_players = int(utils.util.get_choice(NB_player))  # Check if the number of players is even
@@ -81,12 +81,12 @@ class TournamentController:
         self.view.display_text("good_luck")
         self.view.display_text("started_ronde")
         date_start = utils.util.get_date_now()
-        View.display_var(date_start, center=True)
+        View.display_item(date_start, center=True)
         self.view.display_text("end_ronde")
         utils.util.get_choice([""])
         date_end = utils.util.get_date_now()
         self.view.display_text("ended_ronde")
-        View.display_var(date_end, center=True)
+        View.display_item(date_end, center=True)
         return date_start, date_end
 
 

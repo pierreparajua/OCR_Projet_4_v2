@@ -22,13 +22,12 @@ class View:
     def display_instance(instance):
         """Display the requested instance"""
         print(instance)
-        print("\n")
 
     @staticmethod
     def display_items(items, name_items, select=False):
         """Display a list of items in order depending on class"""
         items.sort()
-        print(f"Liste des {name_items}: ")
+        print(f"\nListe des {name_items}: ")
         if select:
             print(f"Sélectionnez un {name_items[:-1]}: ")
         for i, item in enumerate(items):
@@ -43,25 +42,11 @@ class View:
                       f"    {match[0].full_name()} contre {match[1].full_name()}\n")
 
     @staticmethod
-    def display_var(var, center=False):
+    def display_item(item, center=False):
         if center:
-            print(f"   ----------{var}----------")
+            print(f"   ----------{item}----------")
         else:
-            print(var)
-
-    def display_text(self, key, center=False):
-        if center:
-            print(f"   ----------{self.dict_text[key]}----------")
-        else:
-            print(self.dict_text[key])
-
-    def select_item(self, items):
-        """Select an item from a list and return it"""
-        choice = utils.util.get_choice(list(map(str, list(range(1, len(items) + 1)))))
-        self.display_text("selected_player")
-        item = items[int(choice) - 1]
-        self.display_instance(item)
-        return item
+            print(item)
 
     @staticmethod
     def get_scores(chess_players, matches):
@@ -99,3 +84,19 @@ class View:
                 y = ChessPlayer.chess_player_from_id(chess_players, match[1]).score = 0.5
                 match[1] = (match[1], y)
         return chess_players, matches
+
+    def display_text(self, key, center=False):
+        if center:
+            print(f"   ----------{self.dict_text[key]}----------")
+        else:
+            print(self.dict_text[key])
+
+    def select_item(self, items):
+        """Select an item from a list and return it"""
+        choice = input(Fore.LIGHTBLUE_EX + "Choix: ").lower()
+        while choice not in list(map(str, list(range(1, len(items) + 1)))):
+            choice = utils.util.wrong_entry(choice)
+        self.display_text("selected_player")
+        item = items[int(choice) - 1]
+        self.display_instance(item)
+        return item

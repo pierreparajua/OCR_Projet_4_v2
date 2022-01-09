@@ -1,6 +1,5 @@
-import utils
 from controller.c_tournament import TournamentController
-from model.m_storage import Tinydb, db_tournaments
+from model.m_storage import Tinydb, db_tournaments, db_players
 from utils.util import Menu
 from controller.c_player import PlayerController
 from view.view import View, DICT_TEXT
@@ -36,18 +35,32 @@ report_menu = Menu(title="Rapport des tournois: ",
                    items=["Tournois en cours",
                           "Tournois terminés"],
                    choice="")
+save_or_quit_menu = Menu(title="Souhaitez-vous:",
+                         add_info="",
+                         items=["Sauvegarder et continuer",
+                                "Sauvegarder et retourner au menu",
+                                "Annuler"],
+                         choice="")
+delete_or_quit_menu = Menu(title="Souhaitez-vous:",
+                           add_info="",
+                           items=["Supprimer et continuer",
+                                  "Supprimer et retourner au menu",
+                                  "Annuler"],
+                           choice="")
 
 player_controller = PlayerController()
 tournament_controller = TournamentController()
 storage_t = Tinydb(db_tournaments)
+storage_p = Tinydb(db_players)
 view = View(DICT_TEXT)
 
 
-class ManageMenu:
+class MainController:
     """Manage the navigation inside the programme."""
 
-    def __init__(self, title, add_info, items, choice):
-        self.menu = Menu(title, add_info, items, choice)
+    def __init__(self):
+        self.menu = Menu("", "", "", "")
+        self.choice_save = "1"
 
     def main_manager(self):
         """Manage the main menu"""
@@ -67,16 +80,25 @@ class ManageMenu:
         self.menu.display_menu()
         self.menu.choice = self.menu.get_choices()
         if self.menu.choice == "1":
-            player_controller.add_player()
+            while self.choice_save == "1":
+                player = player_controller.add_player()
+                self.choice_save = self.save_or_quit(player, storage_p, update=False)
             self.player_manager()
         elif self.menu.choice == "2":
-            player_controller.display_all_players()
+            dict_players = storage_p.load_all()
+            player_controller.display_all_players(dict_players)
             self.player_manager()
         elif self.menu.choice == "3":
-            player_controller.update_player()
+            while self.choice_save == "1":
+                dict_players = storage_p.load_all()
+                player = player_controller.update_player(dict_players)
+                self.choice_save = self.save_or_quit(player, storage_p)
             self.player_manager()
         elif self.menu.choice == "4":
-            player_controller.delete_player()
+            while self.choice_save == "1":
+                dict_players = storage_p.load_all()
+                player = player_controller.delete_player(dict_players)
+                self.choice_save = self.delete_or_quit(player, storage_p)
             self.player_manager()
         elif self.menu.choice == "m":
             self.main_manager()
@@ -87,9 +109,9 @@ class ManageMenu:
         self.menu.choice = self.menu.get_choices()
         if self.menu.choice == "1":
             tournament = tournament_controller.prepare_tournament()
-            self.save_or_quit(tournament, update=False)
+            self.save_or_quit(tournament, storage_t, update=False)
             tournament = tournament_controller.round1(tournament)
-            self.save_or_quit(tournament)
+            self.save_or_quit(tournament, storage_t)
 
         elif self.menu.choice == "2":
             print("reprendre tournament")
@@ -111,21 +133,46 @@ class ManageMenu:
         elif self.menu.choice == "m":
             self.tournament_manager()
 
-    def save_or_quit(self, tournament, update=True):
-        view.display_text("save_or_quit")
-        choice = utils.util.get_choice(["1", "2"])
-        if choice == "1":
+    def save_or_quit(self, item, table, update=True):
+        self.menu = save_or_quit_menu
+        self.menu.display_menu()
+        self.menu.choice = self.menu.get_choices()
+        if self.menu.choice == "1":
             if not update:
-                tournament.id_db = storage_t.save(tournament)
-            storage_t.update(tournament)
-        elif choice == "2":
+                item.id_db = table.save(item)
+            table.update(item)
+            return self.menu.choice
+        elif self.menu.choice == "2":
             if not update:
-                tournament.id_db = storage_t.save(tournament)
-            storage_t.update(tournament)
-            self.tournament_manager()
+                item.id_db = table.save(item)
+            table.update(item)
+            if table is storage_p:
+                self.player_manager()
+            else:
+                self.tournament_manager()
+        elif self.menu.choice == "3":
+            self.main_manager()
+
+    def delete_or_quit(self, item, table):
+        self.menu = delete_or_quit_menu
+        self.menu.display_menu()
+        self.menu.choice = self.menu.get_choices()
+        if self.menu.choice == "1":
+            table.delete(item)
+            return self.menu.choice
+        elif self.menu.choice == "2":
+            table.delete(item)
+            if table is storage_p:
+                self.player_manager()
+            else:
+                self.tournament_manager()
+        elif self.menu.choice == "3":
+            self.main_manager()
 
 
 if __name__ == "__main__":
+    chess_manager = MainController()
+    chess_manager.main_manager()
     """
     test = TournamentController()
 
