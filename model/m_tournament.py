@@ -3,9 +3,11 @@ from dataclasses import dataclass
 from colorama import Fore
 
 import utils
-from model.m_storage import Tinydb, db_tournaments
+from model.m_player import Player
+from model.m_storage import Tinydb, db_tournaments, db_players
 
 storage_t = Tinydb(db_tournaments)
+storage_p = Tinydb(db_players)
 
 
 class Tournament:
@@ -126,6 +128,7 @@ class Ronde:
                f"date de début: {self.date_start}\n" \
                f"date de fin: {self.date_end}\n" \
                f"matchs: {self.matches}"
+
     """
     def compute_score(self):
         for match in self.matches:
@@ -139,13 +142,17 @@ class Ronde:
         return dict_rondes
 
     @staticmethod
-    def add_opponents(players, matches):
+    def add_opponents(chess_players, matches):
         for match in matches:
-            ChessPlayer.chess_player_from_id(players, match[0]).opponents \
-                .append(ChessPlayer.chess_player_from_id(players, match[1]).id_player)
-            ChessPlayer.chess_player_from_id(players, match[1]).opponents \
-                .append(ChessPlayer.chess_player_from_id(players, match[0]).id_player)
-        return players
+            chess_player1 = next(chess for chess in chess_players if chess.id_player == match[0])
+            print(chess_player1)
+            print(chess_player1)
+            chess_player2 = next(chess for chess in chess_players if chess.id_player == match[1])
+            chess_player1.opponents.append(chess_player2.id_player)
+            chess_player2.opponents.append(chess_player1.id_player)
+            print(chess_player1.opponents)
+            print(chess_player1)
+        return chess_players
 
     def serialize(self) -> dict:
         """Serialize a Ronde instance"""
@@ -154,8 +161,6 @@ class Ronde:
                       "date_end": self.date_end,
                       "matches": self.matches}
         return dict_ronde
-
-
 
 
 @dataclass
@@ -168,6 +173,14 @@ class ChessPlayer:
     def __lt__(self, other):
         return self.score_tot > other.score_tot
 
+    @staticmethod
+    def deserialize(chess_player_dict):
+        chess_player = ChessPlayer(chess_player_dict["id_player"],
+                                   chess_player_dict["score"],
+                                   chess_player_dict["score_tot"],
+                                   chess_player_dict["opponents"])
+        return chess_player
+
     def create_chess_player(self, player):
         self.id_player = player.id_db
         chess_player = ChessPlayer(self.id_player,
@@ -177,18 +190,12 @@ class ChessPlayer:
                                    )
         return chess_player
 
-    @staticmethod
-    def chess_player_from_id(players, id_player):
-        return next(x for x in players if x.id_player == id_player)
-
-    @staticmethod
-    def deserialize(chess_player_dict):
-        chess_player = ChessPlayer(chess_player_dict["id_player"],
-                                   chess_player_dict["score"],
-                                   chess_player_dict["score_tot"],
-                                   chess_player_dict["opponents"])
-        return chess_player
-
+    def player_from_chess_player(self):
+        return Player.deserialize(storage_p.load(self.id_player))
+    """
+    def chess_player_from_id(self, players):
+        return next(x for x in players if self.id_player == self.id_player)
+    """
     def serialize(self):
         dict_chess_player = {"id_player": self.id_player,
                              "score": self.score,

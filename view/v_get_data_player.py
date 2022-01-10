@@ -68,7 +68,7 @@ class GetDataPlayer(Player):
                    "m": "break"}
         while True:
             update_player_menu.display_menu()
-            choice = update_player_menu.get_choices()
+            choice = update_player_menu.get_choice()
             if choices.get(choice) == "break":
                 break
             dict_player[choices.get(choice)[1]] = choices.get(choice)[0]()

@@ -48,43 +48,6 @@ class View:
         else:
             print(item)
 
-    @staticmethod
-    def get_scores(chess_players, matches):
-        for match, i in zip(matches, range(len(matches))):
-            player1 = Player.deserialize(storage_p.load(match[0]))
-            player2 = Player.deserialize(storage_p.load(match[1]))
-            print(Fore.LIGHTBLUE_EX + f"\nMatch n°{i + 1}: " + Fore.RESET +
-                  f"    {player1.full_name()} - {player1.ranking}"
-                  f"   contre   {player2.full_name()} - {player2.ranking}")
-            print("Qui est le gagnant du match: \n"
-                  f"1: pour {player1.full_name()}\n"
-                  f"2: pour {player2.full_name()}\n"
-                  f"3: pour égalité")
-            choice = utils.util.get_choice(['1', '2', '3'])
-            ChessPlayer.chess_player_from_id(chess_players, match[0]).score = 0
-            ChessPlayer.chess_player_from_id(chess_players, match[1]).score = 0
-            if choice == '1':
-                print(f"{player1.full_name()} :" + Fore.LIGHTGREEN_EX + " 1 point")
-                print(f"{player2.full_name()} :" + Fore.LIGHTRED_EX + " 0 point\n")
-                x = ChessPlayer.chess_player_from_id(chess_players, match[0]).score = 1
-                match[0] = (match[0], x)
-                match[1] = (match[1], 0)
-
-            elif choice == '2':
-                print(f"{player1.full_name()} :" + Fore.LIGHTRED_EX + " 0 point")
-                print(f"{player2.full_name()} :" + Fore.LIGHTGREEN_EX + " 1 point\n")
-                y = ChessPlayer.chess_player_from_id(chess_players, match[1]).score = 1
-                match[0] = (match[0], 0)
-                match[1] = (match[1], y)
-            elif choice == '3':
-                print(f"{player1.full_name()} :" + Fore.LIGHTBLUE_EX + " 0.5 point")
-                print(f"{player2.full_name()} :" + Fore.LIGHTBLUE_EX + " 0.5 point\n")
-                x = ChessPlayer.chess_player_from_id(chess_players, match[0]).score = 0.5
-                match[0] = (match[0], x)
-                y = ChessPlayer.chess_player_from_id(chess_players, match[1]).score = 0.5
-                match[1] = (match[1], y)
-        return chess_players, matches
-
     def display_text(self, key, center=False):
         if center:
             print(f"   ----------{self.dict_text[key]}----------")

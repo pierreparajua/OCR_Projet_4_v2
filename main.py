@@ -1,5 +1,7 @@
 from controller.c_tournament import TournamentController
+from model.m_player import Player
 from model.m_storage import Tinydb, db_tournaments, db_players
+from model.m_tournament import Tournament, ChessPlayer
 from utils.util import Menu
 from controller.c_player import PlayerController
 from view.view import View, DICT_TEXT
@@ -66,7 +68,7 @@ class MainController:
         """Manage the main menu"""
         self.menu = main_menu
         self.menu.display_menu()
-        self.menu.choice = self.menu.get_choices()
+        self.menu.choice = self.menu.get_choice()
         if self.menu.choice == "1":
             self.player_manager()
         elif self.menu.choice == "2":
@@ -78,7 +80,7 @@ class MainController:
         """Manage the player menu"""
         self.menu = player_menu
         self.menu.display_menu()
-        self.menu.choice = self.menu.get_choices()
+        self.menu.choice = self.menu.get_choice()
         if self.menu.choice == "1":
             while self.choice_save == "1":
                 player = player_controller.add_player()
@@ -106,7 +108,7 @@ class MainController:
     def tournament_manager(self):
         self.menu = tournament_menu
         self.menu.display_menu()
-        self.menu.choice = self.menu.get_choices()
+        self.menu.choice = self.menu.get_choice()
         if self.menu.choice == "1":
             tournament = tournament_controller.prepare_tournament()
             self.save_or_quit(tournament, storage_t, update=False)
@@ -125,7 +127,7 @@ class MainController:
     def report_manager(self):
         self.menu = report_menu
         self.menu.display_menu()
-        self.menu.choice = self.menu.get_choices()
+        self.menu.choice = self.menu.get_choice()
         if self.menu.choice == "1":
             print("Rapport tournois en cours")
         elif self.menu.choice == "2":
@@ -136,7 +138,7 @@ class MainController:
     def save_or_quit(self, item, table, update=True):
         self.menu = save_or_quit_menu
         self.menu.display_menu()
-        self.menu.choice = self.menu.get_choices()
+        self.menu.choice = self.menu.get_choice()
         if self.menu.choice == "1":
             if not update:
                 item.id_db = table.save(item)
@@ -156,7 +158,7 @@ class MainController:
     def delete_or_quit(self, item, table):
         self.menu = delete_or_quit_menu
         self.menu.display_menu()
-        self.menu.choice = self.menu.get_choices()
+        self.menu.choice = self.menu.get_choice()
         if self.menu.choice == "1":
             table.delete(item)
             return self.menu.choice
@@ -171,22 +173,36 @@ class MainController:
 
 
 if __name__ == "__main__":
-    chess_manager = MainController()
-    chess_manager.main_manager()
-    """
-    test = TournamentController()
+    main = MainController()
+    main.main_manager()
 
+
+    """
+    test = tournament_controller
+    chess_player = ChessPlayer(0, 0, 0, [])
+
+    dict_players = storage_p.load_all()
+    players = [Player.deserialize(dict_player) for dict_player in dict_players]
+    players.sort()
+    tournament = Tournament("master", "lyon", "05/02/2002", [], players, "Blitz", "test", 1, 4)
+    tournament.chess_players = [chess_player.create_chess_player(player) for player in players]
+    tournament = test.round1(tournament)
+    print(tournament.chess_players)
+    storage_t.update(tournament)
+    """
+    """
     caroline = Player("caroline", "sejil", "12/02/1984", "femme", 1, 1230)
     damien = Player("damien", "parajua", "08/05/1984", "femme", 2, 1130)
     pierre = Player("pierre", "yves", "08/02/1989", "homme", 3, 1250)
     eddy = Player("eddy", "sejil", "08/02/1984", "homme", 4, 1098)
-    players = [caroline, damien, pierre, eddy]
+    jean = Player("jean", "sejil", "12/02/1984", "femme", , 1239)
+    yves = Player("yves", "parajua", "08/05/1984", "femme", 2, 1230)
+    robert = Player("robert", "yves", "08/02/1989", "homme", 3, 1850)
+    charle = Player("charle", "sejil", "08/02/1984", "homme", 4, 1048)
 
+    players = [caroline, damien, pierre, eddy, jean, yves, robert, charle]
     tournament = Tournament("master", "lyon", "05/02/2002", [], players, "Blitz", "test", 1, 4)
     test.view.display_instance(tournament)
-    storage_t.item = tournament
-    tournament = Tournament.deserialize(storage_t.load())
     tournament = test.round1(tournament)
-    storage_t.item = tournament
-    storage_t.update()
     """
+

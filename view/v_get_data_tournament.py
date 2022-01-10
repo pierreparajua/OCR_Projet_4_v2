@@ -43,7 +43,7 @@ class GetDataTournament(Tournament):
     def get_time(self):
         """Gets the time control method from the user"""
         time_control_menu.display_menu()
-        choice = time_control_menu.get_choices()
+        choice = time_control_menu.get_choice()
         if choice == "1":
             self.time = "Bullet"
         elif choice == "2":
@@ -69,6 +69,46 @@ class GetDataTournament(Tournament):
                                 1,
                                 self.get_nbr_of_rounds())
         return tournament
+
+    @staticmethod
+    def get_scores(chess_players, matches):
+
+        for match, i in zip(matches, range(len(matches))):
+            chess_player1 = next(chess for chess in chess_players if chess.id_player == match[0])
+            player1 = chess_player1.player_from_chess_player()
+            chess_player2 = next(chess for chess in chess_players if chess.id_player == match[0])
+            player2 = chess_player2.player_from_chess_player()
+            print(Fore.LIGHTBLUE_EX + f"\nMatch n°{i + 1}: " + Fore.RESET +
+                  f"    {player1.full_name()} - {player1.ranking}"
+                  f"   contre   {player2.full_name()} - {player2.ranking}")
+            print("Qui est le gagnant du match: \n"
+                  f"1: pour {player1.full_name()}\n"
+                  f"2: pour {player2.full_name()}\n"
+                  f"3: pour égalité")
+            choice = utils.util.get_choice(['1', '2', '3'])
+            chess_player1.score = 0
+            chess_player2.score = 0
+            if choice == '1':
+                print(f"{player1.full_name()} :" + Fore.LIGHTGREEN_EX + " 1 point")
+                print(f"{player2.full_name()} :" + Fore.LIGHTRED_EX + " 0 point\n")
+                x = chess_player1.score = 1
+                match[0] = (match[0], x)
+                match[1] = (match[1], 0)
+
+            elif choice == '2':
+                print(f"{player1.full_name()} :" + Fore.LIGHTRED_EX + " 0 point")
+                print(f"{player2.full_name()} :" + Fore.LIGHTGREEN_EX + " 1 point\n")
+                y = chess_player2.score = 1
+                match[0] = (match[0], 0)
+                match[1] = (match[1], y)
+            elif choice == '3':
+                print(f"{player1.full_name()} :" + Fore.LIGHTBLUE_EX + " 0.5 point")
+                print(f"{player2.full_name()} :" + Fore.LIGHTBLUE_EX + " 0.5 point\n")
+                x = chess_player1.score = 0.5
+                match[0] = (match[0], x)
+                y = chess_player2.score = 0.5
+                match[1] = (match[1], y)
+        return chess_players, matches
 
 
 if __name__ == "__main__":

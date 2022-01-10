@@ -64,9 +64,9 @@ class TournamentController:
         players_split1, players_split2 = utils.util.split_players(tournament.chess_players)
         ronde1.matches = [[players_split1[i].id_player, players_split2[i].id_player]
                           for i in range(int(len(tournament.chess_players) / 2))]
-
+        ronde1.date_start, ronde1.date_end = self.start_end_ronde()
         tournament.chess_players = Ronde.add_opponents(tournament.chess_players, ronde1.matches)
-        tournament.chess_players, ronde1.matches = View.get_scores(tournament.chess_players, ronde1.matches)
+        tournament.chess_players, ronde1.matches = got_tournament.get_scores(tournament.chess_players, ronde1.matches)
         tournament.rondes.append(ronde1)
         return tournament
 
@@ -92,33 +92,10 @@ class TournamentController:
 
 if __name__ == "__main__":
     """
-    matches = [[1, 6], [2, 3], [4, 5], [7, 8]]
-
-    for match in matches:
-        match[0] = (match[0], 2)
-        match[1] = (match[1], 3)
-
-*
-    test = TournamentController()
-    storage_t = Tinydb(db_tournaments)
+        test = TournamentController()
     players = [1, 2, 3, 4, 5, 6, 7, 8]
     tournament = Tournament("master", "lyon", "05/02/2002", [], players, "Blitz", "test", 1, 4)
-    tournament.chess_players = [chess_player.create_chess_player(player) for player in players]
-    test.round1(tournament)
-    tournament.id_db = storage_t.save(tournament)
-    storage_t.update(tournament)
-
-    ronde1 = Ronde("1", "", "", "")
-    test = TournamentController()
-    players_split1, players_split2 = utils.util.split_players(tournament.chess_players)
-    ronde1.matches = [[players_split1[i].id_player, players_split2[i].id_player]
-                      for i in range(int(len(tournament.chess_players) / 2))]
-    print(tournament.chess_players)
-    tournament.chess_players = Ronde.add_opponents(tournament.chess_players, ronde1.matches)
-    print(tournament.chess_players)
-    tournament.chess_players = View.get_scores(tournament.chess_players, ronde1.matches)
-    tournament.rondes.append(ronde1)
-    print(tournament.chess_players)
-    print(tournament.rondes[0].matches)
-    storage_t.save(tournament)
+    test.prepare_tournament()
     """
+
+

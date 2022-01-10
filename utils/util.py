@@ -28,7 +28,7 @@ class Menu:
         choices_list.append("m")
         return choices_list
 
-    def get_choices(self):
+    def get_choice(self):
         """Gets et returns the user's choice"""
         self.choice = input(Fore.LIGHTBLUE_EX + "Choix: ").lower()
         while self.choice not in self.get_choice_list():
@@ -83,6 +83,13 @@ def get_date_now():
     """ Gets the date and hour and return """
     date = datetime.datetime.now().strftime("%d/%m/%Y %H:%M")
     return date
+
+
+def get_choice(choices: list):
+    choice = input(Fore.LIGHTBLUE_EX + "Choix: ").lower()
+    while choice not in choices:
+        choice = wrong_entry(choice)
+    return choice
 
 
 def split_players(players: list) -> tuple:
