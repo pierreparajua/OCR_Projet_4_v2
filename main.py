@@ -1,7 +1,7 @@
-from controller.c_tournament import TournamentController
+from controller.c_tournament import TournamentController, chess_player
 from model.m_player import Player
 from model.m_storage import Tinydb, db_tournaments, db_players
-from model.m_tournament import Tournament, ChessPlayer
+from model.m_tournament import ChessPlayer, Tournament
 from utils.util import Menu
 from controller.c_player import PlayerController
 from view.view import View, DICT_TEXT
@@ -174,35 +174,12 @@ class MainController:
 
 if __name__ == "__main__":
     main = MainController()
-    main.main_manager()
+    test = TournamentController()
+    tournament = Tournament.deserialize(storage_t.load(1))
+    print(tournament)
+    Tournament = test.round1(tournament)
 
 
-    """
-    test = tournament_controller
-    chess_player = ChessPlayer(0, 0, 0, [])
 
-    dict_players = storage_p.load_all()
-    players = [Player.deserialize(dict_player) for dict_player in dict_players]
-    players.sort()
-    tournament = Tournament("master", "lyon", "05/02/2002", [], players, "Blitz", "test", 1, 4)
-    tournament.chess_players = [chess_player.create_chess_player(player) for player in players]
-    tournament = test.round1(tournament)
-    print(tournament.chess_players)
-    storage_t.update(tournament)
-    """
-    """
-    caroline = Player("caroline", "sejil", "12/02/1984", "femme", 1, 1230)
-    damien = Player("damien", "parajua", "08/05/1984", "femme", 2, 1130)
-    pierre = Player("pierre", "yves", "08/02/1989", "homme", 3, 1250)
-    eddy = Player("eddy", "sejil", "08/02/1984", "homme", 4, 1098)
-    jean = Player("jean", "sejil", "12/02/1984", "femme", , 1239)
-    yves = Player("yves", "parajua", "08/05/1984", "femme", 2, 1230)
-    robert = Player("robert", "yves", "08/02/1989", "homme", 3, 1850)
-    charle = Player("charle", "sejil", "08/02/1984", "homme", 4, 1048)
 
-    players = [caroline, damien, pierre, eddy, jean, yves, robert, charle]
-    tournament = Tournament("master", "lyon", "05/02/2002", [], players, "Blitz", "test", 1, 4)
-    test.view.display_instance(tournament)
-    tournament = test.round1(tournament)
-    """
 

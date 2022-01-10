@@ -23,8 +23,6 @@ class Player:
         """Sort the Players by ranking"""
         return self.ranking > other.ranking
 
-
-
     @property
     def first_name(self):
         return self._first_name
@@ -83,6 +81,7 @@ class Player:
     def serialize(self):
         """ This function serialize an instance of Player"""
         return self.__dict__
+
     """"
     def player_from_id(self, table, id_db):
         return self.deserialize(table.load(id_db))

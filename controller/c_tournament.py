@@ -4,20 +4,20 @@ from model.m_player import Player
 from model.m_storage import Tinydb, db_players
 from model.m_tournament import Ronde, ChessPlayer
 from view.v_get_data_tournament import GetDataTournament
-from view.view import View, DICT_TEXT
+from view.view import View
 
 NB_PLAYER_MAX = 20
 NB_player = list(map(str, list(range(1, (NB_PLAYER_MAX + 1)))))[1::2]
 
 player_controller = PlayerController()
-got_tournament = GetDataTournament("", "", "", [], [], "", "")
 storage_p = Tinydb(db_players)
 chess_player = ChessPlayer(0, 0, 0, [])
 
 
 class TournamentController:
     def __init__(self, ):
-        self.view: View = View(DICT_TEXT)
+        self.got_tournament = GetDataTournament("", "", "", [], [], "", "")
+        self.view: View = View("")
 
     def prepare_tournament(self):
         self.view.display_text("ask_for_player")
@@ -28,11 +28,13 @@ class TournamentController:
             choice = utils.util.get_choice(["o", "n"])
         self.view.display_text("new_tournament", center=True)
         self.view.display_text("fill_items")
-        tournament = got_tournament.create_tournament()
+        tournament = self.got_tournament.create_tournament()
         players = self.select_players(tournament.nbr_of_rounds)
         self.view.display_text("resume_tournament", center=True)
-        self.view.display_instance(tournament)
-        self.view.display_items(players, "joueurs sélectionnés")
+        self.view.item = tournament
+        self.view.display_item()
+        self.view.item = players
+        self.view.display_items("joueurs sélectionnés")
         tournament.chess_players = [chess_player.create_chess_player(player) for player in players]
         return tournament
 
@@ -45,10 +47,11 @@ class TournamentController:
             nb_players = int(utils.util.get_choice(NB_player))
         dict_players = storage_p.load_all()
         players = [Player.deserialize(dict_player) for dict_player in dict_players]
-        self.view.display_items(players, "joueurs", select=True)
+        self.view.item = players
+        self.view.display_items("joueurs", select=True)
         i = 0
         while i < nb_players:
-            player = self.view.select_item(players)
+            player = self.view.select_item()
             if player in players_selected:
                 self.view.display_text("already_selected")
             else:
@@ -65,10 +68,17 @@ class TournamentController:
         ronde1.matches = [[players_split1[i].id_player, players_split2[i].id_player]
                           for i in range(int(len(tournament.chess_players) / 2))]
         ronde1.date_start, ronde1.date_end = self.start_end_ronde()
-        tournament.chess_players = Ronde.add_opponents(tournament.chess_players, ronde1.matches)
-        tournament.chess_players, ronde1.matches = got_tournament.get_scores(tournament.chess_players, ronde1.matches)
+        tournament.chess_players, ronde1.matches = self.got_tournament.get_scores(tournament.chess_players,
+                                                                                  ronde1.matches)
         tournament.rondes.append(ronde1)
+        self.view.item = tournament
+        self.view.display_score()
         return tournament
+
+    def ronde(self, tournament):
+        nbr_ronde = len(tournament.rondes) + 1
+        print(nbr_ronde)
+        ronde = Ronde(nbr_ronde, "", "", "")
 
     def start_end_ronde(self):
         """
@@ -81,21 +91,11 @@ class TournamentController:
         self.view.display_text("good_luck")
         self.view.display_text("started_ronde")
         date_start = utils.util.get_date_now()
-        View.display_item(date_start, center=True)
+        self.view.item = date_start
+        self.view.display_item(center=True)
         self.view.display_text("end_ronde")
         utils.util.get_choice([""])
         date_end = utils.util.get_date_now()
-        self.view.display_text("ended_ronde")
-        View.display_item(date_end, center=True)
+        self.view.item = date_end
+        self.view.display_item(center=True)
         return date_start, date_end
-
-
-if __name__ == "__main__":
-    """
-        test = TournamentController()
-    players = [1, 2, 3, 4, 5, 6, 7, 8]
-    tournament = Tournament("master", "lyon", "05/02/2002", [], players, "Blitz", "test", 1, 4)
-    test.prepare_tournament()
-    """
-
-

@@ -34,7 +34,7 @@ class Tournament:
                 + Fore.LIGHTWHITE_EX + "Remarque du directeur de tournois: " + Fore.RESET + f"{self.description}")
 
     def __lt__(self, other):
-        return self.date > other.date
+        return self.date < other.date
 
     @property
     def name(self):
@@ -94,7 +94,7 @@ class Tournament:
                                 tournament_dict["place"],
                                 tournament_dict["date"],
                                 tournament_dict["rondes"],
-                                tournament_dict["chess_players"],
+                                [ChessPlayer.deserialize(player) for player in tournament_dict["chess_players"]],
                                 tournament_dict["time"],
                                 tournament_dict["description"],
                                 tournament_dict["id_db"],
@@ -140,19 +140,6 @@ class Ronde:
     def serialize_rondes(rondes: list) -> list:
         dict_rondes = [ronde.serialize() for ronde in rondes]
         return dict_rondes
-
-    @staticmethod
-    def add_opponents(chess_players, matches):
-        for match in matches:
-            chess_player1 = next(chess for chess in chess_players if chess.id_player == match[0])
-            print(chess_player1)
-            print(chess_player1)
-            chess_player2 = next(chess for chess in chess_players if chess.id_player == match[1])
-            chess_player1.opponents.append(chess_player2.id_player)
-            chess_player2.opponents.append(chess_player1.id_player)
-            print(chess_player1.opponents)
-            print(chess_player1)
-        return chess_players
 
     def serialize(self) -> dict:
         """Serialize a Ronde instance"""

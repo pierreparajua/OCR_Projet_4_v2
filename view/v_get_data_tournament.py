@@ -72,11 +72,13 @@ class GetDataTournament(Tournament):
 
     @staticmethod
     def get_scores(chess_players, matches):
-
         for match, i in zip(matches, range(len(matches))):
             chess_player1 = next(chess for chess in chess_players if chess.id_player == match[0])
+            chess_player2 = next(chess for chess in chess_players if chess.id_player == match[1])
+            chess_player1.opponents.append(chess_player2.id_player)
+            chess_player2.opponents.append(chess_player1.id_player)
+
             player1 = chess_player1.player_from_chess_player()
-            chess_player2 = next(chess for chess in chess_players if chess.id_player == match[0])
             player2 = chess_player2.player_from_chess_player()
             print(Fore.LIGHTBLUE_EX + f"\nMatch n°{i + 1}: " + Fore.RESET +
                   f"    {player1.full_name()} - {player1.ranking}"
@@ -94,6 +96,8 @@ class GetDataTournament(Tournament):
                 x = chess_player1.score = 1
                 match[0] = (match[0], x)
                 match[1] = (match[1], 0)
+                chess_player1.score_tot = chess_player1.score_tot + chess_player1.score
+                chess_player2.score_tot = chess_player2.score_tot + chess_player2.score
 
             elif choice == '2':
                 print(f"{player1.full_name()} :" + Fore.LIGHTRED_EX + " 0 point")
@@ -101,6 +105,9 @@ class GetDataTournament(Tournament):
                 y = chess_player2.score = 1
                 match[0] = (match[0], 0)
                 match[1] = (match[1], y)
+                chess_player1.score_tot = chess_player1.score_tot + chess_player1.score
+                chess_player2.score_tot = chess_player2.score_tot + chess_player2.score
+
             elif choice == '3':
                 print(f"{player1.full_name()} :" + Fore.LIGHTBLUE_EX + " 0.5 point")
                 print(f"{player2.full_name()} :" + Fore.LIGHTBLUE_EX + " 0.5 point\n")
@@ -108,6 +115,9 @@ class GetDataTournament(Tournament):
                 match[0] = (match[0], x)
                 y = chess_player2.score = 0.5
                 match[1] = (match[1], y)
+
+                chess_player1.score_tot = chess_player1.score_tot + chess_player1.score
+                chess_player2.score_tot = chess_player2.score_tot + chess_player2.score
         return chess_players, matches
 
 
