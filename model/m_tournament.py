@@ -94,7 +94,7 @@ class Tournament:
         tournament = Tournament(tournament_dict["name"],
                                 tournament_dict["place"],
                                 tournament_dict["date"],
-                                tournament_dict["rondes"],
+                                [Ronde.deserialize(ronde) for ronde in tournament_dict["rondes"]],
                                 [ChessPlayer.deserialize(player) for player in tournament_dict["chess_players"]],
                                 tournament_dict["time"],
                                 tournament_dict["description"],
@@ -154,6 +154,14 @@ class Ronde:
                f"date de début: {self.date_start}\n" \
                f"date de fin: {self.date_end}\n" \
                f"matchs: {self.matches}"
+
+    @staticmethod
+    def deserialize(ronde_dict):
+        ronde = Ronde(ronde_dict["number"],
+                      ronde_dict["date_start"],
+                      ronde_dict["date_end"],
+                      ronde_dict["matches"])
+        return ronde
 
     def serialize(self) -> dict:
         """Serialize a Ronde instance"""

@@ -78,7 +78,7 @@ class TournamentController:
     def ronde(self, tournament):
         nbr_ronde = len(tournament.rondes) + 1
         ronde = Ronde("", "", "", "")
-        ronde.number = nbr_ronde
+        ronde.number = str(nbr_ronde)
         self.view.item = f"\n         ----------Ronde N° {nbr_ronde}----------"
         self.view.display_item()
         ronde.matches = tournament.compute_matches()
@@ -112,14 +112,19 @@ class TournamentController:
 
     def delete_tournament(self, dict_tournaments):
         if dict_tournaments:
-            tournaments = [Tournament.deserialize(tournament) for tournament in dict_tournaments]
-            self.view.item = tournaments
-            self.view.display_tournaments()
-            tournament = self.view.select_item()
+            tournament = self.select_tournament(dict_tournaments)
             self.view.display_text("confirm_delete")
             self.view.display_text("confirm_deleted")
             return tournament
         else:
             self.view.display_text("db_empty_tournament")
+
+    def select_tournament(self, dict_tournaments):
+        tournaments = [Tournament.deserialize(tournament) for tournament in dict_tournaments]
+        self.view.item = tournaments
+        self.view.display_tournaments()
+        tournament = self.view.select_item()
+        return tournament
+
 
 

@@ -112,16 +112,13 @@ class MainController:
         if self.menu.choice == "1":
             tournament = tournament_controller.prepare_tournament()
             self.save_or_quit(tournament, storage_t, update=False)
-            tournament = tournament_controller.round1(tournament)
-            self.save_or_quit(tournament, storage_t)
-            i = 1
-            while i != tournament.nbr_of_rounds:
-                tournament = tournament_controller.ronde(tournament)
-                self.save_or_quit(tournament, storage_t)
-                i += 1
+            self.continue_tournament(tournament)
             print(f"Le gagnant est {tournament.chess_players[0]}")
+
         elif self.menu.choice == "2":
-            tournaments = storage_t.load_all()
+            tournament = tournament_controller.select_tournament(storage_t.load_all())
+            self.continue_tournament(tournament)
+            print(f"Le gagnant est {tournament.chess_players[0]}")
 
         elif self.menu.choice == "3":
             tournaments = storage_t.load_all()
@@ -129,8 +126,10 @@ class MainController:
             if tournament:
                 self.delete_or_quit(tournament, storage_t)
             self.tournament_manager()
+
         elif self.menu.choice == "4":
             self.report_manager()
+
         elif self.menu.choice == "m":
             self.main_manager()
 
@@ -180,6 +179,24 @@ class MainController:
                 self.tournament_manager()
         elif self.menu.choice == "3":
             self.main_manager()
+
+    def continue_tournament(self, tournament):
+        status = len(tournament.rondes) + 1
+        if status == 1:
+            tournament = tournament_controller.round1(tournament)
+            self.save_or_quit(tournament, storage_t)
+            while status != tournament.nbr_of_rounds:
+                tournament = tournament_controller.ronde(tournament)
+                self.save_or_quit(tournament, storage_t)
+                status += 1
+        elif status > 1:
+            while status != tournament.nbr_of_rounds:
+                tournament = tournament_controller.ronde(tournament)
+                self.save_or_quit(tournament, storage_t)
+                status += 1
+
+
+
 
 
 if __name__ == "__main__":
