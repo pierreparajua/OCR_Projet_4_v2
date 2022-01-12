@@ -2,7 +2,7 @@ import utils
 from controller.c_player import PlayerController
 from model.m_player import Player
 from model.m_storage import Tinydb, db_players
-from model.m_tournament import Ronde, ChessPlayer
+from model.m_tournament import Ronde, ChessPlayer, Tournament
 from view.v_get_data_tournament import GetDataTournament
 from view.view import View
 
@@ -77,8 +77,18 @@ class TournamentController:
 
     def ronde(self, tournament):
         nbr_ronde = len(tournament.rondes) + 1
-        print(nbr_ronde)
-        ronde = Ronde(nbr_ronde, "", "", "")
+        ronde = Ronde("", "", "", "")
+        ronde.number = nbr_ronde
+        self.view.item = f"\n         ----------Ronde N° {nbr_ronde}----------"
+        self.view.display_item()
+        ronde.matches = tournament.compute_matches()
+        ronde.date_start, ronde.date_end = self.start_end_ronde()
+        tournament.chess_players, ronde.matches = self.got_tournament.get_scores(tournament.chess_players,
+                                                                                 ronde.matches)
+        tournament.rondes.append(ronde)
+        self.view.item = tournament
+        self.view.display_score()
+        return tournament
 
     def start_end_ronde(self):
         """
@@ -99,3 +109,17 @@ class TournamentController:
         self.view.item = date_end
         self.view.display_item(center=True)
         return date_start, date_end
+
+    def delete_tournament(self, dict_tournaments):
+        if dict_tournaments:
+            tournaments = [Tournament.deserialize(tournament) for tournament in dict_tournaments]
+            self.view.item = tournaments
+            self.view.display_tournaments()
+            tournament = self.view.select_item()
+            self.view.display_text("confirm_delete")
+            self.view.display_text("confirm_deleted")
+            return tournament
+        else:
+            self.view.display_text("db_empty_tournament")
+
+

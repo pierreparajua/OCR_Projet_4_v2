@@ -1,3 +1,4 @@
+import random
 from dataclasses import dataclass
 
 from colorama import Fore
@@ -102,12 +103,37 @@ class Tournament:
 
         return tournament
 
+    def create_matches(self):
+        chess_players = self.chess_players
+        new_matches = []
+        for t in range(int(len(chess_players) / 2)):
+            ind = 0
+            i = 1
+            while chess_players[0].id_player in chess_players[ind + i].opponents:
+                i += 1
+                if i == len(chess_players):
+                    return []
+            new_matches.append([chess_players[0], chess_players[ind + i]])
+            chess_players.pop(ind + i)
+            chess_players.pop(0)
+        self.chess_players = self.deserialize(storage_t.load(self.id_db)).chess_players
+        return new_matches
+
+    def compute_matches(self):
+        matches = self.create_matches()
+        while not matches:
+            chess_players = self.chess_players
+            random.shuffle(chess_players)
+            matches = self.create_matches()
+        matches = [[match[0].id_player, match[1].id_player] for match in matches]
+        return matches
+
     def serialize(self) -> dict:
         """Serialize an instance of tournament"""
         dict_tournament = {"name": self.name,
                            "place": self.place,
                            "date": self.date,
-                           "rondes": Ronde.serialize_rondes(self.rondes),
+                           "rondes": [Ronde.serialize(ronde) for ronde in self.rondes],
                            "chess_players": [ChessPlayer.serialize(player) for player in self.chess_players],
                            "time": self.time,
                            "description": self.description,
@@ -128,18 +154,6 @@ class Ronde:
                f"date de début: {self.date_start}\n" \
                f"date de fin: {self.date_end}\n" \
                f"matchs: {self.matches}"
-
-    """
-    def compute_score(self):
-        for match in self.matches:
-            match[0].add_score()
-            match[1].add_score()
-    """
-
-    @staticmethod
-    def serialize_rondes(rondes: list) -> list:
-        dict_rondes = [ronde.serialize() for ronde in rondes]
-        return dict_rondes
 
     def serialize(self) -> dict:
         """Serialize a Ronde instance"""

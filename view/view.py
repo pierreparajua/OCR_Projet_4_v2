@@ -5,7 +5,6 @@ from pathlib import Path
 
 import utils
 
-
 init(autoreset=True)
 
 SOURCE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +19,7 @@ class View:
 
     def display_item(self, center=False):
         if center:
-            print(f"   ----------{self.item}----------")
+            print(f"          ----------{self.item}----------")
         else:
             print(self.item)
 
@@ -38,16 +37,19 @@ class View:
         self.item.chess_players.sort()
         print(Fore.LIGHTGREEN_EX + f"Classement à l' issue de la ronde N° {nbr_ronde}: ")
         for chess_player in self.item.chess_players:
-            print(f"{self.item.chess_players.index(chess_player)+1}:"
+            print(f"{self.item.chess_players.index(chess_player) + 1}:"
                   f" {chess_player.player_from_chess_player().full_name(): <15}"
                   f" {chess_player.score_tot: >5} pts")
-
 
     def display_text(self, key, center=False):
         if center:
             print(f"   ----------{self.dict_text[key]}----------")
         else:
             print(self.dict_text[key])
+
+    def display_tournaments(self):
+        for i,  tournament in enumerate(self.item):
+            print(f"{i + 1}:  Tournoi: {tournament.name}- le {tournament.date}")
 
     def select_item(self):
         """Select an item from a list and return it"""
@@ -66,7 +68,3 @@ class View:
             for match, i in zip(matches, range(len(matches))):
                 print(f"Match n°{i + 1}:\n"
                       f"    {match[0].full_name()} contre {match[1].full_name()}\n")
-
-
-
-

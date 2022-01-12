@@ -67,9 +67,9 @@
     },
     "Database_tournaments": {
         "1": {
-            "name": "dqs",
-            "place": "sdf",
-            "date": "10/01/2022",
+            "name": "master",
+            "place": "lyon",
+            "date": "12/01/2022",
             "rondes": [],
             "chess_players": [
                 {

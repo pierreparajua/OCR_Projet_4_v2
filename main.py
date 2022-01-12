@@ -114,11 +114,21 @@ class MainController:
             self.save_or_quit(tournament, storage_t, update=False)
             tournament = tournament_controller.round1(tournament)
             self.save_or_quit(tournament, storage_t)
-
+            i = 1
+            while i != tournament.nbr_of_rounds:
+                tournament = tournament_controller.ronde(tournament)
+                self.save_or_quit(tournament, storage_t)
+                i += 1
+            print(f"Le gagnant est {tournament.chess_players[0]}")
         elif self.menu.choice == "2":
-            print("reprendre tournament")
+            tournaments = storage_t.load_all()
+
         elif self.menu.choice == "3":
-            print("delete tournament")
+            tournaments = storage_t.load_all()
+            tournament = tournament_controller.delete_tournament(tournaments)
+            if tournament:
+                self.delete_or_quit(tournament, storage_t)
+            self.tournament_manager()
         elif self.menu.choice == "4":
             self.report_manager()
         elif self.menu.choice == "m":
@@ -174,11 +184,17 @@ class MainController:
 
 if __name__ == "__main__":
     main = MainController()
+    main.tournament_manager()
+    """
     test = TournamentController()
     tournament = Tournament.deserialize(storage_t.load(1))
     print(tournament)
-    Tournament = test.round1(tournament)
-
+    tournament = test.round1(tournament)
+    print(tournament)
+    print(tournament.rondes)
+    print(tournament.chess_players)
+    test.ronde(tournament)
+    """
 
 
 
