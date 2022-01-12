@@ -9,6 +9,7 @@ bin-release/
 env
 __pycache__
 .idea
+flake-repor
 
 # Executables
 *.swf

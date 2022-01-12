@@ -54,7 +54,7 @@ class View:
 
     def display_tournaments(self):
         """Display all tournament from a list"""
-        for i,  tournament in enumerate(self.item):
+        for i, tournament in enumerate(self.item):
             print(f"{i + 1}:  Tournoi: {tournament.name} - le {tournament.date}")
 
     def select_item(self):

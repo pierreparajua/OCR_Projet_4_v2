@@ -81,8 +81,8 @@ class GetDataTournament(Tournament):
 
             player1 = chess_player1.player_from_chess_player()
             player2 = chess_player2.player_from_chess_player()
-            print(Fore.LIGHTBLUE_EX + f"\nMatch n°{i + 1}: " + Fore.RESET +
-                  f"    {player1.full_name()} - {player1.ranking}"
+            print(Fore.LIGHTBLUE_EX + f"\nMatch n°{i + 1}: "
+                  + Fore.RESET + f"    {player1.full_name()} - {player1.ranking}"
                   f"   contre   {player2.full_name()} - {player2.ranking}")
             print("Qui est le gagnant du match: \n"
                   f"1: pour {player1.full_name()}\n"

@@ -63,7 +63,7 @@ class TournamentController:
         players_selected.sort()
         return players
 
-    def round1(self, tournament:  Tournament) -> Tournament:
+    def round1(self, tournament: Tournament) -> Tournament:
         """Execute the first round"""
         ronde1 = Ronde("1", "", "", "")
         self.view.display_text("ronde1", center=True)
@@ -135,7 +135,7 @@ class TournamentController:
             return tournament
         self.view.display_text("db_empty_tournament")
 
-    def report(self, tournament:  Tournament):
+    def report(self, tournament: Tournament):
         """Manage the display of the report"""
         if tournament:
             self.view.item = tournament

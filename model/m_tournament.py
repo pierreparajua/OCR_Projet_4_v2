@@ -12,8 +12,8 @@ storage_p = Tinydb(db_players)
 
 
 class Tournament:
-    def __init__(self, name: str, place: str, date: str, rondes: list, chess_players: list, time: str, description: str,
-                 id_db: int = 1, nbr_of_rounds=4):
+    def __init__(self, name: str, place: str, date: str, rondes: list, chess_players: list, time: str,
+                 description: str, id_db: int = 1, nbr_of_rounds=4):
         self.name = name
         self.place = place
         self.date = date
