@@ -3,3 +3,6 @@ colorama==0.4.4
 tinydb==4.5.2
 python-dateutil~=2.8.2
 
+
+flake8 --format=html --htmldir=flake-repor --ignore=F401,W503,W504 controller, model, view, utils
+

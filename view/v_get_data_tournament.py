@@ -37,7 +37,9 @@ class GetDataTournament(Tournament):
 
     def get_nbr_of_rounds(self):
         """Get the number of rounds from the user"""
-        self.nbr_of_rounds = input("Tapez sur 'Entrez' pour 4 rondes\nou entrez le nombre de ronde souhaiter: ")
+        self.nbr_of_rounds = input("Entrez le nombre de ronde: \nTapez sur 'Entrez' pour 4 rondes\nou entrez le nombre "
+                                   "de "
+                                   "ronde souhaiter: ")
         return self.nbr_of_rounds
 
     def get_time(self) -> str:
