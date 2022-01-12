@@ -1,5 +1,8 @@
+import random
+
 from controller.c_tournament import TournamentController
 from model.m_storage import Tinydb, db_tournaments, db_players
+from model.m_tournament import Tournament
 from utils.util import Menu
 from controller.c_player import PlayerController
 from view.view import View, DICT_TEXT
@@ -110,6 +113,7 @@ class MainController:
             tournament = tournament_controller.prepare_tournament()
             self.save_or_quit(tournament, storage_t, update=False)
             self.continue_tournament(tournament)
+            self.tournament_manager()
 
         elif self.menu.choice == "2":
             tournament = tournament_controller.select_tournament(storage_t.load_all(), display_all=False)
@@ -127,21 +131,12 @@ class MainController:
             self.tournament_manager()
 
         elif self.menu.choice == "4":
-            self.report_manager()
+            tournament = tournament_controller.select_tournament(storage_t.load_all(), rapport=True)
+            tournament_controller.report(tournament)
+            self.tournament_manager()
 
         elif self.menu.choice == "m":
             self.main_manager()
-
-    def report_manager(self):
-        self.menu = report_menu
-        self.menu.display_menu()
-        self.menu.choice = self.menu.get_choice()
-        if self.menu.choice == "1":
-            print("Rapport tournois en cours")
-        elif self.menu.choice == "2":
-            print("Rapport tournois terminé")
-        elif self.menu.choice == "m":
-            self.tournament_manager()
 
     def save_or_quit(self, item, table, update=True):
         self.menu = save_or_quit_menu
@@ -203,3 +198,13 @@ class MainController:
 if __name__ == "__main__":
     main = MainController()
     main.tournament_manager()
+    """
+    tournament = Tournament.deserialize(storage_t.load(1))
+    test = TournamentController()
+    players = tournament.chess_players
+
+    tournament = test.ronde(tournament)
+    tournament = test.ronde(tournament)
+    test.winner(tournament)
+    """
+

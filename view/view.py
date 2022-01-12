@@ -40,6 +40,7 @@ class View:
             print(f"{self.item.chess_players.index(chess_player) + 1}:"
                   f" {chess_player.player_from_chess_player().full_name(): <15}"
                   f" {chess_player.score_tot: >5} pts")
+        print("\n")
 
     def display_text(self, key, center=False):
         if center:
@@ -68,3 +69,17 @@ class View:
             for match, i in zip(matches, range(len(matches))):
                 print(f"Match n°{i + 1}:\n"
                       f"    {match[0].full_name()} contre {match[1].full_name()}\n")
+
+    def display_ronde(self):
+        """Display all matches inside each rounds for report"""
+        for ronde in self.item.rondes:
+            print(Fore.LIGHTGREEN_EX + f"\nRONDE N° {ronde.number}  début: {ronde.date_start}  fin: {ronde.date_end} ")
+            for match in ronde.matches:
+                chess_player1 = next(chess for chess in self.item.chess_players if chess.id_player == match[0][0])
+                chess_player2 = next(chess for chess in self.item.chess_players if chess.id_player == match[1][0])
+                player1 = chess_player1.player_from_chess_player()
+                player2 = chess_player2.player_from_chess_player()
+                x = ""
+                print(f"{player1.full_name(): <14}: {chess_player1.score: >5} pt    contre   "
+                      f"{player2.full_name(): >15}: {chess_player2.score: >5}pt {x: <15}")
+        print("\n")

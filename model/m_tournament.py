@@ -103,8 +103,7 @@ class Tournament:
 
         return tournament
 
-    def create_matches(self):
-        chess_players = self.chess_players
+    def create_matches(self, chess_players):
         new_matches = []
         for t in range(int(len(chess_players) / 2)):
             ind = 0
@@ -116,16 +115,16 @@ class Tournament:
             new_matches.append([chess_players[0], chess_players[ind + i]])
             chess_players.pop(ind + i)
             chess_players.pop(0)
-        self.chess_players = self.deserialize(storage_t.load(self.id_db)).chess_players
         return new_matches
 
     def compute_matches(self):
-        matches = self.create_matches()
+        matches = self.create_matches(Tournament.deserialize(storage_t.load(self)).chess_players)
         while not matches:
-            chess_players = self.chess_players
+            chess_players = Tournament.deserialize(storage_t.load(self)).chess_players
             random.shuffle(chess_players)
-            matches = self.create_matches()
+            matches = self.create_matches(chess_players)
         matches = [[match[0].id_player, match[1].id_player] for match in matches]
+        self.chess_players = self.deserialize(storage_t.load(self.id_db)).chess_players
         return matches
 
     def serialize(self) -> dict:

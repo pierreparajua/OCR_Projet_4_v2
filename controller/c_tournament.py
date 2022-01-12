@@ -117,10 +117,13 @@ class TournamentController:
             self.view.display_text("confirm_deleted")
             return tournament
 
-    def select_tournament(self, dict_tournaments, display_all=True):
+    def select_tournament(self, dict_tournaments, display_all=True, rapport=False):
         tournaments = [Tournament.deserialize(tournament) for tournament in dict_tournaments]
-        tournaments = [tournament for tournament in tournaments if len(tournament.rondes) != 4
-                       or display_all]
+        if rapport:
+            tournaments = [tournament for tournament in tournaments if len(tournament.rondes) == 4]
+        else:
+            tournaments = [tournament for tournament in tournaments if len(tournament.rondes) != 4
+                           or display_all]
         if tournaments:
             self.view.item = tournaments
             self.view.display_tournaments()
@@ -128,7 +131,15 @@ class TournamentController:
             return tournament
         self.view.display_text("db_empty_tournament")
 
+    def report(self, tournament):
+        if tournament:
+            self.view.item = tournament
+            self.view.display_ronde()
+            self.view.display_score()
+            self.winner(tournament)
+
     def winner(self, tournament):
-        self.view.display_text("end_tournament", center=True)
-        self.view.item = tournament.chess_players[0].player_from_chess_player()
+        self.view.display_text("winner")
+        self.view.item = f"{tournament.chess_players[0].player_from_chess_player().full_name()}\n"
         self.view.display_item()
+        self.view.display_text("end_tournament", center=True)

@@ -42,6 +42,6 @@
     "ended_ronde": "La ronde a pris fin le: ",
     "get_score": "\nVeuillez renseigner le r\u00e9sultat des matchs:",
     "score_error": "\nErreur dans les scores: veuillez saisir '0', '1' ou '0.5'\n",
-    "winner": "\n Le gagnant du tournoi est : ",
-    "end_tournament": "            ------FIN DU TOURNOIS-------\n"
+    "winner": "Le gagnant du tournoi est : ",
+    "end_tournament":"Fin du tournoi"
 }
