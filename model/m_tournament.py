@@ -1,7 +1,7 @@
-import random
-from dataclasses import dataclass
 
+from dataclasses import dataclass
 from colorama import Fore
+import random
 
 import utils
 from model.m_player import Player
@@ -25,6 +25,7 @@ class Tournament:
         self.nbr_of_rounds = nbr_of_rounds
 
     def __str__(self):
+        """Display tournament's attributes."""
         return (Fore.LIGHTWHITE_EX + "Tournois: " + Fore.RESET + f"{self.name}\n"
                 + Fore.LIGHTWHITE_EX + "Lieu: " + Fore.RESET + f"{self.place}\n"
                 + Fore.LIGHTWHITE_EX + "Date: " + Fore.RESET + f"{self.date}\n"
@@ -35,6 +36,7 @@ class Tournament:
                 + Fore.LIGHTWHITE_EX + "Remarque du directeur de tournois: " + Fore.RESET + f"{self.description}")
 
     def __lt__(self, other):
+        """Sort the players by date"""
         return self.date < other.date
 
     @property
@@ -103,7 +105,9 @@ class Tournament:
 
         return tournament
 
-    def create_matches(self, chess_players):
+    @staticmethod
+    def create_matches(chess_players: list) -> list:
+        """From a list of 'chess_player' create a list of matches for the next ronde"""
         new_matches = []
         for t in range(int(len(chess_players) / 2)):
             ind = 0
@@ -117,7 +121,8 @@ class Tournament:
             chess_players.pop(0)
         return new_matches
 
-    def compute_matches(self):
+    def compute_matches(self) -> list:
+        """If 'create_matches' is enable to work correctly, shuffle the list of chess_player and try again"""
         matches = self.create_matches(Tournament.deserialize(storage_t.load(self)).chess_players)
         while not matches:
             chess_players = Tournament.deserialize(storage_t.load(self)).chess_players
@@ -128,7 +133,7 @@ class Tournament:
         return matches
 
     def serialize(self) -> dict:
-        """Serialize an instance of tournament"""
+        """Create a dict from an instance of tournament to save it in database"""
         dict_tournament = {"name": self.name,
                            "place": self.place,
                            "date": self.date,
@@ -142,20 +147,22 @@ class Tournament:
 
 
 class Ronde:
-    def __init__(self, number, date_start, date_end, matches):
+    def __init__(self, number: str, date_start: str, date_end: str, matches: list):
         self.number = number
         self.date_start = date_start
         self.date_end = date_end
         self.matches = matches
 
     def __str__(self):
+        """Display ronde's attributes."""
         return f"number: {self.number}\n" \
                f"date de début: {self.date_start}\n" \
                f"date de fin: {self.date_end}\n" \
                f"matchs: {self.matches}"
 
     @staticmethod
-    def deserialize(ronde_dict):
+    def deserialize(ronde_dict: dict):
+        """Create an instance of Ronde."""
         ronde = Ronde(ronde_dict["number"],
                       ronde_dict["date_start"],
                       ronde_dict["date_end"],
@@ -173,37 +180,39 @@ class Ronde:
 
 @dataclass
 class ChessPlayer:
+    """A ChessPlayer in a player selected for a tournament.
+    The matching between a Player and a ChessPlayer is the id"""
     id_player: int
     score: float
     score_tot: float
     opponents: list
 
     def __lt__(self, other):
+        """Sort the chess_players by score_tot"""
         return self.score_tot > other.score_tot
 
     @staticmethod
-    def deserialize(chess_player_dict):
+    def deserialize(chess_player_dict: dict):
+        """Create an instance of ChessPlayer."""
         chess_player = ChessPlayer(chess_player_dict["id_player"],
                                    chess_player_dict["score"],
                                    chess_player_dict["score_tot"],
                                    chess_player_dict["opponents"])
         return chess_player
 
-    def create_chess_player(self, player):
+    def create_chess_player(self, player: Player):
+        """From a player create a chess_player"""
         self.id_player = player.id_db
         chess_player = ChessPlayer(self.id_player,
                                    score=0,
                                    score_tot=0,
-                                   opponents=[]
-                                   )
+                                   opponents=[])
         return chess_player
 
-    def player_from_chess_player(self):
+    def player_from_chess_player(self) -> Player:
+        """From a ChessPlayer return a Player"""
         return Player.deserialize(storage_p.load(self.id_player))
-    """
-    def chess_player_from_id(self, players):
-        return next(x for x in players if self.id_player == self.id_player)
-    """
+
     def serialize(self):
         dict_chess_player = {"id_player": self.id_player,
                              "score": self.score,

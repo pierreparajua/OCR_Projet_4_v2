@@ -13,18 +13,20 @@ DICT_TEXT = json.load(open(JSON_PATH, 'r', encoding='utf8'))
 
 
 class View:
+    """Manage the main displays"""
     def __init__(self, item):
         self.dict_text = DICT_TEXT
         self.item = item
 
     def display_item(self, center=False):
+        """Display an item"""
         if center:
             print(f"          ----------{self.item}----------")
         else:
             print(self.item)
 
-    def display_items(self, name_items, select=False):
-        """Display a list of items in order depending on class"""
+    def display_items(self, name_items: list, select=False):
+        """Display a list of items in order depending on class method"""
         self.item.sort()
         print(f"\nListe des {name_items}: ")
         if select:
@@ -33,6 +35,7 @@ class View:
             print(f"{i + 1}: {item}")
 
     def display_score(self):
+        """Display the score for each player at the end of a round"""
         nbr_ronde = len(self.item.rondes)
         self.item.chess_players.sort()
         print(Fore.LIGHTGREEN_EX + f"Classement à l' issue de la ronde N° {nbr_ronde}: ")
@@ -42,13 +45,15 @@ class View:
                   f" {chess_player.score_tot: >5} pts")
         print("\n")
 
-    def display_text(self, key, center=False):
+    def display_text(self, key: str, center=False):
+        """Display the text matching with the key from the dict 'chess_manager_text.json"""
         if center:
             print(f"   ----------{self.dict_text[key]}----------")
         else:
             print(self.dict_text[key])
 
     def display_tournaments(self):
+        """Display all tournament from a list"""
         for i,  tournament in enumerate(self.item):
             print(f"{i + 1}:  Tournoi: {tournament.name} - le {tournament.date}")
 

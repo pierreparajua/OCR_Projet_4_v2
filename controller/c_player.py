@@ -4,13 +4,12 @@ from view.view import View
 
 
 class PlayerController:
-    """Controls the players."""
-
+    """Control the main features of the players"""
     def __init__(self):
         self.got_player = GetDataPlayer("", "", "", "")
         self.view = View("")
 
-    def add_player(self):
+    def add_player(self) -> Player:
         """ Add player to database"""
         self.view.display_text("add_player")
         player = self.got_player.create_player()
@@ -19,16 +18,16 @@ class PlayerController:
         self.view.display_item()
         return player
 
-    def display_all_players(self, dict_players, display=True):
-        """Display the list of players save in database."""
+    def display_all_players(self, dict_players: dict, display=True) -> list:
+        """Display a list of players saved in database"""
         players = [Player.deserialize(dict_player) for dict_player in dict_players]
         if display:
             self.view.item = players
             self.view.display_items("joueurs")
         return players
 
-    def update_player(self, dict_players):
-        """Update a player in the database."""
+    def update_player(self, dict_players: dict) -> Player:
+        """Update a player in the database"""
         players = self.display_all_players(dict_players, display=False)
         self.view.item = players
         self.view.display_items("joueurs", select=True)
@@ -38,8 +37,8 @@ class PlayerController:
         self.view.display_item()
         return new_player
 
-    def delete_player(self, dict_players):
-        """Delete a player."""
+    def delete_player(self, dict_players: dict) -> Player:
+        """Delete a player"""
         players = self.display_all_players(dict_players, display=False)
         self.view.item = players
         self.view.display_items("joueurs", select=True)
@@ -47,5 +46,3 @@ class PlayerController:
         self.view.display_text("confirm_delete")
         self.view.display_text("confirm_deleted")
         return player
-
-

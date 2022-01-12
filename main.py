@@ -1,8 +1,6 @@
-import random
 
 from controller.c_tournament import TournamentController
 from model.m_storage import Tinydb, db_tournaments, db_players
-from model.m_tournament import Tournament
 from utils.util import Menu
 from controller.c_player import PlayerController
 from view.view import View, DICT_TEXT
@@ -131,7 +129,7 @@ class MainController:
             self.tournament_manager()
 
         elif self.menu.choice == "4":
-            tournament = tournament_controller.select_tournament(storage_t.load_all(), rapport=True)
+            tournament = tournament_controller.select_tournament(storage_t.load_all(), report=True)
             tournament_controller.report(tournament)
             self.tournament_manager()
 

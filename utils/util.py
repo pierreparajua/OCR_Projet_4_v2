@@ -2,7 +2,6 @@ from colorama import Fore, init
 
 import datetime
 import re
-import utils
 
 init(autoreset=True)
 
@@ -29,7 +28,7 @@ class Menu:
         return choices_list
 
     def get_choice(self):
-        """Gets et returns the user's choice"""
+        """Get and return the user's choice"""
         self.choice = input(Fore.LIGHTBLUE_EX + "Choix: ").lower()
         while self.choice not in self.get_choice_list():
             self.choice = wrong_entry(self.choice)
@@ -71,7 +70,7 @@ def check_sex(sex):
     """Check the format of sex"""
     if sex:
         while sex not in ["h", "f", "H", "F", "homme", "femme"]:
-            sex = utils.util.wrong_entry(sex)
+            sex = wrong_entry(sex)
         if sex in ["f", "F"]:
             return "femme"
         elif sex in ["h", "H"]:
@@ -80,12 +79,13 @@ def check_sex(sex):
 
 
 def get_date_now():
-    """ Gets the date and hour and return """
+    """Get the live date and hour and return """
     date = datetime.datetime.now().strftime("%d/%m/%Y %H:%M")
     return date
 
 
-def get_choice(choices: list):
+def get_choice(choices: list) -> str:
+    """Return a choice from a list of choices"""
     choice = input(Fore.LIGHTBLUE_EX + "Choix: ").lower()
     while choice not in choices:
         choice = wrong_entry(choice)
@@ -93,13 +93,7 @@ def get_choice(choices: list):
 
 
 def split_players(players: list) -> tuple:
-    """
-    Split the main list in 2, according with the tournament's rules.
-    Args:
-        players(list): List of players.
-    Returns:
-        players_split1, players_split2(tuple): The 2 lists in a tuple
-    """
+    """Split the main list in 2, according with the tournament's rules"""
     nb = int(len(players) / 2)
     players_split1 = players[0: nb]
     players_split2 = players[nb: int(nb * 2)]
@@ -111,8 +105,3 @@ def wrong_entry(choice: str):
     value = input(Fore.LIGHTGREEN_EX + f"{choice}"
                   + Fore.LIGHTRED_EX + " : n' est pas un choix valide.\n Veuillez ressaisir votre choix: \n")
     return value
-
-
-if __name__ == "__main__":
-    print(check_ranking("1"))
-    print(type(check_ranking(1)))

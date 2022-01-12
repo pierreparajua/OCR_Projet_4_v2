@@ -15,11 +15,13 @@ chess_player = ChessPlayer(0, 0, 0, [])
 
 
 class TournamentController:
+    """Control the main features of the tournaments"""
     def __init__(self, ):
         self.got_tournament = GetDataTournament("", "", "", [], [], "", "")
         self.view: View = View("")
 
-    def prepare_tournament(self):
+    def prepare_tournament(self) -> Tournament:
+        """Get all informations needed to start a tournament"""
         self.view.display_text("ask_for_player")
         choice: str = utils.util.get_choice(["o", "n"])
         while choice == "o":
@@ -39,6 +41,7 @@ class TournamentController:
         return tournament
 
     def select_players(self, nb_round: int) -> list:
+        """Select players for the tournament"""
         players_selected = []
         self.view.display_text("nb_player")
         nb_players = int(utils.util.get_choice(NB_player))  # Check if the number of players is even
@@ -60,7 +63,7 @@ class TournamentController:
         players_selected.sort()
         return players
 
-    def round1(self, tournament):
+    def round1(self, tournament:  Tournament) -> Tournament:
         """Execute the first round"""
         ronde1 = Ronde("1", "", "", "")
         self.view.display_text("ronde1", center=True)
@@ -75,7 +78,8 @@ class TournamentController:
         self.view.display_score()
         return tournament
 
-    def ronde(self, tournament):
+    def ronde(self, tournament: Tournament) -> Tournament:
+        """Execute the others rounds"""
         nbr_ronde = len(tournament.rondes) + 1
         ronde = Ronde("", "", "", "")
         ronde.number = str(nbr_ronde)
@@ -90,12 +94,8 @@ class TournamentController:
         self.view.display_score()
         return tournament
 
-    def start_end_ronde(self):
-        """
-        Gets the date and the hour for the start and the end of the round.
-        Returns:
-            date_start, date_end(tuple): with date and hour
-        """
+    def start_end_ronde(self) -> tuple:
+        """Get the date and the hour for the start and the end of the round"""
         self.view.display_text("start_ronde")
         utils.util.get_choice([""])
         self.view.display_text("good_luck")
@@ -110,16 +110,20 @@ class TournamentController:
         self.view.display_item(center=True)
         return date_start, date_end
 
-    def delete_tournament(self, dict_tournaments):
+    def delete_tournament(self, dict_tournaments: dict) -> Tournament:
+        """Delete the selected tournament from database"""
         tournament = self.select_tournament(dict_tournaments)
         if tournament:
             self.view.display_text("confirm_delete")
             self.view.display_text("confirm_deleted")
             return tournament
 
-    def select_tournament(self, dict_tournaments, display_all=True, rapport=False):
+    def select_tournament(self, dict_tournaments: dict, display_all=True, report=False) -> Tournament:
+        """Select a tournament from list.
+            If 'display_all' is false: the list contains only the unterminated tournament.
+            If report is True: the list containing only  the terminated tournament"""
         tournaments = [Tournament.deserialize(tournament) for tournament in dict_tournaments]
-        if rapport:
+        if report:
             tournaments = [tournament for tournament in tournaments if len(tournament.rondes) == 4]
         else:
             tournaments = [tournament for tournament in tournaments if len(tournament.rondes) != 4
@@ -131,14 +135,16 @@ class TournamentController:
             return tournament
         self.view.display_text("db_empty_tournament")
 
-    def report(self, tournament):
+    def report(self, tournament:  Tournament):
+        """Manage the display of the report"""
         if tournament:
             self.view.item = tournament
             self.view.display_ronde()
             self.view.display_score()
             self.winner(tournament)
 
-    def winner(self, tournament):
+    def winner(self, tournament: Tournament):
+        """Manage the display of the winner"""
         self.view.display_text("winner")
         self.view.item = f"{tournament.chess_players[0].player_from_chess_player().full_name()}\n"
         self.view.display_item()

@@ -1,4 +1,5 @@
 from typing import Protocol
+
 from tinydb import TinyDB, where
 from pathlib import Path
 

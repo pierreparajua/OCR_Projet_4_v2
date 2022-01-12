@@ -20,7 +20,7 @@ class Player:
                f" {self.ranking: >3}"
 
     def __lt__(self, other):
-        """Sort the Players by ranking"""
+        """Sort the players by ranking"""
         return self.ranking > other.ranking
 
     @property
@@ -64,8 +64,8 @@ class Player:
         self._ranking = utils.util.check_ranking(value)
 
     @staticmethod
-    def deserialize(player_dict):
-        """ This function deserialize a dict to create an instance of Player"""
+    def deserialize(player_dict: dict):
+        """This function deserialize a dict to create an instance of Player"""
         player = Player(player_dict["_first_name"],
                         player_dict["_last_name"],
                         player_dict["_date_of_birth"],
@@ -76,13 +76,9 @@ class Player:
         return player
 
     def full_name(self):
+        """Return the player's fullname"""
         return f"{self.first_name} {self.last_name}"
 
     def serialize(self):
-        """ This function serialize an instance of Player"""
+        """This function serialize an instance of Player"""
         return self.__dict__
-
-    """"
-    def player_from_id(self, table, id_db):
-        return self.deserialize(table.load(id_db))
-    """
