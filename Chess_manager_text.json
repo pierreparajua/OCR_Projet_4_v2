@@ -37,11 +37,11 @@
     "ronde1": "Ronde numéro 1",
     "start_ronde": "Appuyer sur 'Entrez' pour lancer la ronde",
     "started_ronde": "La ronde a commenc\u00e9 le: ",
-    "good_luck": "\n----------BONNE CHANCE A TOUS----------\n",
+    "good_luck": "\n         ----------BONNE CHANCE A TOUS----------\n",
     "end_ronde": "\nAppuyer sur 'Entrez' pour finir la ronde",
     "ended_ronde": "La ronde a pris fin le: ",
     "get_score": "\nVeuillez renseigner le r\u00e9sultat des matchs:",
     "score_error": "\nErreur dans les scores: veuillez saisir '0', '1' ou '0.5'\n",
-    "save_or_quit": "\nSouhaitez vous: \n 1: Sauvegarder et continuer le tournoi\n 2: Sauvegarder et quitter",
-    "end_tournament": "\n\n             ------FIN DU TOURNOIS-------\n"
+    "winner": "\n Le gagnant du tournoi est : ",
+    "end_tournament": "            ------FIN DU TOURNOIS-------\n"
 }

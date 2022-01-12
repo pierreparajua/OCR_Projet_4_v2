@@ -1,7 +1,5 @@
-from controller.c_tournament import TournamentController, chess_player
-from model.m_player import Player
+from controller.c_tournament import TournamentController
 from model.m_storage import Tinydb, db_tournaments, db_players
-from model.m_tournament import ChessPlayer, Tournament
 from utils.util import Menu
 from controller.c_player import PlayerController
 from view.view import View, DICT_TEXT
@@ -87,8 +85,7 @@ class MainController:
                 self.choice_save = self.save_or_quit(player, storage_p, update=False)
             self.player_manager()
         elif self.menu.choice == "2":
-            dict_players = storage_p.load_all()
-            player_controller.display_all_players(dict_players)
+            player_controller.display_all_players(storage_p.load_all())
             self.player_manager()
         elif self.menu.choice == "3":
             while self.choice_save == "1":
@@ -113,18 +110,20 @@ class MainController:
             tournament = tournament_controller.prepare_tournament()
             self.save_or_quit(tournament, storage_t, update=False)
             self.continue_tournament(tournament)
-            print(f"Le gagnant est {tournament.chess_players[0]}")
 
         elif self.menu.choice == "2":
-            tournament = tournament_controller.select_tournament(storage_t.load_all())
-            self.continue_tournament(tournament)
-            print(f"Le gagnant est {tournament.chess_players[0]}")
+            tournament = tournament_controller.select_tournament(storage_t.load_all(), display_all=False)
+            if tournament:
+                self.continue_tournament(tournament)
+            self.tournament_manager()
 
         elif self.menu.choice == "3":
-            tournaments = storage_t.load_all()
-            tournament = tournament_controller.delete_tournament(tournaments)
-            if tournament:
-                self.delete_or_quit(tournament, storage_t)
+            while self.choice_save == "1":
+                tournament = tournament_controller.delete_tournament(storage_t.load_all())
+                if tournament:
+                    self.choice_save = self.delete_or_quit(tournament, storage_t)
+                else:
+                    self.choice_save = "2"
             self.tournament_manager()
 
         elif self.menu.choice == "4":
@@ -162,7 +161,7 @@ class MainController:
             else:
                 self.tournament_manager()
         elif self.menu.choice == "3":
-            self.main_manager()
+            self.tournament_manager()
 
     def delete_or_quit(self, item, table):
         self.menu = delete_or_quit_menu
@@ -178,41 +177,29 @@ class MainController:
             else:
                 self.tournament_manager()
         elif self.menu.choice == "3":
-            self.main_manager()
+            self.tournament_manager()
 
     def continue_tournament(self, tournament):
-        status = len(tournament.rondes) + 1
-        if status == 1:
+        status = len(tournament.rondes)
+        if status == 0:
             tournament = tournament_controller.round1(tournament)
             self.save_or_quit(tournament, storage_t)
-            while status != tournament.nbr_of_rounds:
-                tournament = tournament_controller.ronde(tournament)
+            status += 1
+            self.manage_ronde(status, tournament)
+        elif status > 0:
+            self.manage_ronde(status, tournament)
+
+    def manage_ronde(self, status, tournament):
+        while status != tournament.nbr_of_rounds:
+            tournament = tournament_controller.ronde(tournament)
+            status += 1
+            if status == tournament.nbr_of_rounds:
+                tournament_controller.winner(tournament)
+                storage_t.update(tournament)
+            else:
                 self.save_or_quit(tournament, storage_t)
-                status += 1
-        elif status > 1:
-            while status != tournament.nbr_of_rounds:
-                tournament = tournament_controller.ronde(tournament)
-                self.save_or_quit(tournament, storage_t)
-                status += 1
-
-
-
 
 
 if __name__ == "__main__":
     main = MainController()
     main.tournament_manager()
-    """
-    test = TournamentController()
-    tournament = Tournament.deserialize(storage_t.load(1))
-    print(tournament)
-    tournament = test.round1(tournament)
-    print(tournament)
-    print(tournament.rondes)
-    print(tournament.chess_players)
-    test.ronde(tournament)
-    """
-
-
-
-
