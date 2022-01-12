@@ -197,14 +197,5 @@ class MainController:
 
 if __name__ == "__main__":
     main = MainController()
-    main.tournament_manager()
-    """
-    tournament = Tournament.deserialize(storage_t.load(1))
-    test = TournamentController()
-    players = tournament.chess_players
-
-    tournament = test.ronde(tournament)
-    tournament = test.ronde(tournament)
-    test.winner(tournament)
-    """
+    main.main_manager()
 

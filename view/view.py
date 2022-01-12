@@ -50,7 +50,7 @@ class View:
 
     def display_tournaments(self):
         for i,  tournament in enumerate(self.item):
-            print(f"{i + 1}:  Tournoi: {tournament.name}- le {tournament.date}")
+            print(f"{i + 1}:  Tournoi: {tournament.name} - le {tournament.date}")
 
     def select_item(self):
         """Select an item from a list and return it"""
@@ -80,6 +80,6 @@ class View:
                 player1 = chess_player1.player_from_chess_player()
                 player2 = chess_player2.player_from_chess_player()
                 x = ""
-                print(f"{player1.full_name(): <14}: {chess_player1.score: >5} pt    contre   "
-                      f"{player2.full_name(): >15}: {chess_player2.score: >5}pt {x: <15}")
+                print(f"{player1.full_name(): <14}: {match[0][1]: >5} pt    contre   "
+                      f"{player2.full_name(): >15}: {match[1][1]: >5}pt {x: <15}")
         print("\n")
