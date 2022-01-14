@@ -1,8 +1,4 @@
 import utils
-from model.m_storage import Tinydb, db_players
-
-storage_p = Tinydb(db_players)
-
 
 class Player:
     def __init__(self, first_name: str, last_name: str, date_of_birth: str, sex: str,

@@ -1,13 +1,5 @@
 {
     "Database_players": {
-        "1": {
-            "_first_name": "jean",
-            "_last_name": "paul",
-            "_date_of_birth": "20/09/2000",
-            "_sex": "homme",
-            "id_db": 1,
-            "_ranking": 1267
-        },
         "2": {
             "_first_name": "damien",
             "_last_name": "jacques",
@@ -57,12 +49,20 @@
             "_ranking": 1158
         },
         "9": {
-            "_first_name": "pierre",
+            "_first_name": "damien",
             "_last_name": "parajua",
             "_date_of_birth": "20/06/1986",
             "_sex": "homme",
             "id_db": 9,
             "_ranking": 1390
+        },
+        "10": {
+            "_first_name": "pierre",
+            "_last_name": "parajua",
+            "_date_of_birth": "20/06/1986",
+            "_sex": "homme",
+            "id_db": 1,
+            "_ranking": 1309
         }
     },
     "Database_tournaments": {

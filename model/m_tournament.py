@@ -5,10 +5,8 @@ import random
 
 import utils
 from model.m_player import Player
-from model.m_storage import Tinydb, db_tournaments, db_players
+from model.m_storage import  db_tournaments, db_players
 
-storage_t = Tinydb(db_tournaments)
-storage_p = Tinydb(db_players)
 
 
 class Tournament:

@@ -25,7 +25,7 @@ class View:
         else:
             print(self.item)
 
-    def display_items(self, name_items: list, select=False):
+    def display_items(self, name_items: str, select=False):
         """Display a list of items in order depending on class method"""
         self.item.sort()
         print(f"\nListe des {name_items}: ")
