@@ -43,13 +43,13 @@ class MainController:
             self.menu.display_menu()
             self.menu.choice = self.menu.get_choice()
             if self.menu.choice == "1":
-                self.player_manager.player_manager()
+                self.player_manager.menu_manager()
             elif self.menu.choice == "2":
                 self.tournament_manager.tournament_manager()
             elif self.menu.choice == "3":
                 break
 
-
+    """
     def delete_or_quit(self, item, table):
         self.menu = delete_or_quit_menu
         self.menu.display_menu()
@@ -84,5 +84,5 @@ class MainController:
                 tournament_controller.winner(tournament)
                 storage_t.update(tournament)
             else:
-                self.save_or_quit(tournament, storage_t)
+                self.save_or_quit(tournament, storage_t)"""
 

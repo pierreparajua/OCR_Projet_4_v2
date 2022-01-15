@@ -1,9 +1,9 @@
 import utils
-import controller
+
 from utils.util import Menu
-from controller.c_player import PlayerManager, PlayerController, confirm_quit_menu
-from model.m_player import Player
-from model.m_storage import db_tournaments, TinyDatabase, db_players
+from controller.c_player import PlayerManager, PlayerController
+
+from model.m_storage import storage_t, storage_p
 from model.m_tournament import Ronde, ChessPlayer, Tournament
 from view.v_get_data_tournament import GetDataTournament
 from view.view import View
@@ -15,6 +15,13 @@ player_controller = PlayerController()
 
 chess_player = ChessPlayer(0, 0, 0, [])
 
+save_or_quit_menu = Menu(title="Souhaitez-vous: ",
+                         add_info="",
+                         items=["Continuer",
+                                "Sauver et retourner au menu",
+                                "Annuler"],
+                         choice="")
+
 
 class TournamentController:
     """Control the main features of the tournaments"""
@@ -22,9 +29,9 @@ class TournamentController:
     def __init__(self):
         self.view: View = View("")
         self.got_tournament = GetDataTournament("", "", "", [], [], "", "")
-        self.menu = confirm_quit_menu
+        self.menu = save_or_quit_menu
 
-    def prepare_tournament(self, dict_player) -> Tournament:
+    def prepare_tournament(self, dict_player) -> tuple:
         """Get all informations needed to start a tournament"""
         self.view.display_text("ask_for_player")
         choice: str = utils.util.get_choice(["o", "n"])
@@ -42,7 +49,10 @@ class TournamentController:
         self.view.item = players
         self.view.display_items("joueurs sélectionnés")
         tournament.chess_players = [chess_player.create_chess_player(player) for player in players]
-        return tournament
+        self.menu.display_menu()
+        choice = self.menu.get_choice()
+        if choice == "1" or "2":
+            return tournament, choice
 
     def select_players(self, nb_round: int, dict_player) -> list:
         """Select players for the tournament"""
@@ -68,23 +78,27 @@ class TournamentController:
 
     def round1(self, tournament: Tournament) -> Tournament:
         """Execute the first round"""
-        ronde1 = Ronde("1", "", "", "")
+        ronde1 = Ronde("1", "", "", [])
         self.view.display_text("ronde1", center=True)
         players_split1, players_split2 = utils.util.split_players(tournament.chess_players)
         ronde1.matches = [[players_split1[i].id_player, players_split2[i].id_player]
                           for i in range(int(len(tournament.chess_players) / 2))]
+        self.view.display_matches(ronde1.matches, tournament.chess_players)
         ronde1.date_start, ronde1.date_end = self.start_end_ronde()
         tournament.chess_players, ronde1.matches = self.got_tournament.get_scores(tournament.chess_players,
                                                                                   ronde1.matches)
         tournament.rondes.append(ronde1)
         self.view.item = tournament
         self.view.display_score()
-        return tournament
+        self.menu.display_menu()
+        choice = self.menu.get_choice()
+        if choice == "1":
+            return tournament
 
-    def ronde(self, tournament: Tournament) -> Tournament:
+    def round(self, tournament: Tournament) -> Tournament:
         """Execute the others rounds"""
         nbr_ronde = len(tournament.rondes) + 1
-        ronde = Ronde("", "", "", "")
+        ronde = Ronde("", "", "", [])
         ronde.number = str(nbr_ronde)
         self.view.item = f"\n         ----------Ronde N° {nbr_ronde}----------"
         self.view.display_item()
@@ -95,7 +109,10 @@ class TournamentController:
         tournament.rondes.append(ronde)
         self.view.item = tournament
         self.view.display_score()
-        return tournament
+        self.menu.display_menu()
+        choice = self.menu.get_choice()
+        if choice == "1":
+            return tournament
 
     def start_end_ronde(self) -> tuple:
         """Get the date and the hour for the start and the end of the round"""
@@ -169,17 +186,27 @@ class TournamentManager:
 
     def __init__(self):
         self.menu = tournament_menu
-        self.storage_t = TinyDatabase(db_tournaments)
-        self.storage_p = TinyDatabase(db_players)
+
         self.controller = TournamentController()
 
     def tournament_manager(self):
         self.menu.display_menu()
         self.menu.choice = self.menu.get_choice()
         if self.menu.choice == "1":
-            tournament = self.controller.prepare_tournament(self.storage_p.load_all())
-
-            self.continue_tournament(tournament)
+            tournament, choice = self.controller.prepare_tournament(self.storage_p.load_all())
+            if choice == "2":
+                tournament.id_db = self.storage_t.save(tournament)
+                self.storage_t.update(tournament)
+                self.tournament_manager()
+            elif choice == "1":
+                tournament.id_db = self.storage_t.save(tournament)
+                self.storage_t.update(tournament)
+                tournament = self.controller.round1(tournament)
+                if tournament:
+                    print("ok")
+                    self.storage_t.update(tournament)
+                    for _ in tournament.nbr_of_rounds:
+                        tournament = self.controller.round(tournament)
             self.tournament_manager()
 
         elif self.menu.choice == "2":

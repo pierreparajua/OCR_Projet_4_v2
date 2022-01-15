@@ -68,12 +68,16 @@ class View:
         return item
 
     @staticmethod
-    def display_matches(matches: list):
+    def display_matches(matches: list, chess_players):
         """ Display the matches for the next round"""
         if matches:
             for match, i in zip(matches, range(len(matches))):
+                chess_player1 = next(chess for chess in chess_players if chess.id_player == match[0])
+                chess_player2 = next(chess for chess in chess_players if chess.id_player == match[1])
+                player1 = chess_player1.player_from_chess_player()
+                player2 = chess_player2.player_from_chess_player()
                 print(f"Match n°{i + 1}:\n"
-                      f"    {match[0].full_name()} contre {match[1].full_name()}\n")
+                      f"    {player1.full_name()} contre {player2.full_name()}\n")
 
     def display_ronde(self):
         """Display all matches inside each rounds for report"""
