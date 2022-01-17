@@ -56,12 +56,18 @@ player_menu = Menu(title="Menu de gestion des joueurs: ",
                           "Supprimer un joueur"],
                    choice="")
 
-confirm_quit_menu = Menu(title="Souhaitez-vous:",
-                         add_info="",
-                         items=["Sauver et continuer",
-                                "Sauver et retourner au menu",
-                                "Annuler"],
-                         choice="")
+save_or_cancel = Menu(title="Souhaitez-vous:",
+                      add_info="",
+                      items=["Sauver et continuer",
+                             "Sauver et retourner au menu",
+                             "Annuler"],
+                      choice="")
+
+delete_or_cancel = Menu(title="Souhaitez-vous:",
+                        add_info="",
+                        items=["Confirmer",
+                               "Annuler"],
+                        choice="")
 
 
 class PlayerManager:
@@ -104,21 +110,25 @@ class PlayerManager:
             pass
 
     def storage_manager(self, item, update=False, delete=False):
-        self.menu = confirm_quit_menu
+        if delete:
+            self.menu = delete_or_cancel
+            self.menu.display_menu()
+            self.menu.choice = self.menu.get_choice()
+            if self.menu.choice == "1":
+                self.storage.delete(item)
+                return False
+            elif self.menu.choice == "2":
+                self.menu = player_menu
+                return False
+        self.menu = save_or_cancel
         self.menu.display_menu()
         self.menu.choice = self.menu.get_choice()
         if self.menu.choice == "1":
-            if delete:
-                self.storage.delete(item)
-                return True
             if not update:
                 item.id_db = self.storage.save(item)
             self.storage.update(item)
             return True
         elif self.menu.choice == "2":
-            if delete:
-                self.storage.delete(item)
-                return False
             if not update:
                 item.id_db = self.storage.save(item)
             self.storage.update(item)

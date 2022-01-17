@@ -5,8 +5,7 @@ import random
 
 import utils
 from model.m_player import Player
-
-
+from model.m_storage import storage_t, storage_p
 
 
 class Tournament:

@@ -14,7 +14,7 @@
     "confirm_updated": "Le joueur \u00e0 \u00e9t\u00e9 modifi\u00e9 dans la base de donn\u00e9e\n",
     "cancel-action": "action non ex\u00e9cut\u00e9e - retour au menu",
     "delete_player": "Quel joueur souhaitez vous supprim\u00e9: ",
-    "confirm_delete": "Confirmez la suppression du  joueur suivant: ",
+    "confirm_delete": "\nConfirmez la suppression du  joueur suivant: ",
     "player_in_tournament": "Le joueur s\u00e9lectionn\u00e9 participe \u00e0 un tournoi enregistr\u00e9 en base de donn\u00e9e, vous ne pouvez pas le supprimer",
     "confirm_deleted": "Le joueur \u00e0 \u00e9t\u00e9 supprim\u00e9 de la base de donn\u00e9e\n",
     "db_empty_player": " Pas de joueurs en base de donn\u00e9e",
