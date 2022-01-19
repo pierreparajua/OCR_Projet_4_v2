@@ -118,8 +118,6 @@ class Tournament:
         """
         new_matches = []
         for _ in range(int(len(chess_players) / 2)):
-            print(chess_players)
-            [print(chess_player.full_name) for chess_player in chess_players]
             i = 1
             while chess_players[0].id_player in chess_players[i].opponents:
                 i += 1

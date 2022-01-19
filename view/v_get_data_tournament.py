@@ -54,7 +54,7 @@ class GetDataTournament(Tournament):
 
     def get_description(self) -> str:
         """Get description from the user"""
-        self.description = input("Remarques du président de tournois: ")
+        self.description = input("Remarques du président de tournoi: ")
         return self.description
 
     def create_tournament(self) -> Tournament:

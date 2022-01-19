@@ -21,7 +21,7 @@
     "new_tournament": "Cr\u00e9ation d' un nouveau tournoi",
     "ask_for_player": "Attention: Les joueurs participant au tournoi doivent \u00eatre pr\u00e9alablement saisie en base de donn\u00e9e\nSouhaitez vous cr\u00e9er un nouveau joueur ('o' ou 'n'): ",
     "fill_items": "Remplissez les champs suivants: ",
-    "nb_player": "Entrez le nombre participant au tournois: ",
+    "nb_player": "Entrez le nombre de joueur participant au tournoi: ",
     "error_nb_player": "Le nombre de joueurs est insuffisant par rapport aux nombres de rondes",
     "select_player": "S\u00e9lectionner les joueurs pour le tournoi: ",
     "selected_player_for_tournament": "S\u00e9lectionner pour le tournoi",

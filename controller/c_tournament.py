@@ -95,7 +95,6 @@ class TournamentController:
                                                                                   ronde1.matches)
         tournament.rondes.append(ronde1)
         tournament.chess_players = utils.util.sort(tournament.chess_players)
-        [print(chess_player) for chess_player in tournament.chess_players]
         self.view.item = tournament
         self.view.display_score()
         return tournament
@@ -120,7 +119,6 @@ class TournamentController:
                                                                                  ronde.matches)
         tournament.rondes.append(ronde)
         tournament.chess_players = utils.util.sort(tournament.chess_players)
-        [print(chess_player) for chess_player in tournament.chess_players]
         self.view.item = tournament
         self.view.display_score()
         return tournament
@@ -208,10 +206,10 @@ class TournamentController:
 tournament_menu = Menu(title="Menu de gestion des tournois: ",
                        add_info="(Tapez le chiffre correspondant à votre choix ou 'm' pour retourner au menu "
                                 "précédent: )",
-                       items=["Ajouter un tournois",
-                              "Reprendre un tournois",
-                              "Supprimer un tournois",
-                              "Afficher les rapports de tournois"],
+                       items=["Ajouter un tournoi",
+                              "Reprendre un tournoi",
+                              "Supprimer un tournoi",
+                              "Afficher les rapports des tournois"],
                        choice="")
 
 save_or_cancel = Menu(title="Souhaitez-vous: ",

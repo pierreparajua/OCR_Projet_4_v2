@@ -74,7 +74,7 @@ player_menu = Menu(title="Menu de gestion des joueurs: ",
                             "précédent: )",
                    items=["Ajouter un joueur",
                           "Afficher les joueurs",
-                          "Modifier un joueurs",
+                          "Modifier un joueur",
                           "Supprimer un joueur"],
                    choice="")
 
