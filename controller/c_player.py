@@ -6,12 +6,17 @@ from view.view import View
 
 
 class PlayerController:
+    """Control the features for a player"""
     def __init__(self):
         self.view = View("")
         self.got_player = GetDataPlayer("", "", "", "")
 
-    def add_player(self) -> Player:
-        """ Add player to database"""
+    def create_player(self) -> Player:
+        """
+        Create a new player.
+        Returns:
+             player: an instance of Player.
+        """
         self.view.display_text("add_player")
         player = self.got_player.create_player()
         self.view.display_text("confirm-add-player")
@@ -19,15 +24,27 @@ class PlayerController:
         self.view.display_item()
         return player
 
-    def display_all_players(self, dict_players: dict, display=True) -> list:
-        """Display a list of players saved in database"""
-        self.view.item = [Player.deserialize(dict_player) for dict_player in dict_players]
-        if display:
-            self.view.display_items("joueurs")
-        return self.view.item
+    def display_all_players(self, dict_players: dict) -> list:
+        """
+        Display and return  a list of dict_players.
+        Args:
+            dict_players: Dict from the database containing all players.
+        Returns:
+            players: A list of Players
+        """
+        players = [Player.deserialize(dict_player) for dict_player in dict_players]
+        self.view.item = players
+        self.view.display_items("joueurs")
+        return players
 
     def update_player(self, dict_players: dict) -> Player:
-        """Update a player in the database"""
+        """
+        Select a player from a dict, update and return it.
+        Args:
+            dict_players: Dict from the database containing all players.
+        Returns:
+            new_player: an instance of Player.
+        """
         self.view.display_text("player_to_update")
         self.view.item = self.display_all_players(dict_players)
         old_player = self.view.select_item()
@@ -35,11 +52,16 @@ class PlayerController:
         self.view.item = new_player
         self.view.display_text("confirm_update")
         self.view.display_item()
-
         return new_player
 
     def delete_player(self, dict_players: dict) -> Player:
-        """Delete a player"""
+        """
+        Select a player from a dict, and return it to be deleted.
+        Args:
+            dict_players: Dict from the database containing all players.
+        Returns:
+            player: the selected player
+        """
         players = self.display_all_players(dict_players)
         self.view.item = players
         player = self.view.select_item()
@@ -70,17 +92,16 @@ delete_or_cancel = Menu(title="Souhaitez-vous:",
                         choice="")
 
 
-class PlayerManager:
-    """Control the main features of the players"""
-
+class PlayerManager(PlayerController):
+    """Manage the interface with the users and the relation with the database"""
     def __init__(self):
+        super().__init__()
         self.menu = player_menu
         self.storage = storage_p
-        self.controller = PlayerController()
         self.choice = True
 
     def menu_manager(self):
-        """Manage the player menu"""
+        """Manage the player's menu according with the user choice"""
         self.choice = True
         self.menu = player_menu
         self.menu.display_menu()
@@ -88,28 +109,38 @@ class PlayerManager:
 
         if self.menu.choice == "1":
             while self.choice:
-                player = self.controller.add_player()
+                player = self.create_player()
                 self.choice = self.storage_manager(player)
             self.menu = player_menu
             self.menu_manager()
         elif self.menu.choice == "2":
-            self.controller.display_all_players(self.storage.load_all())
+            self.display_all_players(self.storage.load_all())
             self.menu_manager()
 
         elif self.menu.choice == "3":
             while self.choice:
-                player = self.controller.update_player(self.storage.load_all())
+                player = self.update_player(self.storage.load_all())
                 self.choice = self.storage_manager(player, update=True)
             self.menu_manager()
         elif self.menu.choice == "4":
             while self.choice:
-                player = self.controller.delete_player(self.storage.load_all())
+                player = self.delete_player(self.storage.load_all())
                 self.choice = self.storage_manager(player, delete=True)
             self.menu_manager()
         elif self.menu.choice == "m":
             pass
 
-    def storage_manager(self, item, update=False, delete=False):
+    def storage_manager(self, item, update=False, delete=False) -> bool:
+        """
+        Manage the relation with the database,
+        if parameters are false, save the item.
+        Args:
+            item: Item on which the method is executed.
+            update: If True update the item.
+            delete: If True delete item.
+        Returns:
+            A boolean, to know for menu_manager if it must repeat the action or not.
+        """
         if delete:
             self.menu = delete_or_cancel
             self.menu.display_menu()

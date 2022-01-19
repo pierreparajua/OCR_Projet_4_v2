@@ -1,3 +1,5 @@
+import operator
+
 from colorama import Fore, init
 
 import datetime
@@ -90,6 +92,13 @@ def get_choice(choices: list) -> str:
     while choice not in choices:
         choice = wrong_entry(choice)
     return choice
+
+
+def sort(chess_players):
+    """Sort chess_players by ranking then by score_tot"""
+    chess_players = sorted(chess_players, key=operator.attrgetter('ranking'), reverse=True)
+    chess_players.sort()
+    return chess_players
 
 
 def split_players(players: list) -> tuple:

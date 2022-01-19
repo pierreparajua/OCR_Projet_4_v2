@@ -12,7 +12,6 @@ main_menu = Menu(title="Menu principal: ",
 
 class MainController:
     """Manage the navigation inside the programme."""
-
     def __init__(self):
         self.menu = Menu("", "", "", "")
         self.choice_save = "1"

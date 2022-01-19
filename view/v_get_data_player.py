@@ -11,7 +11,6 @@ update_player_menu = Menu(title="Quel attribut souhaitez vous modifier: ",
 
 class GetDataPlayer(Player):
     """Get player's informations from the user"""
-
     def get_first_name(self) -> str:
         """Get the first_name from the user"""
         self.first_name = input("Entrez le prénom: ")
@@ -48,7 +47,11 @@ class GetDataPlayer(Player):
         return self.ranking
 
     def create_player(self) -> Player:
-        """Create an instance of player from user's informations"""
+        """
+        Create an instance of player from user's informations
+        Returns:
+            player: A Player
+        """
         player = Player(self.get_first_name(),
                         self.get_last_name(),
                         self.get_date_of_birth(),
@@ -58,7 +61,13 @@ class GetDataPlayer(Player):
         return player
 
     def get_updating(self, updating_player: Player) -> Player:
-        """Ask if the user wants update a player's item and return the updated player"""
+        """
+        Ask if the user wants update a player's item and return the updated player
+        Args:
+            updating_player: Player to update
+        Returns:
+            updating_player: Player updated
+        """
         dict_player = updating_player.__dict__
         choices = {"1": [self.get_first_name, "_first_name"],
                    "2": [self.get_last_name, "_last_name"],

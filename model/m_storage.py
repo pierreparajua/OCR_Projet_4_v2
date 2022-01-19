@@ -29,7 +29,7 @@ class Storage(Protocol):
 
 
 class TinyDatabase(Storage):
-    """Storage player by Tinydb"""
+    """Storage  by Tinydb"""
 
     def __init__(self, table):
         self.table = table

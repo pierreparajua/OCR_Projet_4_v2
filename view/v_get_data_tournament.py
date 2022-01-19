@@ -12,7 +12,6 @@ time_control_menu = Menu(title="Choisissez le système de contrôle du temps",
 
 class GetDataTournament(Tournament):
     """Gets tournament's informations from the user"""
-
     def get_name(self) -> str:
         """Get the name from the user"""
         self.name = input("Entrez le nom du tournoi: ")
@@ -37,9 +36,8 @@ class GetDataTournament(Tournament):
 
     def get_nbr_of_rounds(self):
         """Get the number of rounds from the user"""
-        self.nbr_of_rounds = input("Entrez le nombre de ronde: \nTapez sur 'Entrez' pour 4 rondes\nou entrez le nombre "
-                                   "de "
-                                   "ronde souhaiter: ")
+        self.nbr_of_rounds = input("Entrez le nombre de ronde: \nTapez sur 'Entrez' pour 4 rondes"
+                                   "\nou entrez le nombre de ronde souhaiter: ")
         return self.nbr_of_rounds
 
     def get_time(self) -> str:
@@ -60,7 +58,11 @@ class GetDataTournament(Tournament):
         return self.description
 
     def create_tournament(self) -> Tournament:
-        """Create an instance of tournament from user's informations"""
+        """
+        Create an instance of tournament from user's informations
+        Returns:
+            tournament: An instance of Tournament
+        """
         tournament = Tournament(self.get_name(),
                                 self.get_place(),
                                 self.get_date(),
@@ -74,51 +76,48 @@ class GetDataTournament(Tournament):
 
     @staticmethod
     def get_scores(chess_players: list, matches: list) -> tuple:
-        """Ask for the winner and return corresponding score"""
+        """
+        Ask for the winner, return corresponding score and add the opponent
+        Args:
+            chess_players: List of ChessPlayers
+            matches: List of matches
+        Returns:
+            chess_players and matches with the score and the opponents added
+        """
         for match, i in zip(matches, range(len(matches))):
             chess_player1 = next(chess for chess in chess_players if chess.id_player == match[0])
             chess_player2 = next(chess for chess in chess_players if chess.id_player == match[1])
+
             chess_player1.opponents.append(chess_player2.id_player)
             chess_player2.opponents.append(chess_player1.id_player)
 
-            player1 = chess_player1.player_from_chess_player()
-            player2 = chess_player2.player_from_chess_player()
             print(Fore.LIGHTBLUE_EX + f"\nMatch n°{i + 1}: "
-                  + Fore.RESET + f"    {player1.full_name()} - {player1.ranking}"
-                  f"   contre   {player2.full_name()} - {player2.ranking}")
+                  + Fore.RESET + f"    {chess_player1.full_name} - {chess_player1.ranking}"
+                  f"   contre   {chess_player2.full_name} - {chess_player2.ranking}")
             print("Qui est le gagnant du match: \n"
-                  f"1: pour {player1.full_name()}\n"
-                  f"2: pour {player2.full_name()}\n"
+                  f"1: pour {chess_player1.full_name}\n"
+                  f"2: pour {chess_player2.full_name}\n"
                   f"3: pour égalité")
             choice = utils.util.get_choice(['1', '2', '3'])
-            chess_player1.score = 0
-            chess_player2.score = 0
             if choice == '1':
-                print(f"{player1.full_name()} :" + Fore.LIGHTGREEN_EX + " 1 point")
-                print(f"{player2.full_name()} :" + Fore.LIGHTRED_EX + " 0 point\n")
-                x = chess_player1.score = 1
-                match[0] = (match[0], x)
+                print(f"{chess_player1.full_name} :" + Fore.LIGHTGREEN_EX + " 1 point")
+                print(f"{chess_player2.full_name} :" + Fore.LIGHTRED_EX + " 0 point\n")
+                match[0] = (match[0], 1)
                 match[1] = (match[1], 0)
-                chess_player1.score_tot = chess_player1.score_tot + chess_player1.score
-                chess_player2.score_tot = chess_player2.score_tot + chess_player2.score
+                chess_player1.score_tot = chess_player1.score_tot + 1
 
             elif choice == '2':
-                print(f"{player1.full_name()} :" + Fore.LIGHTRED_EX + " 0 point")
-                print(f"{player2.full_name()} :" + Fore.LIGHTGREEN_EX + " 1 point\n")
-                y = chess_player2.score = 1
+                print(f"{chess_player1.full_name} :" + Fore.LIGHTRED_EX + " 0 point")
+                print(f"{chess_player2.full_name} :" + Fore.LIGHTGREEN_EX + " 1 point\n")
                 match[0] = (match[0], 0)
-                match[1] = (match[1], y)
-                chess_player1.score_tot = chess_player1.score_tot + chess_player1.score
-                chess_player2.score_tot = chess_player2.score_tot + chess_player2.score
+                match[1] = (match[1], 1)
+                chess_player2.score_tot = chess_player2.score_tot + 1
 
             elif choice == '3':
-                print(f"{player1.full_name()} :" + Fore.LIGHTBLUE_EX + " 0.5 point")
-                print(f"{player2.full_name()} :" + Fore.LIGHTBLUE_EX + " 0.5 point\n")
-                x = chess_player1.score = 0.5
-                match[0] = (match[0], x)
-                y = chess_player2.score = 0.5
-                match[1] = (match[1], y)
-
-                chess_player1.score_tot = chess_player1.score_tot + chess_player1.score
-                chess_player2.score_tot = chess_player2.score_tot + chess_player2.score
+                print(f"{chess_player1.full_name} :" + Fore.LIGHTBLUE_EX + " 0.5 point")
+                print(f"{chess_player2.full_name} :" + Fore.LIGHTBLUE_EX + " 0.5 point\n")
+                match[0] = (match[0], 0.5)
+                match[1] = (match[1], 0.5)
+                chess_player1.score_tot = chess_player1.score_tot + 0.5
+                chess_player2.score_tot = chess_player2.score_tot + 0.5
         return chess_players, matches

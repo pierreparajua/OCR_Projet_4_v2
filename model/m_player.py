@@ -17,7 +17,7 @@ class Player:
                f" {self.ranking: >3}"
 
     def __lt__(self, other):
-        """Sort the players by ranking"""
+        """Sort the players by ranking."""
         return self.ranking > other.ranking
 
     @property
@@ -62,7 +62,13 @@ class Player:
 
     @staticmethod
     def deserialize(player_dict: dict):
-        """This function deserialize a dict to create an instance of Player"""
+        """
+        This function deserialize a dict to create an instance of Player
+        Args:
+            player_dict: A dict containing all player's informations, coming from database
+        Returns:
+            player: an instance of Player.
+        """
         player = Player(player_dict["_first_name"],
                         player_dict["_last_name"],
                         player_dict["_date_of_birth"],
