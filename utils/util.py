@@ -65,7 +65,8 @@ def check_ranking(ranking):
         while not x:
             ranking = wrong_entry(ranking)
             x = re.findall("[0-9]", ranking)
-    return int(ranking)
+        ranking = int(ranking)
+    return ranking
 
 
 def check_sex(sex):

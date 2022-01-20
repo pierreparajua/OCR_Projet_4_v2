@@ -28,16 +28,17 @@ class GetDataTournament(Tournament):
 
     def get_date(self) -> str:
         """Get the date from the user"""
-        self.date = input(f"Date du tournois: {utils.util.get_date_now()[0:10]}\n"
-                          f"Tapez la date si différente ou 'Entrez'(JJ/MM:AAAA): ")
+        self.date = input(f"Date du tournois: \n"
+                          f"    Tapez sur 'Entrée' pour conserver la date du jour: {utils.util.get_date_now()[0:10]}\n"
+                          f"    Ou saisir la date souhaitée:")
         if not self.date:
             self.date = str(utils.util.get_date_now()[0:10])
         return self.date
 
     def get_nbr_of_rounds(self):
         """Get the number of rounds from the user"""
-        self.nbr_of_rounds = input("Entrez le nombre de ronde: \nTapez sur 'Entrez' pour 4 rondes"
-                                   "\nou entrez le nombre de ronde souhaiter: ")
+        self.nbr_of_rounds = input("Entrez le nombre de ronde: \n   Tapez sur 'Entrée' pour 4 rondes"
+                                   "\n   ou entrez le nombre de ronde souhaitée: ")
         return self.nbr_of_rounds
 
     def get_time(self) -> str:
