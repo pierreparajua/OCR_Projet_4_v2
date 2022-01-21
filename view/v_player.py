@@ -2,15 +2,20 @@ from colorama import Fore
 
 from utils.util import Menu
 from model.m_player import Player
-
-update_player_menu = Menu(title="Quel attribut souhaitez vous modifier: ",
-                          add_info="(Tapez 'm' pour sortir)",
-                          items=["Prénom", "Nom", "date de naissance", "sexe", "classement"],
-                          choice="")
+from view.view import View
 
 
-class GetDataPlayer(Player):
+class ViewPlayer(Player, View):
     """Get player's informations from the user"""
+    update_player_menu = Menu(title="Quel attribut souhaitez vous modifier: ",
+                              add_info="(Tapez 'm' pour sortir)",
+                              items=["Prénom", "Nom", "date de naissance", "sexe", "classement"],
+                              choice="")
+
+    def __init__(self):
+
+        super().__init__()
+
     def get_first_name(self) -> str:
         """Get the first_name from the user"""
         self.first_name = input("Entrez le prénom: ")
@@ -76,8 +81,8 @@ class GetDataPlayer(Player):
                    "5": [self.get_ranking, "_ranking"],
                    "m": "break"}
         while True:
-            update_player_menu.display_menu()
-            choice = update_player_menu.get_choice()
+            self.update_player_menu.display_menu()
+            choice = self.update_player_menu.get_choice()
             if choices.get(choice) == "break":
                 break
             dict_player[choices.get(choice)[1]] = choices.get(choice)[0]()

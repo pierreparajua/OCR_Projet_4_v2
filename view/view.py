@@ -14,7 +14,8 @@ DICT_TEXT = json.load(open(JSON_PATH, 'r', encoding='utf8'))
 
 class View:
     """Manage the main displays."""
-    def __init__(self, item):
+
+    def __init__(self, item=None):
         self.dict_text = DICT_TEXT
         self.item = item
 
@@ -43,16 +44,6 @@ class View:
         for i, item in enumerate(self.item):
             print(f"{i + 1}: {item}")
 
-    def display_score(self):
-        """Display the score for each player at the end of a round"""
-        nbr_ronde = len(self.item.rondes)
-        print(Fore.LIGHTGREEN_EX + f"Classement à l' issue de la ronde N° {nbr_ronde}: ")
-        for chess_player in self.item.chess_players:
-            print(f"{self.item.chess_players.index(chess_player) + 1}:"
-                  f" {chess_player.player_from_chess_player().full_name(): <15}"
-                  f" {chess_player.score_tot: >5} pts")
-        print("\n")
-
     def display_text(self, key: str, center=False):
         """
         Display the text matching with the key from the dict 'chess_manager_text.json.
@@ -65,39 +56,12 @@ class View:
         else:
             print(self.dict_text[key])
 
-    def display_tournaments(self):
-        """Display all tournament."""
-        for i, tournament in enumerate(self.item):
-            print(f"{i + 1}:  Tournoi: {tournament.name} - le {tournament.date}")
-
-    def select_item(self):
+    def select_item(self, items):
         """Select an item and return it"""
         choice = input(Fore.LIGHTBLUE_EX + "Choix: ").lower()
-        while choice not in list(map(str, list(range(1, len(self.item) + 1)))):
+        while choice not in list(map(str, list(range(1, len(items) + 1)))):
             choice = utils.util.wrong_entry(choice)
-        self.display_text("selected_player")
-        item = self.item[int(choice) - 1]
+        self.display_text("selected_item")
+        item = items[int(choice) - 1]
         print(item)
         return item
-
-    @staticmethod
-    def display_matches(matches: list, chess_players):
-        """ Display the matches for the next round"""
-        if matches:
-            for match, i in zip(matches, range(len(matches))):
-                chess_player1 = next(chess for chess in chess_players if chess.id_player == match[0])
-                chess_player2 = next(chess for chess in chess_players if chess.id_player == match[1])
-                print(f"Match n°{i + 1}:\n"
-                      f"    {chess_player1.full_name} contre {chess_player2.full_name}\n")
-
-    def display_ronde(self):
-        """Display all matches inside each rounds for report"""
-        for ronde in self.item.rondes:
-            print(Fore.LIGHTGREEN_EX + f"\nRONDE N° {ronde.number}  début: {ronde.date_start}  fin: {ronde.date_end} ")
-            for match in ronde.matches:
-                chess_player1 = next(chess for chess in self.item.chess_players if chess.id_player == match[0][0])
-                chess_player2 = next(chess for chess in self.item.chess_players if chess.id_player == match[1][0])
-                x = ""
-                print(f"{chess_player1.full_name: <14}: {match[0][1]: >5} pt    contre   "
-                      f"{chess_player2.full_name: >15}: {match[1][1]: >5}pt {x: <15}")
-        print("\n")

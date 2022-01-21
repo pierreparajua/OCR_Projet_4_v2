@@ -1,5 +1,5 @@
 from utils.util import Menu
-from controller.c_player import PlayerManager
+from controller.c_player import PlayerController
 from controller.c_tournament import TournamentManager
 
 main_menu = Menu(title="Menu principal: ",
@@ -15,7 +15,7 @@ class MainController:
     def __init__(self):
         self.menu = Menu("", "", "", "")
         self.choice_save = "1"
-        self.player_manager = PlayerManager()
+        self.player_manager = PlayerController()
         self.tournament_manager = TournamentManager()
 
     def main_manager(self):
@@ -25,8 +25,8 @@ class MainController:
             self.menu.display_menu()
             self.menu.choice = self.menu.get_choice()
             if self.menu.choice == "1":
-                self.player_manager.menu_manager()
+                self.player_manager.manage_menu()
             elif self.menu.choice == "2":
-                self.tournament_manager.tournament_manager()
+                self.tournament_manager.manage_menu()
             elif self.menu.choice == "3":
                 break

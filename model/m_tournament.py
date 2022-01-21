@@ -1,4 +1,3 @@
-
 from dataclasses import dataclass
 from colorama import Fore
 
@@ -8,8 +7,8 @@ from model.m_storage import storage_t, storage_p
 
 
 class Tournament:
-    def __init__(self, name: str, place: str, date: str, rondes: list, chess_players: list, time: str,
-                 description: str, id_db: int = 1, nbr_of_rounds=4):
+    def __init__(self, name: str = "", place: str = "", date: str = "", rondes: list = None, chess_players: list = None,
+                 time: str = "", description: str = "", id_db: int = 1, nbr_of_rounds=4):
         self.name = name
         self.place = place
         self.date = date
@@ -137,9 +136,9 @@ class Tournament:
         """
         matches = self.create_matches(Tournament.deserialize(storage_t.load(self)).chess_players)
         while not matches:
+            i = 1
             chess_players = Tournament.deserialize(storage_t.load(self)).chess_players
-            chess_players[1], chess_players[3] = chess_players[3], chess_players[1]
-            chess_players[-2], chess_players[-3] = chess_players[-3], chess_players[-2]
+            chess_players[i], chess_players[i + 2] = chess_players[i + 2], chess_players[i]
             matches = self.create_matches(chess_players)
         matches = [[match[0].id_player, match[1].id_player] for match in matches]
         self.chess_players = self.deserialize(storage_t.load(self.id_db)).chess_players
@@ -200,14 +199,16 @@ class Ronde:
 class ChessPlayer:
     """A ChessPlayer in a player selected for a tournament.
     The matching between a Player and a ChessPlayer is the id"""
-    id_player: int
-    score_tot: float
-    opponents: list
-    ranking: int
-    full_name: str
+    id_player: int = None
+    score_tot: float = None
+    opponents: list = None
+    ranking: int = None
+    full_name: str = ""
 
     def __lt__(self, other):
         """Sort the chess_players by score_tot"""
+        if self.score_tot == other.score_tot:
+            return self.ranking > other.ranking
         return self.score_tot > other.score_tot
 
     @staticmethod

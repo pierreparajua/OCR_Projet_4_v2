@@ -2,24 +2,108 @@ from colorama import Fore
 
 import utils
 from utils.util import Menu
-from controller.c_player import PlayerController, PlayerManager
+from controller.c_player import PlayerController
 from model.m_storage import storage_t, storage_p
 from model.m_tournament import Ronde, ChessPlayer, Tournament
-from view.v_get_data_tournament import GetDataTournament
+from view.v_tournament import ViewTournament
 from view.view import View
 
 NB_PLAYER_MAX = 20
 NB_player = list(map(str, list(range(1, (NB_PLAYER_MAX + 1)))))[1::2]
 
 
-class TournamentController:
-    """Control the main features of the tournaments"""
+class TournamentManager:
+    """Manage the interface with the users and the relation with the database"""
+
     def __init__(self):
-        self.view: View = View("")
-        self.got_tournament = GetDataTournament("", "", "", [], [], "", "")
+        self.menu = self._create_menu("tournament_menu")
+        self.storage_p = storage_p
+        self.storage_t = storage_t
+        self.view: View = View()
+        self.v_tournament = ViewTournament()
         self.player_controller = PlayerController()
-        self.player_manager = PlayerManager()
-        self.chess_player = ChessPlayer(0, 0, [], 0, "")
+        self.chess_player = ChessPlayer()
+        self.choice = True
+
+    def manage_menu(self):
+        """Manage the tournament's menu according with the user choice"""
+        self.menu.display_menu()
+        self.menu.choice = self.menu.get_choice()
+        if self.menu.choice == "1":
+            tournament = self.prepare_tournament(self.storage_p.load_all())
+            while not tournament:
+                tournament = self.prepare_tournament(self.storage_p.load_all())
+            if self.manage_storage(tournament):
+                tournament = self.round1(tournament)
+                self.execute_rounds(tournament)
+            self.menu = self._create_menu("tournament_menu")
+            self.manage_menu()
+
+        elif self.menu.choice == "2":
+            self.choice = True
+            tournament = self.select_tournament(self.storage_t.load_all(), display_all=False)
+            if tournament:
+                if not tournament.rondes:
+                    tournament = self.round1(tournament)
+                self.execute_rounds(tournament)
+            self.menu = self._create_menu("tournament_menu")
+            self.manage_menu()
+
+        elif self.menu.choice == "3":
+            tournament = self.delete_tournament(storage_t.load_all())
+            if tournament:
+                self.manage_storage(tournament, delete=True)
+            self.menu = self._create_menu("tournament_menu")
+            self.manage_menu()
+
+        elif self.menu.choice == "4":
+            tournament = self.select_tournament(self.storage_t.load_all(), report=True)
+            self.report(tournament)
+            self.manage_menu()
+
+        elif self.menu.choice == "m":
+            pass
+
+    def manage_storage(self, item, direct_update=False, update=False, delete=False):
+        """
+        Manage the relation with the database,
+        if parameters are false, save the item.
+        Args:
+            item: item on which the method is executed.
+            direct_update: if True to a quick update without ask question to the user.
+            update: If True update the item.
+            delete: If True delete item.
+        Returns:
+        A boolean, to know for menu_manager if it must repeat the action or not.
+        """
+        if delete:
+            self.menu = self._create_menu("delete_or_cancel")
+            self.menu.display_menu()
+            self.menu.choice = self.menu.get_choice()
+            if self.menu.choice == "1":
+                self.storage_t.delete(item)
+                return False
+            elif self.menu.choice == "2":
+                self.menu = self._create_menu("tournament_menu")
+                return False
+        if direct_update:
+            self.storage_t.update(item)
+            return False
+        self.menu = self._create_menu("save_or_cancel")
+        self.menu.display_menu()
+        self.menu.choice = self.menu.get_choice()
+        if self.menu.choice == "1":
+            if not update:
+                item.id_db = self.storage_t.save(item)
+            self.storage_t.update(item)
+            return True
+        elif self.menu.choice == "2":
+            if not update:
+                item.id_db = self.storage_t.save(item)
+            self.storage_t.update(item)
+            return False
+        elif self.menu.choice == "3":
+            return False
 
     def prepare_tournament(self, dict_player) -> Tournament or []:
         """
@@ -34,11 +118,11 @@ class TournamentController:
         self.view.display_text("ask_for_player")
         choice: str = utils.util.get_choice(["o", "n"])
         if choice == "o":
-            self.player_manager.menu_manager()
+            self.player_controller.manage_menu()
             return []
         self.view.display_text("new_tournament", center=True)
         self.view.display_text("fill_items")
-        tournament = self.got_tournament.create_tournament()
+        tournament = self.v_tournament.create_tournament()
         players = self.select_players(tournament.nbr_of_rounds, dict_player)
         self.view.display_text("resume_tournament", center=True)
         self.view.item = tournament
@@ -64,10 +148,9 @@ class TournamentController:
             self.view.display_text("error_nb_player")
             nb_players = int(utils.util.get_choice(NB_player))
         players = self.player_controller.display_all_players(dict_player)
-        self.view.item = players
         i = 0
         while i < nb_players:
-            player = self.view.select_item()
+            player = self.view.select_item(players)
             if player in players_selected:
                 self.view.display_text("already_selected")
             else:
@@ -89,14 +172,15 @@ class TournamentController:
         players_split1, players_split2 = utils.util.split_players(tournament.chess_players)
         ronde1.matches = [[players_split1[i].id_player, players_split2[i].id_player]
                           for i in range(int(len(tournament.chess_players) / 2))]
-        self.view.display_matches(ronde1.matches, tournament.chess_players)
+        self.v_tournament.item = tournament
+        self.v_tournament.display_matches(ronde1.matches)
         ronde1.date_start, ronde1.date_end = self.start_end_ronde()
-        tournament.chess_players, ronde1.matches = self.got_tournament.get_scores(tournament.chess_players,
-                                                                                  ronde1.matches)
+        tournament.chess_players, ronde1.matches = self.v_tournament.get_scores(tournament.chess_players,
+                                                                                ronde1.matches)
         tournament.rondes.append(ronde1)
         tournament.chess_players = utils.util.sort(tournament.chess_players)
-        self.view.item = tournament
-        self.view.display_score()
+        self.v_tournament.item = tournament
+        self.v_tournament.display_score()
         return tournament
 
     def round(self, tournament: Tournament) -> Tournament:
@@ -112,16 +196,32 @@ class TournamentController:
         ronde.number = str(nbr_ronde)
         self.view.item = f"\n         ----------Ronde N° {nbr_ronde}----------"
         self.view.display_item()
-        ronde.matches = tournament.compute_matches()
-        self.view.display_matches(ronde.matches, tournament.chess_players)
-        ronde.date_start, ronde.date_end = self.start_end_ronde()
-        tournament.chess_players, ronde.matches = self.got_tournament.get_scores(tournament.chess_players,
-                                                                                 ronde.matches)
-        tournament.rondes.append(ronde)
         tournament.chess_players = utils.util.sort(tournament.chess_players)
-        self.view.item = tournament
-        self.view.display_score()
+        ronde.matches = tournament.compute_matches()
+        self.v_tournament.item = tournament
+        self.v_tournament.display_matches()
+        ronde.date_start, ronde.date_end = self.start_end_ronde()
+        tournament.chess_players, ronde.matches = self.v_tournament.get_scores(tournament.chess_players,
+                                                                               ronde.matches)
+        tournament.rondes.append(ronde)
+        self.v_tournament.item = tournament
+        self.v_tournament.display_score()
         return tournament
+
+    def execute_rounds(self, tournament):
+        """
+        Manage main loop which execute a round depending of number_of_rounds parameter.
+        Args:
+            tournament: An instance of Tournament.
+        """
+        if self.manage_storage(tournament, update=True):
+            while self.choice and len(tournament.rondes) < tournament.nbr_of_rounds:
+                tournament = self.round(tournament)
+                if len(tournament.rondes) < 4:
+                    self.choice = self.manage_storage(tournament, update=True)
+                else:
+                    self.manage_storage(tournament, direct_update=True)
+                    self.winner(tournament)
 
     def start_end_ronde(self) -> tuple:
         """
@@ -173,9 +273,9 @@ class TournamentController:
             tournaments = [tournament for tournament in tournaments if len(tournament.rondes) != 4
                            or display_all]
         if tournaments:
-            self.view.item = tournaments
-            self.view.display_tournaments()
-            tournament = self.view.select_item()
+            self.v_tournament.item = tournaments
+            self.v_tournament.display_tournaments()
+            tournament = self.view.select_item(tournaments)
             return tournament
         self.view.display_text("db_empty_tournament")
 
@@ -186,9 +286,9 @@ class TournamentController:
             tournament: An instance of tournament.
         """
         if tournament:
-            self.view.item = tournament
-            self.view.display_ronde()
-            self.view.display_score()
+            self.v_tournament.item = tournament
+            self.v_tournament.display_ronde()
+            self.v_tournament.display_score()
             self.winner(tournament)
 
     def winner(self, tournament: Tournament):
@@ -202,129 +302,30 @@ class TournamentController:
         self.view.display_item()
         self.view.display_text("end_tournament", center=True)
 
+    @staticmethod
+    def _create_menu(menu):
+        tournament_menu = Menu(title="Menu de gestion des tournois: ",
+                               add_info="(Tapez le chiffre correspondant à votre choix ou 'm' pour retourner au menu "
+                                        "précédent: )",
+                               items=["Ajouter un tournoi",
+                                      "Reprendre un tournoi",
+                                      "Supprimer un tournoi",
+                                      "Afficher les rapports des tournois"],
+                               choice="")
 
-tournament_menu = Menu(title="Menu de gestion des tournois: ",
-                       add_info="(Tapez le chiffre correspondant à votre choix ou 'm' pour retourner au menu "
-                                "précédent: )",
-                       items=["Ajouter un tournoi",
-                              "Reprendre un tournoi",
-                              "Supprimer un tournoi",
-                              "Afficher les rapports des tournois"],
-                       choice="")
+        save_or_cancel = Menu(title="Souhaitez-vous: ",
+                              add_info="",
+                              items=["Continuer",
+                                     "Sauver et retourner au menu",
+                                     "Annuler"],
+                              choice="")
+        delete_or_cancel = Menu(title="Souhaitez-vous:",
+                                add_info="",
+                                items=["Confirmer",
+                                       "Annuler"],
+                                choice="")
 
-save_or_cancel = Menu(title="Souhaitez-vous: ",
-                      add_info="",
-                      items=["Continuer",
-                             "Sauver et retourner au menu",
-                             "Annuler"],
-                      choice="")
-delete_or_cancel = Menu(title="Souhaitez-vous:",
-                        add_info="",
-                        items=["Confirmer",
-                               "Annuler"],
-                        choice="")
-
-
-class TournamentManager(TournamentController):
-    """Manage the interface with the users and the relation with the database"""
-    def __init__(self):
-        super().__init__()
-        self.menu = tournament_menu
-        self.storage_p = storage_p
-        self.storage_t = storage_t
-        self.choice = True
-
-    def tournament_manager(self):
-        """Manage the tournament's menu according with the user choice"""
-        self.menu.display_menu()
-        self.menu.choice = self.menu.get_choice()
-        if self.menu.choice == "1":
-            tournament = self.prepare_tournament(self.storage_p.load_all())
-            while not tournament:
-                tournament = self.prepare_tournament(self.storage_p.load_all())
-            if self.storage_manager(tournament):
-                tournament = self.round1(tournament)
-                self.continu_tournament(tournament)
-            self.menu = tournament_menu
-            self.tournament_manager()
-
-        elif self.menu.choice == "2":
-            self.choice = True
-            tournament = self.select_tournament(self.storage_t.load_all(), display_all=False)
-            if tournament:
-                if not tournament.rondes:
-                    tournament = self.round1(tournament)
-                self.continu_tournament(tournament)
-            self.menu = tournament_menu
-            self.tournament_manager()
-
-        elif self.menu.choice == "3":
-            tournament = self.delete_tournament(storage_t.load_all())
-            if tournament:
-                self.storage_manager(tournament, delete=True)
-            self.menu = tournament_menu
-            self.tournament_manager()
-
-        elif self.menu.choice == "4":
-            tournament = self.select_tournament(self.storage_t.load_all(), report=True)
-            self.report(tournament)
-            self.tournament_manager()
-
-        elif self.menu.choice == "m":
-            pass
-
-    def storage_manager(self, item, direct_update=False, update=False, delete=False):
-        """
-        Manage the relation with the database,
-        if parameters are false, save the item.
-        Args:
-            item: item on which the method is executed.
-            direct_update: if True to a quick update without ask question to the user.
-            update: If True update the item.
-            delete: If True delete item.
-        Returns:
-        A boolean, to know for menu_manager if it must repeat the action or not.
-        """
-        if delete:
-            self.menu = delete_or_cancel
-            self.menu.display_menu()
-            self.menu.choice = self.menu.get_choice()
-            if self.menu.choice == "1":
-                self.storage_t.delete(item)
-                return False
-            elif self.menu.choice == "2":
-                self.menu = tournament_menu
-                return False
-        if direct_update:
-            self.storage_t.update(item)
-            return False
-        self.menu = save_or_cancel
-        self.menu.display_menu()
-        self.menu.choice = self.menu.get_choice()
-        if self.menu.choice == "1":
-            if not update:
-                item.id_db = self.storage_t.save(item)
-            self.storage_t.update(item)
-            return True
-        elif self.menu.choice == "2":
-            if not update:
-                item.id_db = self.storage_t.save(item)
-            self.storage_t.update(item)
-            return False
-        elif self.menu.choice == "3":
-            return False
-
-    def continu_tournament(self, tournament):
-        """
-        Manage main loop which execute a round depending of number_of_rounds parameter.
-        Args:
-            tournament: An instance of Tournament.
-        """
-        if self.storage_manager(tournament, update=True):
-            while self.choice and len(tournament.rondes) < tournament.nbr_of_rounds:
-                tournament = self.round(tournament)
-                if len(tournament.rondes) < 4:
-                    self.choice = self.storage_manager(tournament, update=True)
-                else:
-                    self.storage_manager(tournament, direct_update=True)
-                    self.winner(tournament)
+        dict_menu = {"tournament_menu": tournament_menu,
+                     "save_or_cancel": save_or_cancel,
+                     "delete_or_cancel": delete_or_cancel}
+        return dict_menu[menu]

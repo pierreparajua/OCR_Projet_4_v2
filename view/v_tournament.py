@@ -3,6 +3,7 @@ from colorama import Fore
 import utils
 from model.m_tournament import Tournament
 from utils.util import Menu
+from view.view import View
 
 time_control_menu = Menu(title="Choisissez le système de contrôle du temps",
                          add_info="",
@@ -10,7 +11,10 @@ time_control_menu = Menu(title="Choisissez le système de contrôle du temps",
                          choice="")
 
 
-class GetDataTournament(Tournament):
+class ViewTournament(Tournament, View):
+    def __init__(self):
+        super().__init__()
+
     """Gets tournament's informations from the user"""
     def get_name(self) -> str:
         """Get the name from the user"""
@@ -74,6 +78,42 @@ class GetDataTournament(Tournament):
                                 1,
                                 self.get_nbr_of_rounds())
         return tournament
+
+    def display_score(self):
+        """Display the score for each player at the end of a round"""
+        nbr_ronde = len(self.item.rondes)
+        print(Fore.LIGHTGREEN_EX + f"Classement à l' issue de la ronde N° {nbr_ronde}: ")
+        for chess_player in self.item.chess_players:
+            print(f"{self.item.chess_players.index(chess_player) + 1}:"
+                  f" {chess_player.player_from_chess_player().full_name(): <15}"
+                  f" {chess_player.score_tot: >5} pts")
+        print("\n")
+
+    def display_matches(self, matches):
+        """ Display the matches for the next round"""
+        if matches:
+            for match, i in zip(matches, range(len(matches))):
+                chess_player1 = next(chess for chess in self.item.chess_players if chess.id_player == match[0])
+                chess_player2 = next(chess for chess in self.item.chess_players if chess.id_player == match[1])
+                print(f"Match n°{i + 1}:\n"
+                      f"    {chess_player1.full_name} contre {chess_player2.full_name}\n")
+
+    def display_ronde(self):
+        """Display all matches inside each rounds for report"""
+        for ronde in self.item.rondes:
+            print(Fore.LIGHTGREEN_EX + f"\nRONDE N° {ronde.number}  début: {ronde.date_start}  fin: {ronde.date_end} ")
+            for match in ronde.matches:
+                chess_player1 = next(chess for chess in self.item.chess_players if chess.id_player == match[0][0])
+                chess_player2 = next(chess for chess in self.item.chess_players if chess.id_player == match[1][0])
+                x = ""
+                print(f"{chess_player1.full_name: <14}: {match[0][1]: >5} pt    contre   "
+                      f"{chess_player2.full_name: >15}: {match[1][1]: >5}pt {x: <15}")
+        print("\n")
+
+    def display_tournaments(self):
+        """Display all tournaments."""
+        for i, tournament in enumerate(self.item):
+            print(f"{i + 1}:  Tournoi: {tournament.name} - le {tournament.date}")
 
     @staticmethod
     def get_scores(chess_players: list, matches: list) -> tuple:

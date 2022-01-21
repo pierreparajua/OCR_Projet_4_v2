@@ -97,7 +97,6 @@ def get_choice(choices: list) -> str:
 
 def sort(chess_players):
     """Sort chess_players by ranking then by score_tot"""
-    chess_players = sorted(chess_players, key=operator.attrgetter('ranking'), reverse=True)
     chess_players.sort()
     return chess_players
 

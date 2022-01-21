@@ -2,7 +2,7 @@ import utils
 
 
 class Player:
-    def __init__(self, first_name: str, last_name: str, date_of_birth: str, sex: str,
+    def __init__(self, first_name: str = "", last_name: str = "", date_of_birth: str = "", sex: str = "",
                  id_db: int = 1, ranking: int = 1000):
         self.first_name = first_name
         self.last_name = last_name

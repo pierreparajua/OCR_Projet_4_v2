@@ -8,7 +8,7 @@
     "sorted_player": "Voulez vous trier les joueurs par classement ('o' ou 'n')",
     "all_players": "\nListes des joueurs enregistr\u00e9s en base de donn\u00e9e :",
     "player_to_update": "\nQuel joueur de la liste souhaitez vous modifier: ",
-    "selected_player": "\nVous avez s\u00e9lectionn\u00e9: ",
+    "selected_item": "\nVous avez s\u00e9lectionn\u00e9: ",
     "updating_player": "\nModifier, si vous souhaitez, l' item entre parenth\u00e8se ou tapez 'Entrez' pour passer \u00e0 l' item suivant: ",
     "confirm_update": "\nVous avez modifié le joueur suivant: ",
     "confirm_updated": "Le joueur \u00e0 \u00e9t\u00e9 modifi\u00e9 dans la base de donn\u00e9e\n",
