@@ -13,8 +13,6 @@ NB_player = list(map(str, list(range(1, (NB_PLAYER_MAX + 1)))))[1::2]
 
 
 class TournamentManager:
-    """Manage the interface with the users and the relation with the database"""
-
     def __init__(self):
         self.menu = self._create_menu("tournament_menu")
         self.storage_p = storage_p
@@ -74,7 +72,7 @@ class TournamentManager:
             update: If True update the item.
             delete: If True delete item.
         Returns:
-        A boolean, to know for menu_manager if it must repeat the action or not.
+        A boolean, to method "manage_menu" to know if it must repeat the action or not.
         """
         if delete:
             self.menu = self._create_menu("delete_or_cancel")
@@ -178,7 +176,7 @@ class TournamentManager:
         tournament.chess_players, ronde1.matches = self.v_tournament.get_scores(tournament.chess_players,
                                                                                 ronde1.matches)
         tournament.rondes.append(ronde1)
-        tournament.chess_players = utils.util.sort(tournament.chess_players)
+        tournament.chess_players.sort()
         self.v_tournament.item = tournament
         self.v_tournament.display_score()
         return tournament
@@ -196,15 +194,16 @@ class TournamentManager:
         ronde.number = str(nbr_ronde)
         self.view.item = f"\n         ----------Ronde N° {nbr_ronde}----------"
         self.view.display_item()
-        tournament.chess_players = utils.util.sort(tournament.chess_players)
+        tournament.chess_players.sort()
         ronde.matches = tournament.compute_matches()
         self.v_tournament.item = tournament
-        self.v_tournament.display_matches()
+        self.v_tournament.display_matches(ronde.matches)
         ronde.date_start, ronde.date_end = self.start_end_ronde()
         tournament.chess_players, ronde.matches = self.v_tournament.get_scores(tournament.chess_players,
                                                                                ronde.matches)
         tournament.rondes.append(ronde)
         self.v_tournament.item = tournament
+        tournament.chess_players.sort()
         self.v_tournament.display_score()
         return tournament
 
@@ -304,6 +303,13 @@ class TournamentManager:
 
     @staticmethod
     def _create_menu(menu):
+        """
+        Helper method to create a menu.
+        Args:
+            menu: Name of the menu, you want to create"
+        Returns:
+            An instance of Menu
+        """
         tournament_menu = Menu(title="Menu de gestion des tournois: ",
                                add_info="(Tapez le chiffre correspondant à votre choix ou 'm' pour retourner au menu "
                                         "précédent: )",

@@ -7,8 +7,8 @@ from model.m_storage import storage_t, storage_p
 
 
 class Tournament:
-    def __init__(self, name: str = "", place: str = "", date: str = "", rondes: list = None, chess_players: list = None,
-                 time: str = "", description: str = "", id_db: int = 1, nbr_of_rounds=4):
+    def __init__(self, name: str = "", place: str = "", date: str = "", rondes: list = None,
+                 chess_players: list = None, time: str = "", description: str = "", id_db: int = 1, nbr_of_rounds=4):
         self.name = name
         self.place = place
         self.date = date
@@ -21,14 +21,14 @@ class Tournament:
 
     def __str__(self):
         """Display tournament's attributes."""
-        return (Fore.LIGHTWHITE_EX + "Tournois: " + Fore.RESET + f"{self.name}\n"
+        return (Fore.LIGHTWHITE_EX + "Tournoi: " + Fore.RESET + f"{self.name}\n"
                 + Fore.LIGHTWHITE_EX + "Lieu: " + Fore.RESET + f"{self.place}\n"
                 + Fore.LIGHTWHITE_EX + "Date: " + Fore.RESET + f"{self.date}\n"
                 + Fore.LIGHTWHITE_EX + "Nombre de tours: " + Fore.RESET + f"{self.nbr_of_rounds}\n"
-                + Fore.LIGHTWHITE_EX + "Liste des rondes: " + Fore.RESET + f"Nombre de rondes deja joués: "
+                + Fore.LIGHTWHITE_EX + "Liste des rondes: " + Fore.RESET + f"Nombre de rondes deja jouées: "
                                                                            f"{len(self.rondes)}\n"
                 + Fore.LIGHTWHITE_EX + "Système de contrôle du temps: " + Fore.RESET + f"{self.time}\n"
-                + Fore.LIGHTWHITE_EX + "Remarque du directeur de tournois: " + Fore.RESET + f"{self.description}")
+                + Fore.LIGHTWHITE_EX + "Remarque du directeur de tournoi: " + Fore.RESET + f"{self.description}")
 
     def __lt__(self, other):
         """Sort the players by date"""
@@ -129,16 +129,18 @@ class Tournament:
 
     def compute_matches(self) -> list:
         """
-        If 'create_matches' is enable to work correctly, modifie the chess_players and try again.
+        If for 'create_matches' is impossible to find a solution (most of the time when the last two players have
+        already playing together) 'compute_player' changes the order to the end of the list until 'create_player
+         finds a solution.
         Returns:
             matches: List of matches for the round
-
         """
         matches = self.create_matches(Tournament.deserialize(storage_t.load(self)).chess_players)
+        i = 0
         while not matches:
-            i = 1
+            i += 1
             chess_players = Tournament.deserialize(storage_t.load(self)).chess_players
-            chess_players[i], chess_players[i + 2] = chess_players[i + 2], chess_players[i]
+            chess_players[-i], chess_players[-i + -1] = chess_players[-i + -1], chess_players[-i]
             matches = self.create_matches(chess_players)
         matches = [[match[0].id_player, match[1].id_player] for match in matches]
         self.chess_players = self.deserialize(storage_t.load(self.id_db)).chess_players

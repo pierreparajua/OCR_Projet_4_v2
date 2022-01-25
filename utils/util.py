@@ -1,4 +1,3 @@
-import operator
 
 from colorama import Fore, init
 
@@ -93,12 +92,6 @@ def get_choice(choices: list) -> str:
     while choice not in choices:
         choice = wrong_entry(choice)
     return choice
-
-
-def sort(chess_players):
-    """Sort chess_players by ranking then by score_tot"""
-    chess_players.sort()
-    return chess_players
 
 
 def split_players(players: list) -> tuple:

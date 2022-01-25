@@ -12,10 +12,10 @@ time_control_menu = Menu(title="Choisissez le système de contrôle du temps",
 
 
 class ViewTournament(Tournament, View):
+    """Manage the views for the tournaments"""
     def __init__(self):
         super().__init__()
 
-    """Gets tournament's informations from the user"""
     def get_name(self) -> str:
         """Get the name from the user"""
         self.name = input("Entrez le nom du tournoi: ")
@@ -32,7 +32,7 @@ class ViewTournament(Tournament, View):
 
     def get_date(self) -> str:
         """Get the date from the user"""
-        self.date = input(f"Date du tournois: \n"
+        self.date = input(f"Date du tournoi: \n"
                           f"    Tapez sur 'Entrée' pour conserver la date du jour: {utils.util.get_date_now()[0:10]}\n"
                           f"    Ou saisir la date souhaitée:")
         if not self.date:

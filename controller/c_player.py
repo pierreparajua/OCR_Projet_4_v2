@@ -6,8 +6,6 @@ from view.view import View
 
 
 class PlayerController:
-    """Manage the interface with the users and the relation with the database"""
-
     def __init__(self):
         self.menu = self._create_menu("player_menu")
         self.storage = storage_p
@@ -54,7 +52,7 @@ class PlayerController:
             update: If True update the item.
             delete: If True delete item.
         Returns:
-            A boolean, to know for menu_manager if it must repeat the action or not.
+            A boolean, to methode "manage_menu" to know if it must repeat the action or not.
         """
         if delete:
             self.menu = self._create_menu("delete_or_save")
@@ -139,7 +137,14 @@ class PlayerController:
         return player
 
     @staticmethod
-    def _create_menu(menu):
+    def _create_menu(menu: str):
+        """
+        Helper method to create a menu.
+        Args:
+            menu: Name of the menu, you want to create"
+        Returns:
+            An instance of Menu
+        """
         player_menu = Menu(title="Menu de gestion des joueurs: ",
                            add_info="(Tapez le chiffre correspondant à votre choix ou 'm' pour retourner au menu "
                                     "précédent: )",
@@ -168,6 +173,4 @@ class PlayerController:
 
 
 if __name__ == "__main__":
-    pierre = Player("pierre", "parajua", "20/06/1986", "homme", 0, 1106)
-    test = PlayerController()
-    test.manage_menu()
+    pass

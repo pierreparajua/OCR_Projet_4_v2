@@ -13,8 +13,7 @@ DICT_TEXT = json.load(open(JSON_PATH, 'r', encoding='utf8'))
 
 
 class View:
-    """Manage the main displays."""
-
+    """Manage the display of generic items."""
     def __init__(self, item=None):
         self.dict_text = DICT_TEXT
         self.item = item
