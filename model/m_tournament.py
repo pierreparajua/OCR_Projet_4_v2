@@ -1,5 +1,7 @@
-from dataclasses import dataclass
+
 from colorama import Fore
+
+from dataclasses import dataclass
 
 import utils
 from model.m_player import Player
