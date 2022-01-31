@@ -2,6 +2,7 @@ from colorama import Fore
 
 import utils
 from model.m_tournament import Tournament
+from model.m_player import Player
 from utils.util import Menu
 from view.view import View
 
@@ -13,6 +14,7 @@ time_control_menu = Menu(title="Choisissez le système de contrôle du temps",
 
 class ViewTournament(Tournament, View):
     """Manage the views for the tournaments"""
+
     def __init__(self):
         super().__init__()
 
@@ -83,20 +85,20 @@ class ViewTournament(Tournament, View):
         """Display the score for each player at the end of a round"""
         nbr_ronde = len(self.item.rondes)
         print(Fore.LIGHTGREEN_EX + f"Classement à l' issue de la ronde N° {nbr_ronde}: ")
-        for chess_player in self.item.chess_players:
-            print(f"{self.item.chess_players.index(chess_player) + 1}:"
-                  f" {chess_player.player_from_chess_player().full_name(): <15}"
-                  f" {chess_player.score_tot: >5} pts")
+        for player in self.item.players:
+            print(f"{self.item.players.index(player) + 1}:"
+                  f" {player.full_name(): <15}"
+                  f" {player.score: >5} pts")
         print("\n")
 
-    def display_matches(self, matches):
+    def display_matches(self):
         """ Display the matches for the next round"""
-        if matches:
-            for match, i in zip(matches, range(len(matches))):
-                chess_player1 = next(chess for chess in self.item.chess_players if chess.id_player == match[0])
-                chess_player2 = next(chess for chess in self.item.chess_players if chess.id_player == match[1])
+
+        if self.item:
+            for match, i in zip(self.item, range(len(self.item))):
                 print(f"Match n°{i + 1}:\n"
-                      f"    {chess_player1.full_name} contre {chess_player2.full_name}\n")
+                      f"    {Player.player_from_id(match[0]).full_name()} contre "
+                      f"{Player.player_from_id(match[1]).full_name()}\n")
 
     def display_ronde(self):
         """Display all matches inside each rounds for report"""
@@ -116,49 +118,41 @@ class ViewTournament(Tournament, View):
             print(f"{i + 1}:  Tournoi: {tournament.name} - le {tournament.date}")
 
     @staticmethod
-    def get_scores(chess_players: list, matches: list) -> tuple:
+    def get_scores(matches: list) -> list:
         """
         Ask for the winner, return corresponding score and add the opponent
         Args:
-            chess_players: List of ChessPlayers
             matches: List of matches
         Returns:
             chess_players and matches with the score and the opponents added
         """
         for match, i in zip(matches, range(len(matches))):
-            chess_player1 = next(chess for chess in chess_players if chess.id_player == match[0])
-            chess_player2 = next(chess for chess in chess_players if chess.id_player == match[1])
-
-            chess_player1.opponents.append(chess_player2.id_player)
-            chess_player2.opponents.append(chess_player1.id_player)
+            player1 = Player.player_from_id(match[0])
+            player2 = Player.player_from_id(match[1])
 
             print(Fore.LIGHTBLUE_EX + f"\nMatch n°{i + 1}: "
-                  + Fore.RESET + f"    {chess_player1.full_name} - {chess_player1.ranking}"
-                  f"   contre   {chess_player2.full_name} - {chess_player2.ranking}")
+                  + Fore.RESET + f"    {player1.full_name()} - {player1.ranking}"
+                                 f"   contre   {player2.full_name()} - {player2.ranking}")
             print("Qui est le gagnant du match: \n"
-                  f"1: pour {chess_player1.full_name}\n"
-                  f"2: pour {chess_player2.full_name}\n"
+                  f"1: pour {player1.full_name()}\n"
+                  f"2: pour {player2.full_name()}\n"
                   f"3: pour égalité")
             choice = utils.util.get_choice(['1', '2', '3'])
             if choice == '1':
-                print(f"{chess_player1.full_name} :" + Fore.LIGHTGREEN_EX + " 1 point")
-                print(f"{chess_player2.full_name} :" + Fore.LIGHTRED_EX + " 0 point\n")
+                print(f"{player1.full_name()} :" + Fore.LIGHTGREEN_EX + " 1 point")
+                print(f"{player2.full_name()} :" + Fore.LIGHTRED_EX + " 0 point\n")
                 match[0] = (match[0], 1)
                 match[1] = (match[1], 0)
-                chess_player1.score_tot = chess_player1.score_tot + 1
 
             elif choice == '2':
-                print(f"{chess_player1.full_name} :" + Fore.LIGHTRED_EX + " 0 point")
-                print(f"{chess_player2.full_name} :" + Fore.LIGHTGREEN_EX + " 1 point\n")
+                print(f"{player1.full_name()} :" + Fore.LIGHTRED_EX + " 0 point")
+                print(f"{player2.full_name()} :" + Fore.LIGHTGREEN_EX + " 1 point\n")
                 match[0] = (match[0], 0)
                 match[1] = (match[1], 1)
-                chess_player2.score_tot = chess_player2.score_tot + 1
 
             elif choice == '3':
-                print(f"{chess_player1.full_name} :" + Fore.LIGHTBLUE_EX + " 0.5 point")
-                print(f"{chess_player2.full_name} :" + Fore.LIGHTBLUE_EX + " 0.5 point\n")
+                print(f"{player1.full_name()} :" + Fore.LIGHTBLUE_EX + " 0.5 point")
+                print(f"{player2.full_name()} :" + Fore.LIGHTBLUE_EX + " 0.5 point\n")
                 match[0] = (match[0], 0.5)
                 match[1] = (match[1], 0.5)
-                chess_player1.score_tot = chess_player1.score_tot + 0.5
-                chess_player2.score_tot = chess_player2.score_tot + 0.5
-        return chess_players, matches
+        return matches

@@ -1,4 +1,3 @@
-
 from colorama import Fore
 
 from dataclasses import dataclass
@@ -10,12 +9,12 @@ from model.m_storage import storage_t, storage_p
 
 class Tournament:
     def __init__(self, name: str = "", place: str = "", date: str = "", rondes: list = None,
-                 chess_players: list = None, time: str = "", description: str = "", id_db: int = 1, nbr_of_rounds=4):
+                 players: list = None, time: str = "", description: str = "", id_db: int = 1, nbr_of_rounds=4):
         self.name = name
         self.place = place
         self.date = date
         self.rondes = rondes
-        self.chess_players = chess_players
+        self.players = players
         self.time = time
         self.description = description
         self.id_db = id_db
@@ -99,8 +98,8 @@ class Tournament:
         tournament = Tournament(tournament_dict["name"],
                                 tournament_dict["place"],
                                 tournament_dict["date"],
-                                [Ronde.deserialize(ronde) for ronde in tournament_dict["rondes"]],
-                                [ChessPlayer.deserialize(player) for player in tournament_dict["chess_players"]],
+                                [Round.deserialize(ronde) for ronde in tournament_dict["rondes"]],
+                                tournament_dict["players"],
                                 tournament_dict["time"],
                                 tournament_dict["description"],
                                 tournament_dict["id_db"],
@@ -109,7 +108,7 @@ class Tournament:
         return tournament
 
     @staticmethod
-    def create_matches(chess_players: list) -> list:
+    def create_matches(players: list) -> list:
         """
         From a list of chess_player' create a list of matches for the next round.
         Args:
@@ -118,15 +117,16 @@ class Tournament:
             new_matches : List of matches for the round
         """
         new_matches = []
-        for _ in range(int(len(chess_players) / 2)):
+        players = [Player.player_from_id(player) for player in players]
+        for _ in range(int(len(players) / 2)):
             i = 1
-            while chess_players[0].id_player in chess_players[i].opponents:
+            while players[0].id_db in players[i].opponents:
                 i += 1
-                if i == len(chess_players):
+                if i == len(players):
                     return []
-            new_matches.append([chess_players[0], chess_players[i]])
-            chess_players.pop(i)
-            chess_players.pop(0)
+            new_matches.append([players[0], players[i]])
+            players.pop(i)
+            players.pop(0)
         return new_matches
 
     def compute_matches(self) -> list:
@@ -137,15 +137,16 @@ class Tournament:
         Returns:
             matches: List of matches for the round
         """
-        matches = self.create_matches(Tournament.deserialize(storage_t.load(self)).chess_players)
+        matches = self.create_matches(Tournament.deserialize(storage_t.load(self)).players)
+
         i = 0
         while not matches:
             i += 1
-            chess_players = Tournament.deserialize(storage_t.load(self)).chess_players
-            chess_players[-i], chess_players[-i + -1] = chess_players[-i + -1], chess_players[-i]
-            matches = self.create_matches(chess_players)
-        matches = [[match[0].id_player, match[1].id_player] for match in matches]
-        self.chess_players = self.deserialize(storage_t.load(self.id_db)).chess_players
+            players = Tournament.deserialize(storage_t.load(self)).players
+            players[-i], players[-i + -1] = players[-i + -1], players[-i]
+            matches = self.create_matches(players)
+        matches = [[match[0].id_db, match[1].id_db] for match in matches]
+        self.players = self.deserialize(storage_t.load(self.id_db)).players
         return matches
 
     def serialize(self) -> dict:
@@ -158,21 +159,53 @@ class Tournament:
         dict_tournament = {"name": self.name,
                            "place": self.place,
                            "date": self.date,
-                           "rondes": [Ronde.serialize(ronde) for ronde in self.rondes],
-                           "chess_players": [ChessPlayer.serialize(player) for player in self.chess_players],
+                           "rondes": [Round.serialize(ronde) for ronde in self.rondes],
+                           "players": self.players,
                            "time": self.time,
                            "description": self.description,
                            "id_db": self.id_db,
                            "nbr_of_rounds": self.nbr_of_rounds}
         return dict_tournament
 
+    def create_list_of_matches(self):
+        all_matches = []
+        for ronde in self.rondes:
+            for match in ronde.matches:
+                all_matches.append(match[0])
+                all_matches.append(match[1])
+        return all_matches
 
-class Ronde:
-    def __init__(self, number: str, date_start: str, date_end: str, matches: list):
-        self.number = number
-        self.date_start = date_start
-        self.date_end = date_end
-        self.matches = matches
+    def add_score_and_opponents(self):
+        all_matches = self.create_list_of_matches()
+        if all_matches:
+            players = [Player.player_from_id(player) for player in self.players]
+            Player.score = 0
+            for player in players:
+                for t_player in all_matches:
+                    if player.id_db == t_player[0]:
+                        player.score += t_player[1]
+            players.sort()
+            self.players = players
+            Player.opponents = []
+            for player in players:
+                opponents = []
+                for i, t_player in zip(range(len(all_matches)), all_matches):
+                    if player.id_db == t_player[0]:
+                        if i < len(all_matches)-1:
+                            opponents.append(all_matches[i+1][0])
+                        elif i == len(all_matches)-1:
+                            opponents.append(all_matches[i - 1][0])
+                player.opponents = opponents
+            self.players = players
+
+
+
+@dataclass
+class Round:
+    number: int
+    date_start: str
+    date_end: str
+    matches: list
 
     def __str__(self):
         """Display ronde's attributes."""
@@ -184,10 +217,10 @@ class Ronde:
     @staticmethod
     def deserialize(ronde_dict: dict):
         """Create an instance of Ronde."""
-        ronde = Ronde(ronde_dict["number"],
-                      ronde_dict["date_start"],
-                      ronde_dict["date_end"],
-                      ronde_dict["matches"])
+        ronde = Round(number=ronde_dict["number"],
+                      date_start=ronde_dict["date_start"],
+                      date_end=ronde_dict["date_end"],
+                      matches=ronde_dict["matches"])
         return ronde
 
     def serialize(self) -> dict:
@@ -199,10 +232,10 @@ class Ronde:
         return dict_ronde
 
 
+"""
 @dataclass
 class ChessPlayer:
-    """A ChessPlayer in a player selected for a tournament.
-    The matching between a Player and a ChessPlayer is the id"""
+
     id_player: int = None
     score_tot: float = None
     opponents: list = None
@@ -210,21 +243,14 @@ class ChessPlayer:
     full_name: str = ""
 
     def __lt__(self, other):
-        """Sort the chess_players by score_tot"""
+
         if self.score_tot == other.score_tot:
             return self.ranking > other.ranking
         return self.score_tot > other.score_tot
 
     @staticmethod
     def deserialize(chess_player_dict: dict):
-        """
-        Create an instance of ChessPlayer.
-        Args:
-            chess_player_dict: A dict of chess_player.
-        Returns:
-            chess_player: An instance of ChessPlayer.
 
-        """
         chess_player = ChessPlayer(chess_player_dict["id_player"],
                                    chess_player_dict["score_tot"],
                                    chess_player_dict["opponents"],
@@ -233,13 +259,7 @@ class ChessPlayer:
         return chess_player
 
     def create_chess_player(self, player: Player):
-        """
-        From a player create a chess_player
-        Args:
-            player: A Player
-        Returns:
-            chess_player:  A ChessPlayer
-        """
+
         self.id_player = player.id_db
         chess_player = ChessPlayer(self.id_player,
                                    score_tot=0,
@@ -249,18 +269,15 @@ class ChessPlayer:
         return chess_player
 
     def player_from_chess_player(self) -> Player:
-        """
-        From a ChessPlayer return a Player
-        Returns:
-            A Player
-        """
+
         return Player.deserialize(storage_p.load(self.id_player))
 
     def serialize(self):
-        """Serialize a ChessPlayer instance"""
+
         dict_chess_player = {"id_player": self.id_player,
                              "score_tot": self.score_tot,
                              "opponents": self.opponents,
                              "ranking": self.ranking,
                              "full_name": self.full_name}
         return dict_chess_player
+"""

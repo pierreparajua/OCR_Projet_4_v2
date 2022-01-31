@@ -66,15 +66,15 @@
         }
     },
     "Database_tournaments": {
-        "4": {
-            "name": "master",
-            "place": "bordeaux",
-            "date": "25/01/2022",
+        "1": {
+            "name": "dsf",
+            "place": "sfd",
+            "date": "31/01/2022",
             "rondes": [
                 {
-                    "number": "1",
-                    "date_start": "25/01/2022 10:19",
-                    "date_end": "25/01/2022 10:19",
+                    "number": 0,
+                    "date_start": "31/01/2022 21:30",
+                    "date_end": "31/01/2022 21:30",
                     "matches": [
                         [
                             [
@@ -119,9 +119,9 @@
                     ]
                 },
                 {
-                    "number": "2",
-                    "date_start": "25/01/2022 10:20",
-                    "date_end": "25/01/2022 10:20",
+                    "number": 1,
+                    "date_start": "31/01/2022 21:31",
+                    "date_end": "31/01/2022 21:31",
                     "matches": [
                         [
                             [
@@ -136,43 +136,6 @@
                         [
                             [
                                 9,
-                                0
-                            ],
-                            [
-                                2,
-                                1
-                            ]
-                        ],
-                        [
-                            [
-                                14,
-                                0.5
-                            ],
-                            [
-                                13,
-                                0.5
-                            ]
-                        ],
-                        [
-                            [
-                                8,
-                                0
-                            ],
-                            [
-                                11,
-                                1
-                            ]
-                        ]
-                    ]
-                },
-                {
-                    "number": "3",
-                    "date_start": "25/01/2022 10:20",
-                    "date_end": "25/01/2022 10:20",
-                    "matches": [
-                        [
-                            [
-                                10,
                                 1
                             ],
                             [
@@ -182,40 +145,30 @@
                         ],
                         [
                             [
-                                3,
-                                1
-                            ],
-                            [
-                                9,
-                                0
-                            ]
-                        ],
-                        [
-                            [
-                                11,
-                                0
-                            ],
-                            [
                                 14,
                                 1
+                            ],
+                            [
+                                13,
+                                0
                             ]
                         ],
                         [
                             [
-                                13,
+                                8,
                                 1
                             ],
                             [
-                                8,
+                                11,
                                 0
                             ]
                         ]
                     ]
                 },
                 {
-                    "number": "4",
-                    "date_start": "25/01/2022 10:21",
-                    "date_end": "25/01/2022 10:21",
+                    "number": 2,
+                    "date_start": "31/01/2022 21:31",
+                    "date_end": "31/01/2022 21:31",
                     "matches": [
                         [
                             [
@@ -250,6 +203,53 @@
                         [
                             [
                                 13,
+                                1
+                            ],
+                            [
+                                11,
+                                0
+                            ]
+                        ]
+                    ]
+                },
+                {
+                    "number": 3,
+                    "date_start": "31/01/2022 21:32",
+                    "date_end": "31/01/2022 21:32",
+                    "matches": [
+                        [
+                            [
+                                10,
+                                1
+                            ],
+                            [
+                                3,
+                                0
+                            ]
+                        ],
+                        [
+                            [
+                                9,
+                                1
+                            ],
+                            [
+                                14,
+                                0
+                            ]
+                        ],
+                        [
+                            [
+                                2,
+                                1
+                            ],
+                            [
+                                13,
+                                0
+                            ]
+                        ],
+                        [
+                            [
+                                8,
                                 1
                             ],
                             [
@@ -260,404 +260,19 @@
                     ]
                 }
             ],
-            "chess_players": [
-                {
-                    "id_player": 10,
-                    "score_tot": 4,
-                    "opponents": [
-                        14,
-                        3,
-                        2,
-                        9
-                    ],
-                    "ranking": 1390,
-                    "full_name": "pierre parajua"
-                },
-                {
-                    "id_player": 3,
-                    "score_tot": 3,
-                    "opponents": [
-                        13,
-                        10,
-                        9,
-                        2
-                    ],
-                    "ranking": 1320,
-                    "full_name": "caroline sejil"
-                },
-                {
-                    "id_player": 14,
-                    "score_tot": 2.5,
-                    "opponents": [
-                        10,
-                        13,
-                        11,
-                        8
-                    ],
-                    "ranking": 1233,
-                    "full_name": "jean yves"
-                },
-                {
-                    "id_player": 13,
-                    "score_tot": 2.5,
-                    "opponents": [
-                        3,
-                        14,
-                        8,
-                        11
-                    ],
-                    "ranking": 1200,
-                    "full_name": "jean claude"
-                },
-                {
-                    "id_player": 2,
-                    "score_tot": 2,
-                    "opponents": [
-                        11,
-                        9,
-                        10,
-                        3
-                    ],
-                    "ranking": 1245,
-                    "full_name": "ren\u00e9 jacques"
-                },
-                {
-                    "id_player": 9,
-                    "score_tot": 1,
-                    "opponents": [
-                        8,
-                        2,
-                        3,
-                        10
-                    ],
-                    "ranking": 1290,
-                    "full_name": "damien parajua"
-                },
-                {
-                    "id_player": 11,
-                    "score_tot": 1,
-                    "opponents": [
-                        2,
-                        8,
-                        14,
-                        13
-                    ],
-                    "ranking": 1156,
-                    "full_name": "antoine robert"
-                },
-                {
-                    "id_player": 8,
-                    "score_tot": 0,
-                    "opponents": [
-                        9,
-                        11,
-                        13,
-                        14
-                    ],
-                    "ranking": 1158,
-                    "full_name": "roland serge"
-                }
-            ],
-            "time": "bullet",
-            "description": "",
-            "id_db": 4,
-            "nbr_of_rounds": 4
-        },
-        "5": {
-            "name": "sd",
-            "place": "dsf",
-            "date": "25/01/2022",
-            "rondes": [
-                {
-                    "number": "1",
-                    "date_start": "25/01/2022 11:01",
-                    "date_end": "25/01/2022 11:01",
-                    "matches": [
-                        [
-                            [
-                                10,
-                                1
-                            ],
-                            [
-                                14,
-                                0
-                            ]
-                        ],
-                        [
-                            [
-                                3,
-                                1
-                            ],
-                            [
-                                13,
-                                0
-                            ]
-                        ],
-                        [
-                            [
-                                9,
-                                1
-                            ],
-                            [
-                                8,
-                                0
-                            ]
-                        ],
-                        [
-                            [
-                                2,
-                                1
-                            ],
-                            [
-                                11,
-                                0
-                            ]
-                        ]
-                    ]
-                },
-                {
-                    "number": "2",
-                    "date_start": "25/01/2022 11:01",
-                    "date_end": "25/01/2022 11:01",
-                    "matches": [
-                        [
-                            [
-                                10,
-                                1
-                            ],
-                            [
-                                3,
-                                0
-                            ]
-                        ],
-                        [
-                            [
-                                9,
-                                1
-                            ],
-                            [
-                                2,
-                                0
-                            ]
-                        ],
-                        [
-                            [
-                                14,
-                                1
-                            ],
-                            [
-                                13,
-                                0
-                            ]
-                        ],
-                        [
-                            [
-                                8,
-                                1
-                            ],
-                            [
-                                11,
-                                0
-                            ]
-                        ]
-                    ]
-                },
-                {
-                    "number": "3",
-                    "date_start": "25/01/2022 11:01",
-                    "date_end": "25/01/2022 11:01",
-                    "matches": [
-                        [
-                            [
-                                10,
-                                1
-                            ],
-                            [
-                                9,
-                                0
-                            ]
-                        ],
-                        [
-                            [
-                                3,
-                                1
-                            ],
-                            [
-                                2,
-                                0
-                            ]
-                        ],
-                        [
-                            [
-                                14,
-                                1
-                            ],
-                            [
-                                8,
-                                0
-                            ]
-                        ],
-                        [
-                            [
-                                13,
-                                1
-                            ],
-                            [
-                                11,
-                                0
-                            ]
-                        ]
-                    ]
-                },
-                {
-                    "number": "4",
-                    "date_start": "25/01/2022 11:02",
-                    "date_end": "25/01/2022 11:02",
-                    "matches": [
-                        [
-                            [
-                                10,
-                                1
-                            ],
-                            [
-                                2,
-                                0
-                            ]
-                        ],
-                        [
-                            [
-                                3,
-                                1
-                            ],
-                            [
-                                9,
-                                0
-                            ]
-                        ],
-                        [
-                            [
-                                14,
-                                1
-                            ],
-                            [
-                                11,
-                                0
-                            ]
-                        ],
-                        [
-                            [
-                                13,
-                                1
-                            ],
-                            [
-                                8,
-                                0
-                            ]
-                        ]
-                    ]
-                }
-            ],
-            "chess_players": [
-                {
-                    "id_player": 10,
-                    "score_tot": 4,
-                    "opponents": [
-                        14,
-                        3,
-                        9,
-                        2
-                    ],
-                    "ranking": 1390,
-                    "full_name": "pierre parajua"
-                },
-                {
-                    "id_player": 3,
-                    "score_tot": 3,
-                    "opponents": [
-                        13,
-                        10,
-                        2,
-                        9
-                    ],
-                    "ranking": 1320,
-                    "full_name": "caroline sejil"
-                },
-                {
-                    "id_player": 14,
-                    "score_tot": 3,
-                    "opponents": [
-                        10,
-                        13,
-                        8,
-                        11
-                    ],
-                    "ranking": 1233,
-                    "full_name": "jean yves"
-                },
-                {
-                    "id_player": 9,
-                    "score_tot": 2,
-                    "opponents": [
-                        8,
-                        2,
-                        10,
-                        3
-                    ],
-                    "ranking": 1290,
-                    "full_name": "damien parajua"
-                },
-                {
-                    "id_player": 13,
-                    "score_tot": 2,
-                    "opponents": [
-                        3,
-                        14,
-                        11,
-                        8
-                    ],
-                    "ranking": 1200,
-                    "full_name": "jean claude"
-                },
-                {
-                    "id_player": 2,
-                    "score_tot": 1,
-                    "opponents": [
-                        11,
-                        9,
-                        3,
-                        10
-                    ],
-                    "ranking": 1245,
-                    "full_name": "ren\u00e9 jacques"
-                },
-                {
-                    "id_player": 8,
-                    "score_tot": 1,
-                    "opponents": [
-                        9,
-                        11,
-                        14,
-                        13
-                    ],
-                    "ranking": 1158,
-                    "full_name": "roland serge"
-                },
-                {
-                    "id_player": 11,
-                    "score_tot": 0,
-                    "opponents": [
-                        2,
-                        8,
-                        13,
-                        14
-                    ],
-                    "ranking": 1156,
-                    "full_name": "antoine robert"
-                }
+            "players": [
+                10,
+                9,
+                3,
+                2,
+                14,
+                8,
+                13,
+                11
             ],
             "time": "blitz",
             "description": "",
-            "id_db": 5,
+            "id_db": 1,
             "nbr_of_rounds": 4
         }
     }

@@ -1,4 +1,5 @@
 import utils
+from model.m_storage import storage_p
 
 
 class Player:
@@ -18,7 +19,12 @@ class Player:
 
     def __lt__(self, other):
         """Sort the players by ranking."""
-        return self.ranking > other.ranking
+        try:
+            if self.score == other.score:
+                return self.ranking > other.ranking
+            return self.score > other.score
+        except:
+            return self.ranking > other.ranking
 
     @property
     def first_name(self):
@@ -74,9 +80,13 @@ class Player:
                         player_dict["_date_of_birth"],
                         player_dict["_sex"],
                         player_dict["id_db"],
-                        player_dict["_ranking"],
+                        player_dict["_ranking"]
                         )
         return player
+
+    @staticmethod
+    def player_from_id(id_db):
+        return Player.deserialize(storage_p.load(id_db))
 
     def full_name(self):
         """Return the player's fullname"""

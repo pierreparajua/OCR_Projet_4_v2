@@ -104,6 +104,7 @@ class PlayerController:
             players: A list of Players
         """
         players = [Player.deserialize(dict_player) for dict_player in dict_players]
+        players.sort()
         self.view.item = players
         self.view.display_items("joueurs")
         return players

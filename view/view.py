@@ -36,7 +36,6 @@ class View:
             name_items: name to the items to print.
             select: If True, print an specific sentence
         """
-        self.item.sort()
         print(f"\nListe des {name_items}: ")
         if select:
             print(f"Sélectionnez un {name_items[:-1]}: ")

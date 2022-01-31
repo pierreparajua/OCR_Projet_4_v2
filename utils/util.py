@@ -9,7 +9,6 @@ init(autoreset=True)
 
 class Menu:
     """Create a menu"""
-
     def __init__(self, title, add_info, items, choice):
         self.title: str = title
         self.add_info: str = add_info
