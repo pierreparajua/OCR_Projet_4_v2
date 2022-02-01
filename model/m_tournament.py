@@ -117,7 +117,6 @@ class Tournament:
             new_matches : List of matches for the round
         """
         new_matches = []
-        players = [Player.player_from_id(player) for player in players]
         for _ in range(int(len(players) / 2)):
             i = 1
             while players[0].id_db in players[i].opponents:
@@ -137,16 +136,19 @@ class Tournament:
         Returns:
             matches: List of matches for the round
         """
-        matches = self.create_matches(Tournament.deserialize(storage_t.load(self)).players)
-
+        matches = self.create_matches(self.players)
         i = 0
         while not matches:
             i += 1
-            players = Tournament.deserialize(storage_t.load(self)).players
+            tournament = self.deserialize(storage_t.load(self.id_db))
+            tournament.add_score_and_opponents()
+            players = tournament.players
             players[-i], players[-i + -1] = players[-i + -1], players[-i]
             matches = self.create_matches(players)
         matches = [[match[0].id_db, match[1].id_db] for match in matches]
-        self.players = self.deserialize(storage_t.load(self.id_db)).players
+        tournament = self.deserialize(storage_t.load(self.id_db))
+        self.players = tournament.players
+        self.add_score_and_opponents()
         return matches
 
     def serialize(self) -> dict:
@@ -191,13 +193,12 @@ class Tournament:
                 opponents = []
                 for i, t_player in zip(range(len(all_matches)), all_matches):
                     if player.id_db == t_player[0]:
-                        if i < len(all_matches)-1:
-                            opponents.append(all_matches[i+1][0])
-                        elif i == len(all_matches)-1:
+                        if i < len(all_matches) - 1 and (i % 2) == 0:
+                            opponents.append(all_matches[i + 1][0])
+                        elif i == len(all_matches) - 1 or (i % 2) != 0:
                             opponents.append(all_matches[i - 1][0])
                 player.opponents = opponents
             self.players = players
-
 
 
 @dataclass
@@ -230,54 +231,3 @@ class Round:
                       "date_end": self.date_end,
                       "matches": self.matches}
         return dict_ronde
-
-
-"""
-@dataclass
-class ChessPlayer:
-
-    id_player: int = None
-    score_tot: float = None
-    opponents: list = None
-    ranking: int = None
-    full_name: str = ""
-
-    def __lt__(self, other):
-
-        if self.score_tot == other.score_tot:
-            return self.ranking > other.ranking
-        return self.score_tot > other.score_tot
-
-    @staticmethod
-    def deserialize(chess_player_dict: dict):
-
-        chess_player = ChessPlayer(chess_player_dict["id_player"],
-                                   chess_player_dict["score_tot"],
-                                   chess_player_dict["opponents"],
-                                   chess_player_dict["ranking"],
-                                   chess_player_dict["full_name"])
-        return chess_player
-
-    def create_chess_player(self, player: Player):
-
-        self.id_player = player.id_db
-        chess_player = ChessPlayer(self.id_player,
-                                   score_tot=0,
-                                   opponents=[],
-                                   ranking=self.player_from_chess_player().ranking,
-                                   full_name=self.player_from_chess_player().full_name())
-        return chess_player
-
-    def player_from_chess_player(self) -> Player:
-
-        return Player.deserialize(storage_p.load(self.id_player))
-
-    def serialize(self):
-
-        dict_chess_player = {"id_player": self.id_player,
-                             "score_tot": self.score_tot,
-                             "opponents": self.opponents,
-                             "ranking": self.ranking,
-                             "full_name": self.full_name}
-        return dict_chess_player
-"""

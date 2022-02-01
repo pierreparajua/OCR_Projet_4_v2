@@ -29,14 +29,14 @@ class TournamentManager:
 
         if self.menu.choice == "1":  # New tournament
             tournament = self.prepare_tournament(self.storage_p.load_all())
-            while not tournament:
-                tournament = self.prepare_tournament(self.storage_p.load_all())
             self.menu = self._create_menu("save_or_cancel")
             self.menu.display_menu()
             self.menu.choice = self.menu.get_choice()
             if self.menu.choice == "1":  # Continue to round
                 storage_t.save(tournament)
                 self.execute_rounds(tournament)
+                self.menu = self._create_menu("tournament_menu")
+                self.manage_menu()
             elif self.menu.choice == "2":  # Save and quit
                 storage_t.save(tournament)
                 self.menu = self._create_menu("tournament_menu")
@@ -53,6 +53,8 @@ class TournamentManager:
                 self.menu.choice = self.menu.get_choice()
                 if self.menu.choice == "1":
                     self.execute_rounds(tournament)
+                    self.menu = self._create_menu("tournament_menu")
+                    self.manage_menu()
                 else:
                     self.menu = self._create_menu("tournament_menu")
                     self.manage_menu()
@@ -76,8 +78,10 @@ class TournamentManager:
 
         elif self.menu.choice == "4":
             tournament = self.select_tournament(self.storage_t.load_all(), report=True)
-            self.report(tournament)
-            self.manage_menu()
+            if tournament:
+                tournament.add_score_and_opponents()
+                self.report(tournament)
+                self.manage_menu()
 
         elif self.menu.choice == "m":
             pass
@@ -96,7 +100,6 @@ class TournamentManager:
         choice: str = utils.util.get_choice(["o", "n"])
         if choice == "o":
             self.player_controller.manage_menu()
-            return []
         self.view.display_text("new_tournament", center=True)
         self.view.display_text("fill_items")
         tournament = self.v_tournament.create_tournament()
@@ -153,6 +156,7 @@ class TournamentManager:
         ronde.date_start, ronde.date_end = self.start_end_ronde()
         ronde.matches = self.v_tournament.get_scores(ronde.matches)
         tournament.rondes.append(ronde)
+        ronde.number = len(tournament.rondes)
         tournament.add_score_and_opponents()
         self.v_tournament.item = tournament
         self.v_tournament.display_score()
@@ -163,6 +167,7 @@ class TournamentManager:
         while len(tournament.rondes) < tournament.nbr_of_rounds:
             tournament = self.round(tournament)
             if len(tournament.rondes) < 4:
+                self.menu = self._create_menu("save_or_cancel")
                 self.menu.display_menu()
                 self.menu.choice = self.menu.get_choice()
                 if self.menu.choice == "3":  # cancel
@@ -176,7 +181,10 @@ class TournamentManager:
                     storage_t.update(tournament)
             else:
                 self.storage_t.update(tournament)
-                self.winner(tournament)
+                self.view.display_text("winner")
+                self.view.item = f"{Player.player_from_id(tournament.players[0]).full_name()}\n"
+                self.view.display_item()
+                self.view.display_text("end_tournament", center=True)
 
     def start_end_ronde(self) -> tuple:
         """
@@ -231,20 +239,6 @@ class TournamentManager:
             self.v_tournament.item = tournament
             self.v_tournament.display_ronde()
             self.v_tournament.display_score()
-            self.winner(tournament)
-
-    def winner(self, tournament: Tournament): # a mettre dans ronde
-        """
-        Manage the display of the winner
-        Args:
-            tournament: An instance of tournament.
-        """
-        self.view.display_text("winner")
-        self.view.item = f"{tournament.players[0].player_from_chess_player().full_name()}\n"
-        self.view.display_item()
-        self.view.display_text("end_tournament", center=True)
-
-
 
     @staticmethod
     def _create_menu(menu):
@@ -290,6 +284,4 @@ class TournamentManager:
 
 if __name__ == "__main__":
     pass
-
-
 

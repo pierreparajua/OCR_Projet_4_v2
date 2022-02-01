@@ -105,11 +105,11 @@ class ViewTournament(Tournament, View):
         for ronde in self.item.rondes:
             print(Fore.LIGHTGREEN_EX + f"\nRONDE N° {ronde.number}  début: {ronde.date_start}  fin: {ronde.date_end} ")
             for match in ronde.matches:
-                chess_player1 = next(chess for chess in self.item.chess_players if chess.id_player == match[0][0])
-                chess_player2 = next(chess for chess in self.item.chess_players if chess.id_player == match[1][0])
+                player1 = next(player for player in self.item.players if player.id_db == match[0][0])
+                player2 = next(player for player in self.item.players if player.id_db == match[1][0])
                 x = ""
-                print(f"{chess_player1.full_name: <14}: {match[0][1]: >5} pt    contre   "
-                      f"{chess_player2.full_name: >15}: {match[1][1]: >5}pt {x: <15}")
+                print(f"{player1.full_name(): <14}: {match[0][1]: >5} pt    contre   "
+                      f"{player2.full_name(): >15}: {match[1][1]: >5}pt {x: <15}")
         print("\n")
 
     def display_tournaments(self):
