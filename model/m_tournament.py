@@ -107,12 +107,19 @@ class Tournament:
 
         return tournament
 
+    def split_players(self) -> tuple:
+        """Split the main list in 2, according with the tournament's rules"""
+        nb = int(len(self.players) / 2)
+        players_split1 = self.players[0: nb]
+        players_split2 = self.players[nb: int(nb * 2)]
+        return players_split1, players_split2
+
     @staticmethod
     def create_matches(players: list) -> list:
         """
         From a list of chess_player' create a list of matches for the next round.
         Args:
-            chess_players: List of ChessPlayer
+            players: List of ChessPlayer
         Returns:
             new_matches : List of matches for the round
         """

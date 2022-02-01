@@ -2,18 +2,22 @@ from colorama import Fore
 
 from utils.util import Menu
 from model.m_player import Player
-from view.view import View
 
 
-class ViewPlayer(Player, View):
+class ViewPlayer:
     """Manage the views for the players"""
     update_player_menu = Menu(title="Quel attribut souhaitez vous modifier: ",
                               add_info="(Tapez 'm' pour sortir)",
                               items=["Prénom", "Nom", "date de naissance", "sexe", "classement"],
                               choice="")
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, first_name: str = "", last_name: str = "", data_of_birth: str = "", sex: str = "",
+                 ranking: int = 0):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.date_of_birth = data_of_birth
+        self.sex = sex
+        self.ranking = ranking
 
     def get_first_name(self) -> str:
         """Get the first_name from the user"""
@@ -48,7 +52,7 @@ class ViewPlayer(Player, View):
         self.ranking = input("Entrez le classement: ")
         while not self.ranking:
             self.ranking = input(Fore.LIGHTYELLOW_EX + "Vous devez saisir un classement: ")
-        return self.ranking
+        return int(self.ranking)
 
     def create_player(self) -> Player:
         """
@@ -60,7 +64,6 @@ class ViewPlayer(Player, View):
                         self.get_last_name(),
                         self.get_date_of_birth(),
                         self.get_sex(),
-                        1,
                         self.get_ranking())
         return player
 

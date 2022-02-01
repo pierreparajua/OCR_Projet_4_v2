@@ -1,3 +1,5 @@
+import operator
+
 from model.m_player import Player
 from model.m_storage import storage_p
 from utils.util import Menu
@@ -57,7 +59,6 @@ class PlayerController:
             elif self.menu.choice == "3":
                 self.manage_menu()
 
-            self.manage_menu()
         elif self.menu.choice == "4":
             player = self.view.select_item(self.display_all_players(self.storage.load_all()))
             self.view.display_text("confirm_delete")
@@ -101,7 +102,13 @@ class PlayerController:
             players: A list of Players
         """
         players = [Player.deserialize(dict_player) for dict_player in dict_players]
-        players.sort()
+        self.menu = self._create_menu("players_order")
+        self.menu.display_menu()
+        self.menu.choice = self.menu.get_choice()
+        if self.menu.choice == "1":
+            players.sort()
+        elif self.menu.choice == "2":
+            players = sorted(players, key=operator.attrgetter('last_name'))
         self.view.item = players
         self.view.display_items("joueurs")
         return players
@@ -160,10 +167,18 @@ class PlayerController:
                                        "Confirmer",
                                        "Annuler"],
                                 choice="")
+        players_order = Menu(title="Souhaitez-vous affichez les joueurs par",
+                             add_info="",
+                             items=["Ordre de classement",
+                                    "Ordre alphabétique"],
+
+                             choice="")
+
         dict_menu = {"player_menu": player_menu,
                      "save_or_cancel": save_or_cancel,
                      "update_or_cancel": update_or_cancel,
-                     "delete_or_cancel": delete_or_cancel}
+                     "delete_or_cancel": delete_or_cancel,
+                     "players_order": players_order}
         return dict_menu[menu]
 
 

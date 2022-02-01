@@ -1,4 +1,3 @@
-
 from colorama import Fore, init
 
 import datetime
@@ -8,7 +7,8 @@ init(autoreset=True)
 
 
 class Menu:
-    """Create a menu"""
+    """Display menu's items and get the user choice and re return it"""
+
     def __init__(self, title, add_info, items, choice):
         self.title: str = title
         self.add_info: str = add_info
@@ -48,6 +48,8 @@ def check_name(name):
 def check_date(date):
     """Check the format of date"""
     if date:
+        if "au" in date:
+            return date
         x = re.findall("^(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.]((19|20)\\d\\d)$", date)
         while not x:
             date = wrong_entry(date)
@@ -80,9 +82,8 @@ def check_sex(sex):
 
 
 def get_date_now():
-    """Get the live date and hour and return """
-    date = datetime.datetime.now().strftime("%d/%m/%Y %H:%M")
-    return date
+    """Get the live date and hour"""
+    return datetime.datetime.now().strftime("%d/%m/%Y %H:%M")
 
 
 def get_choice(choices: list) -> str:
@@ -91,14 +92,6 @@ def get_choice(choices: list) -> str:
     while choice not in choices:
         choice = wrong_entry(choice)
     return choice
-
-
-def split_players(players: list) -> tuple:
-    """Split the main list in 2, according with the tournament's rules"""
-    nb = int(len(players) / 2)
-    players_split1 = players[0: nb]
-    players_split2 = players[nb: int(nb * 2)]
-    return players_split1, players_split2
 
 
 def wrong_entry(choice: str):

@@ -147,7 +147,7 @@ class TournamentManager:
         self.view.item = f"\n         ----------Ronde N° {round_nb + 1}----------"
         self.view.display_item()
         if round_nb == 0:
-            players_split1, players_split2 = utils.util.split_players(tournament.players)
+            players_split1, players_split2 = tournament.split_players()
             ronde.matches = [[players_split1[i], players_split2[i]] for i in range(int(len(tournament.players) / 2))]
         else:
             ronde.matches = tournament.compute_matches()
@@ -180,6 +180,9 @@ class TournamentManager:
                 elif self.menu.choice == "1":  # Continue
                     storage_t.update(tournament)
             else:
+                date_end = utils.util.get_date_now().split(" ")[0]
+                if date_end != tournament.date:
+                    tournament.date = tournament.date + " au " + date_end
                 self.storage_t.update(tournament)
                 self.view.display_text("winner")
                 self.view.item = f"{Player.player_from_id(tournament.players[0]).full_name()}\n"
@@ -205,6 +208,9 @@ class TournamentManager:
         self.view.item = date_end
         self.view.display_item(center=True)
         return date_start, date_end
+
+    def save_date_end_tournament(self):
+        date_end = utils.util.get_date_now()
 
     def select_tournament(self, dict_tournaments: dict, display_all=True, report=False) -> Tournament:
         """
@@ -280,8 +286,3 @@ class TournamentManager:
                      "delete_or_cancel": delete_or_cancel,
                      "continue_or_cancel": continue_or_cancel}
         return dict_menu[menu]
-
-
-if __name__ == "__main__":
-    pass
-

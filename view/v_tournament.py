@@ -12,11 +12,20 @@ time_control_menu = Menu(title="Choisissez le système de contrôle du temps",
                          choice="")
 
 
-class ViewTournament(Tournament, View):
+class ViewTournament(View):
     """Manage the views for the tournaments"""
 
-    def __init__(self):
+    def __init__(self, name: str = "", place: str = "", date: str = "", rondes: list = None, players: list = None,
+                 time: str = "", description: str = "", nbr_of_rounds=4):
         super().__init__()
+        self.name = name
+        self.place = place
+        self.date = date
+        self.rondes = rondes
+        self.players = players
+        self.time = time
+        self.description = description
+        self.nbr_of_rounds = nbr_of_rounds
 
     def get_name(self) -> str:
         """Get the name from the user"""
