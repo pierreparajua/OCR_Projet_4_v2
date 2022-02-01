@@ -5,7 +5,7 @@ from model.m_player import Player
 
 
 class ViewPlayer:
-    """Manage the views for the players"""
+    """Manage the specific views for the players"""
     update_player_menu = Menu(title="Quel attribut souhaitez vous modifier: ",
                               add_info="(Tapez 'm' pour sortir)",
                               items=["Prénom", "Nom", "date de naissance", "sexe", "classement"],

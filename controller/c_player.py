@@ -8,6 +8,7 @@ from view.view import View
 
 
 class PlayerController:
+    """Control all options available for the players"""
     def __init__(self):
         self.menu = self._create_menu("player_menu")
         self.storage = storage_p
@@ -21,63 +22,63 @@ class PlayerController:
         self.menu.display_menu()
         self.menu.choice = self.menu.get_choice()
 
-        if self.menu.choice == "1":
+        if self.menu.choice == "1":  # Create player
             player = self.create_player()
             self.menu = self._create_menu("save_or_cancel")
             self.menu.display_menu()
             self.menu.choice = self.menu.get_choice()
-            while self.menu.choice == "1":
+            while self.menu.choice == "1":  # Save and create an other player
                 player.id_db = storage_p.save(player)
                 storage_p.update(player)
                 player = self.create_player()
                 self.menu.display_menu()
                 self.menu.choice = self.menu.get_choice()
-            if self.menu.choice == "2":
+            if self.menu.choice == "2":  # Save and quit
                 player.id_db = storage_p.save(player)
                 storage_p.update(player)
                 self.manage_menu()
-            elif self.menu.choice == "3":
+            elif self.menu.choice == "3":  # Cancel
                 self.manage_menu()
 
-        elif self.menu.choice == "2":
+        elif self.menu.choice == "2":  # Display all players
             self.display_all_players(self.storage.load_all())
             self.manage_menu()
 
-        elif self.menu.choice == "3":
+        elif self.menu.choice == "3":  # Update a player
             player = self.update_player(self.storage.load_all())
             self.menu = self._create_menu("update_or_cancel")
             self.menu.display_menu()
             self.menu.choice = self.menu.get_choice()
-            while self.menu.choice == "1":
+            while self.menu.choice == "1":  # Save and update an other player
                 storage_p.update(player)
                 player = self.update_player(self.storage.load_all())
                 self.menu.display_menu()
                 self.menu.choice = self.menu.get_choice()
-            if self.menu.choice == "2":
+            if self.menu.choice == "2":  # Save and quit
                 storage_p.update(player)
                 self.manage_menu()
-            elif self.menu.choice == "3":
+            elif self.menu.choice == "3":  # Cancel
                 self.manage_menu()
 
-        elif self.menu.choice == "4":
+        elif self.menu.choice == "4":  # Delete a player
             player = self.view.select_item(self.display_all_players(self.storage.load_all()))
             self.view.display_text("confirm_delete")
             self.menu = self._create_menu("delete_or_cancel")
             self.menu.display_menu()
             self.menu.choice = self.menu.get_choice()
-            while self.menu.choice == "1":
+            while self.menu.choice == "1":  # Delete and delete an other player
                 storage_p.delete(player)
                 player = self.view.select_item(self.display_all_players(self.storage.load_all()))
                 self.view.display_text("confirm_delete")
                 self.menu.display_menu()
                 self.menu.choice = self.menu.get_choice()
-            if self.menu.choice == "2":
+            if self.menu.choice == "2":  # Delete and quit
                 storage_p.delete(player)
                 self.manage_menu()
-            elif self.menu.choice == "3":
+            elif self.menu.choice == "3":  # Cancel
                 self.manage_menu()
 
-        elif self.menu.choice == "m":
+        elif self.menu.choice == "m":  # Retour MainMenu
             pass
 
     def create_player(self) -> Player:
@@ -95,7 +96,9 @@ class PlayerController:
 
     def display_all_players(self, dict_players: dict) -> list:
         """
-        Display and return  a list of dict_players.
+        Receive a dict from the database with all players.
+        Deserialize and display it by ranking or alphabetic order.
+        Return a list of Players
         Args:
             dict_players: Dict from the database containing all players.
         Returns:
@@ -115,7 +118,9 @@ class PlayerController:
 
     def update_player(self, dict_players: dict) -> Player:
         """
-        Select a player from a dict, update and return it.
+        Receive a dict from the database with all players.
+        Select and update parameter, as user want.
+        return the updated Player
         Args:
             dict_players: Dict from the database containing all players.
         Returns:
@@ -180,7 +185,3 @@ class PlayerController:
                      "delete_or_cancel": delete_or_cancel,
                      "players_order": players_order}
         return dict_menu[menu]
-
-
-if __name__ == "__main__":
-    pass

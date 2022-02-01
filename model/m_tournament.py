@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 import utils
 from model.m_player import Player
-from model.m_storage import storage_t, storage_p
+from model.m_storage import storage_t
 
 
 class Tournament:
@@ -117,11 +117,11 @@ class Tournament:
     @staticmethod
     def create_matches(players: list) -> list:
         """
-        From a list of chess_player' create a list of matches for the next round.
+        From a list of player, create a list of matches for the next round.
         Args:
-            players: List of ChessPlayer
+            players: List of Player
         Returns:
-            new_matches : List of matches for the round
+            new_matches : List of matches for the next round
         """
         new_matches = []
         for _ in range(int(len(players) / 2)):
@@ -138,7 +138,7 @@ class Tournament:
     def compute_matches(self) -> list:
         """
         If for 'create_matches' is impossible to find a solution (most of the time when the last two players have
-        already playing together) 'compute_player' changes the order to the end of the list until 'create_player
+        already playing together) 'compute_player' changes the order from the end of the list until 'create_player
          finds a solution.
         Returns:
             matches: List of matches for the round
@@ -163,7 +163,6 @@ class Tournament:
         Create a dict from an instance of tournament to save it in database
         Returns:
             dict_tournament: A dict containing all tournament's informations to save in database.
-
         """
         dict_tournament = {"name": self.name,
                            "place": self.place,
@@ -177,6 +176,11 @@ class Tournament:
         return dict_tournament
 
     def create_list_of_matches(self):
+        """
+        From all the rounds in the tournament, create a list with all couples [id_players, score]
+        Returns:
+            all_matches: list with all couples [id_players, score]
+        """
         all_matches = []
         for ronde in self.rondes:
             for match in ronde.matches:
@@ -185,6 +189,11 @@ class Tournament:
         return all_matches
 
     def add_score_and_opponents(self):
+        """
+        Use method 'create_list_of_matches' to compute the score and opponents for each player depending on this
+        previous matches.
+        Then add dynamically, the attributs self.score and self.opponents to the tournament
+        """
         all_matches = self.create_list_of_matches()
         if all_matches:
             players = [Player.player_from_id(player) for player in self.players]

@@ -14,6 +14,7 @@ NB_player = list(map(str, list(range(1, (NB_PLAYER_MAX + 1)))))[1::2]
 
 
 class TournamentManager:
+    """Control all options available for the tournaments"""
     def __init__(self):
         self.menu = self._create_menu("tournament_menu")
         self.storage_p = storage_p
@@ -32,7 +33,7 @@ class TournamentManager:
             self.menu = self._create_menu("save_or_cancel")
             self.menu.display_menu()
             self.menu.choice = self.menu.get_choice()
-            if self.menu.choice == "1":  # Continue to round
+            if self.menu.choice == "1":  # Start tournament
                 storage_t.save(tournament)
                 self.execute_rounds(tournament)
                 self.menu = self._create_menu("tournament_menu")
@@ -51,32 +52,32 @@ class TournamentManager:
                 self.menu = self._create_menu("continue_or_cancel")
                 self.menu.display_menu()
                 self.menu.choice = self.menu.get_choice()
-                if self.menu.choice == "1":
+                if self.menu.choice == "1":  # Continue tournament
                     self.execute_rounds(tournament)
                     self.menu = self._create_menu("tournament_menu")
                     self.manage_menu()
-                else:
+                elif self.menu.choice == "2":  # Cancel
                     self.menu = self._create_menu("tournament_menu")
                     self.manage_menu()
             self.menu = self._create_menu("tournament_menu")
             self.manage_menu()
 
-        elif self.menu.choice == "3":
+        elif self.menu.choice == "3":  # Delete a tournament
             tournament = self.select_tournament(self.storage_t.load_all())
             if tournament:
                 self.menu = self._create_menu("delete_or_cancel")
                 self.menu.display_menu()
                 self.menu.choice = self.menu.get_choice()
-                if self.menu.choice == "1":
+                if self.menu.choice == "1":  # Delete
                     self.storage_t.delete(tournament)
                     self.view.display_text("confirm_deleted_tournament")
-                else:
+                elif self.menu.choice == "2":  # Cancel
                     self.menu = self._create_menu("tournament_menu")
                     self.manage_menu()
             self.menu = self._create_menu("tournament_menu")
             self.manage_menu()
 
-        elif self.menu.choice == "4":
+        elif self.menu.choice == "4":  # Display the reports
             tournament = self.select_tournament(self.storage_t.load_all(), report=True)
             if tournament:
                 tournament.add_score_and_opponents()
@@ -119,7 +120,7 @@ class TournamentManager:
             nb_round: Nombre of round in the tournament.
             dict_player: Dict from the database containing all players.
         Returns:
-            players_selected: A list with all players selected for the tournament
+            players_selected: A list with all Players selected for the tournament
         """
         players_selected = []
         self.view.display_text("nb_player")
@@ -140,6 +141,13 @@ class TournamentManager:
         return players_selected
 
     def round(self, tournament: Tournament) -> Tournament:
+        """
+        Manage the execution of a round
+        Args:
+            tournament: An instance of tournament
+        Returns:
+            tournament: An instance of tournament
+        """
         tournament.add_score_and_opponents()
         round_nb = len(tournament.rondes)
         ronde = Round(round_nb, "", "", [])
@@ -164,9 +172,14 @@ class TournamentManager:
         return tournament
 
     def execute_rounds(self, tournament):
+        """
+        Manage the sequence of rounds
+        Args:
+            tournament: An instance of tournament
+        """
         while len(tournament.rondes) < tournament.nbr_of_rounds:
             tournament = self.round(tournament)
-            if len(tournament.rondes) < 4:
+            if len(tournament.rondes) < tournament.nbr_of_rounds:
                 self.menu = self._create_menu("save_or_cancel")
                 self.menu.display_menu()
                 self.menu.choice = self.menu.get_choice()
@@ -209,12 +222,11 @@ class TournamentManager:
         self.view.display_item(center=True)
         return date_start, date_end
 
-    def save_date_end_tournament(self):
-        date_end = utils.util.get_date_now()
-
     def select_tournament(self, dict_tournaments: dict, display_all=True, report=False) -> Tournament:
         """
-        Select a tournament from list.
+        Receive a dict from the database with all tournaments.
+        Deserialize and display it depending on parameters .
+        Select and return a tournament.
         Args:
             dict_tournaments: Dict from the database containing all tournaments.
             display_all: If 'display_all' is false: the list contains only the unterminated tournament.

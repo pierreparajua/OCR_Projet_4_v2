@@ -18,12 +18,12 @@ class Player:
                f" {self.ranking: >3}"
 
     def __lt__(self, other):
-        """Sort the players by ranking."""
+        """If score exist and the score are equal, so order by ranking"""
         try:
             if self.score == other.score:
                 return self.ranking > other.ranking
             return self.score > other.score
-        except:
+        except AttributeError:
             return self.ranking > other.ranking
 
     @property

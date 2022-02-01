@@ -102,7 +102,6 @@ class ViewTournament(View):
 
     def display_matches(self):
         """ Display the matches for the next round"""
-
         if self.item:
             for match, i in zip(self.item, range(len(self.item))):
                 print(f"Match n°{i + 1}:\n"
@@ -110,7 +109,7 @@ class ViewTournament(View):
                       f"{Player.player_from_id(match[1]).full_name()}\n")
 
     def display_ronde(self):
-        """Display all matches inside each rounds for report"""
+        """Display all matches inside each round for report"""
         for ronde in self.item.rondes:
             print(Fore.LIGHTGREEN_EX + f"\nRONDE N° {ronde.number}  début: {ronde.date_start}  fin: {ronde.date_end} ")
             for match in ronde.matches:
@@ -129,11 +128,11 @@ class ViewTournament(View):
     @staticmethod
     def get_scores(matches: list) -> list:
         """
-        Ask for the winner, return corresponding score and add the opponent
+        Ask for the winner and add corresponding score
         Args:
             matches: List of matches
         Returns:
-            chess_players and matches with the score and the opponents added
+            matches: List of matches with score added
         """
         for match, i in zip(matches, range(len(matches))):
             player1 = Player.player_from_id(match[0])
