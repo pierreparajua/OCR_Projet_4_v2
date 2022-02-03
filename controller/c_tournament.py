@@ -34,12 +34,14 @@ class TournamentManager:
             self.menu.display_menu()
             self.menu.choice = self.menu.get_choice()
             if self.menu.choice == "1":  # Start tournament
-                storage_t.save(tournament)
+                tournament.id_db = storage_t.save(tournament)
+                storage_t.update(tournament)
                 self.execute_rounds(tournament)
                 self.menu = self._create_menu("tournament_menu")
                 self.manage_menu()
             elif self.menu.choice == "2":  # Save and quit
-                storage_t.save(tournament)
+                tournament.id_db = storage_t.save(tournament)
+                storage_t.update(tournament)
                 self.menu = self._create_menu("tournament_menu")
                 self.manage_menu()
             elif self.menu.choice == "3":  # cancel
@@ -192,7 +194,7 @@ class TournamentManager:
                     self.manage_menu()
                 elif self.menu.choice == "1":  # Continue
                     storage_t.update(tournament)
-            else:
+            else:  # End of tournament
                 date_end = utils.util.get_date_now().split(" ")[0]
                 if date_end != tournament.date:
                     tournament.date = tournament.date + " au " + date_end
