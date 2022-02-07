@@ -45,6 +45,11 @@
    - Le menu "gestion des tournois permet également d'afficher les rapports des tournois terminés
    - La touche "m" permet le retour au menu précédent.
    - On quitte le programme avec la touche "3" à partir du menu principal.
+
+  ## Flake8
+    Vous pouvez acceder au rapport Flak8 avec la commande :
+      flake8 --max-line-length 119 --format=html --htmldir=flake-report model view controller utils
+
   
    ## Version:
    - Ce programme constitue une première version totalement en ligne de commande et hors ligne, qui doit être validé par le client.
