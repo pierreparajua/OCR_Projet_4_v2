@@ -1,4 +1,4 @@
-import utils
+
 from model.m_storage import storage_p
 
 
@@ -32,7 +32,7 @@ class Player:
 
     @first_name.setter
     def first_name(self, value):
-        self._first_name = utils.util.check_name(value).lower()
+        self._first_name = value.lower()
 
     @property
     def last_name(self):
@@ -40,7 +40,7 @@ class Player:
 
     @last_name.setter
     def last_name(self, value):
-        self._last_name = utils.util.check_name(value).lower()
+        self._last_name = value.lower()
 
     @property
     def date_of_birth(self):
@@ -48,7 +48,7 @@ class Player:
 
     @date_of_birth.setter
     def date_of_birth(self, value):
-        self._date_of_birth = utils.util.check_date(value)
+        self._date_of_birth = value
 
     @property
     def sex(self):
@@ -56,7 +56,7 @@ class Player:
 
     @sex.setter
     def sex(self, value):
-        self._sex = utils.util.check_sex(value)
+        self._sex = value.lower()
 
     @property
     def ranking(self):
@@ -64,7 +64,7 @@ class Player:
 
     @ranking.setter
     def ranking(self, value):
-        self._ranking = utils.util.check_ranking(value)
+        self._ranking = value
 
     @staticmethod
     def deserialize(player_dict: dict):

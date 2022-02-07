@@ -2,12 +2,14 @@ from colorama import Fore
 
 from dataclasses import dataclass
 
-import utils
 from model.m_player import Player
 from model.m_storage import storage_t
+from utils.util import Validator
 
 
 class Tournament:
+    validator = Validator()
+
     def __init__(self, name: str = "", place: str = "", date: str = "", rondes: list = None,
                  players: list = None, time: str = "", description: str = "", id_db: int = 1, nbr_of_rounds=4):
         self.name = name
@@ -41,7 +43,7 @@ class Tournament:
 
     @name.setter
     def name(self, value):
-        self._name = utils.util.check_name(value).lower()
+        self._name = value.lower()
 
     @property
     def place(self):
@@ -49,7 +51,7 @@ class Tournament:
 
     @place.setter
     def place(self, value):
-        self._place = utils.util.check_name(value).lower()
+        self._place = value.lower()
 
     @property
     def date(self):
@@ -57,7 +59,7 @@ class Tournament:
 
     @date.setter
     def date(self, value):
-        self._date = utils.util.check_date(value).lower()
+        self._date = value
 
     @property
     def nbr_of_rounds(self):
@@ -65,10 +67,7 @@ class Tournament:
 
     @nbr_of_rounds.setter
     def nbr_of_rounds(self, value):
-        if value:
-            self._nbr_of_rounds = utils.util.check_ranking(value)
-        else:
-            self._nbr_of_rounds = 4
+        self._nbr_of_rounds = value
 
     @property
     def time(self):
@@ -76,7 +75,7 @@ class Tournament:
 
     @time.setter
     def time(self, value):
-        self._time = utils.util.check_name(value).lower()
+        self._time = value
 
     @property
     def description(self):

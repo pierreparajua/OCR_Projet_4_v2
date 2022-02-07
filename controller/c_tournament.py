@@ -1,8 +1,7 @@
 from colorama import Fore
 
-import utils
 from model.m_player import Player
-from utils.util import Menu
+from utils.util import Menu, Validator
 from controller.c_player import PlayerController
 from model.m_storage import storage_t, storage_p
 from model.m_tournament import Round, Tournament
@@ -13,7 +12,7 @@ NB_PLAYER_MAX = 20
 NB_player = list(map(str, list(range(1, (NB_PLAYER_MAX + 1)))))[1::2]
 
 
-class TournamentManager:
+class TournamentController:
     """Control all options available for the tournaments"""
     def __init__(self):
         self.menu = self._create_menu("tournament_menu")
@@ -22,72 +21,73 @@ class TournamentManager:
         self.view: View = View()
         self.v_tournament = ViewTournament()
         self.player_controller = PlayerController()
+        self.validator = Validator()
 
-    def manage_menu(self):
+    def control_menu(self):
         """Manage the tournament's menu according with the user choice"""
-        self.menu.display_menu()
-        self.menu.choice = self.menu.get_choice()
-
-        if self.menu.choice == "1":  # New tournament
-            tournament = self.prepare_tournament(self.storage_p.load_all())
-            self.menu = self._create_menu("save_or_cancel")
+        while True:
+            self.menu = self._create_menu("tournament_menu")
             self.menu.display_menu()
             self.menu.choice = self.menu.get_choice()
-            if self.menu.choice == "1":  # Start tournament
-                tournament.id_db = storage_t.save(tournament)
-                storage_t.update(tournament)
-                self.execute_rounds(tournament)
-                self.menu = self._create_menu("tournament_menu")
-                self.manage_menu()
-            elif self.menu.choice == "2":  # Save and quit
-                tournament.id_db = storage_t.save(tournament)
-                storage_t.update(tournament)
-                self.menu = self._create_menu("tournament_menu")
-                self.manage_menu()
-            elif self.menu.choice == "3":  # cancel
-                self.menu = self._create_menu("tournament_menu")
-                self.manage_menu()
 
-        elif self.menu.choice == "2":  # Resume tournament
-            tournament = self.select_tournament(self.storage_t.load_all(), display_all=False)
-            if tournament:
-                self.menu = self._create_menu("continue_or_cancel")
-                self.menu.display_menu()
-                self.menu.choice = self.menu.get_choice()
-                if self.menu.choice == "1":  # Continue tournament
-                    self.execute_rounds(tournament)
-                    self.menu = self._create_menu("tournament_menu")
-                    self.manage_menu()
-                elif self.menu.choice == "2":  # Cancel
-                    self.menu = self._create_menu("tournament_menu")
-                    self.manage_menu()
-            self.menu = self._create_menu("tournament_menu")
-            self.manage_menu()
+            if self.menu.choice == "1":  # New tournament
+                self.add_new_tournament()
 
-        elif self.menu.choice == "3":  # Delete a tournament
-            tournament = self.select_tournament(self.storage_t.load_all())
-            if tournament:
-                self.menu = self._create_menu("delete_or_cancel")
-                self.menu.display_menu()
-                self.menu.choice = self.menu.get_choice()
-                if self.menu.choice == "1":  # Delete
-                    self.storage_t.delete(tournament)
-                    self.view.display_text("confirm_deleted_tournament")
-                elif self.menu.choice == "2":  # Cancel
-                    self.menu = self._create_menu("tournament_menu")
-                    self.manage_menu()
-            self.menu = self._create_menu("tournament_menu")
-            self.manage_menu()
+            elif self.menu.choice == "2":  # Resume tournament
+                self.resume_tournament()
 
-        elif self.menu.choice == "4":  # Display the reports
-            tournament = self.select_tournament(self.storage_t.load_all(), report=True)
-            if tournament:
-                tournament.add_score_and_opponents()
-                self.report(tournament)
-                self.manage_menu()
+            elif self.menu.choice == "3":  # Delete a tournament
+                self.delete_tournament()
 
-        elif self.menu.choice == "m":
+            elif self.menu.choice == "4":  # Display the reports
+                tournament = self.select_tournament(self.storage_t.load_all(), report=True)
+                if tournament:
+                    tournament.add_score_and_opponents()
+                    self.report(tournament)
+
+            elif self.menu.choice == "5":  # Return to main menu
+                break
+
+    def add_new_tournament(self):
+        """Permit to create and save a new tournament"""
+        tournament = self.prepare_tournament(self.storage_p.load_all())
+        self.menu = self._create_menu("save_or_cancel")
+        self.menu.display_menu()
+        self.menu.choice = self.menu.get_choice()
+        if self.menu.choice == "1":  # Start tournament
+            tournament.id_db = storage_t.save(tournament)
+            storage_t.update(tournament)
+            self.execute_rounds(tournament)
+        elif self.menu.choice == "2":  # Save and quit
+            tournament.id_db = storage_t.save(tournament)
+            storage_t.update(tournament)
+        elif self.menu.choice == "3":  # cancel
             pass
+
+    def resume_tournament(self):
+        """Permit to resume a tournament"""
+        tournament = self.select_tournament(self.storage_t.load_all(), display_all=False)
+        if tournament:
+            self.menu = self._create_menu("continue_or_cancel")
+            self.menu.display_menu()
+            self.menu.choice = self.menu.get_choice()
+            if self.menu.choice == "1":  # Continue tournament
+                self.execute_rounds(tournament)
+            elif self.menu.choice == "2":  # Cancel
+                pass
+
+    def delete_tournament(self):
+        """Permit to delete a tournament"""
+        tournament = self.select_tournament(self.storage_t.load_all())
+        if tournament:
+            self.menu = self._create_menu("delete_or_cancel")
+            self.menu.display_menu()
+            self.menu.choice = self.menu.get_choice()
+            if self.menu.choice == "1":  # Delete
+                self.storage_t.delete(tournament)
+                self.view.display_text("confirm_deleted_tournament")
+            elif self.menu.choice == "2":  # Cancel
+                pass
 
     def prepare_tournament(self, dict_player) -> Tournament or []:
         """
@@ -100,9 +100,9 @@ class TournamentManager:
         self.view.item = Fore.LIGHTMAGENTA_EX + "\n     -----Création d 'un nouveau tournois-----\n"
         self.view.display_item()
         self.view.display_text("ask_for_player")
-        choice: str = utils.util.get_choice(["o", "n"])
+        choice: str = self.validator.get_choice(["o", "n"])
         if choice == "o":
-            self.player_controller.manage_menu()
+            self.player_controller.control_menu()
         self.view.display_text("new_tournament", center=True)
         self.view.display_text("fill_items")
         tournament = self.v_tournament.create_tournament()
@@ -126,10 +126,10 @@ class TournamentManager:
         """
         players_selected = []
         self.view.display_text("nb_player")
-        nb_players = int(utils.util.get_choice(NB_player))  # Check if the number of players is even
+        nb_players = int(self.validator.get_choice(NB_player))  # Check if the number of players is even
         while nb_players / 2 < nb_round:
             self.view.display_text("error_nb_player")
-            nb_players = int(utils.util.get_choice(NB_player))
+            nb_players = int(self.validator.get_choice(NB_player))
         players = self.player_controller.display_all_players(dict_player)
         i = 0
         while i < nb_players:
@@ -186,16 +186,14 @@ class TournamentManager:
                 self.menu.display_menu()
                 self.menu.choice = self.menu.get_choice()
                 if self.menu.choice == "3":  # cancel
-                    self.menu = self._create_menu("tournament_menu")
-                    self.manage_menu()
+                    break
                 elif self.menu.choice == "2":  # Save and quit
                     storage_t.update(tournament)
-                    self.menu = self._create_menu("tournament_menu")
-                    self.manage_menu()
+                    break
                 elif self.menu.choice == "1":  # Continue
                     storage_t.update(tournament)
             else:  # End of tournament
-                date_end = utils.util.get_date_now().split(" ")[0]
+                date_end = Validator.get_date_now().split(" ")[0]
                 if date_end != tournament.date:
                     tournament.date = tournament.date + " au " + date_end
                 self.storage_t.update(tournament)
@@ -211,15 +209,15 @@ class TournamentManager:
             date_start, date_end: date for the start and the end of the round.
         """
         self.view.display_text("start_ronde")
-        utils.util.get_choice([""])
+        self.validator.get_choice([""])
         self.view.display_text("good_luck")
         self.view.display_text("started_ronde")
-        date_start = utils.util.get_date_now()
+        date_start = Validator.get_date_now()
         self.view.item = date_start
         self.view.display_item(center=True)
         self.view.display_text("end_ronde")
-        utils.util.get_choice([""])
-        date_end = utils.util.get_date_now()
+        self.validator.get_choice([""])
+        date_end = Validator.get_date_now()
         self.view.item = date_end
         self.view.display_item(center=True)
         return date_start, date_end
@@ -264,18 +262,16 @@ class TournamentManager:
     def _create_menu(menu):
         """
         Helper method to create a menu.
-        Args:
-            menu: Name of the menu, you want to create"
         Returns:
             An instance of Menu
         """
         tournament_menu = Menu(title="Menu de gestion des tournois: ",
-                               add_info="(Tapez le chiffre correspondant à votre choix ou 'm' pour retourner au menu "
-                                        "précédent: )",
+                               add_info="(Tapez le chiffre correspondant à votre choix: )",
                                items=["Ajouter un tournoi",
                                       "Reprendre un tournoi",
                                       "Supprimer un tournoi",
-                                      "Afficher les rapports des tournois"],
+                                      "Afficher les rapports des tournois",
+                                      "Retourner au menu principal"],
                                choice="")
 
         save_or_cancel = Menu(title="Souhaitez-vous: ",

@@ -31,71 +31,74 @@ class Menu:
         """Get and return the user's choice"""
         self.choice = input(Fore.LIGHTBLUE_EX + "Choix: ").lower()
         while self.choice not in self.get_choice_list():
-            self.choice = wrong_entry(self.choice)
+            self.choice = Validator.wrong_entry(self.choice)
         return self.choice
 
 
-def check_name(name):
-    """Check the format of name"""
-    if name:
-        x = re.findall("[0-9]", name)
+class Validator:
+    """Check if the data from the user are correct"""
+    def __init__(self, item: str = None):
+        self.item = item
+
+    def check_name(self, text):
+        """Check the format of name"""
+        while not self.item:
+            self.item = input(Fore.LIGHTYELLOW_EX + text)
+        x = re.findall("[0-9]", self.item)
         while x:
-            name = wrong_entry(name)
-            x = re.findall("[0-9]", name)
-    return name
+            self.item = self.wrong_entry(self.item)
+            x = re.findall("[0-9]", self.item)
+        return self.item
 
-
-def check_date(date):
-    """Check the format of date"""
-    if date:
-        if "au" in date:
-            return date
-        x = re.findall("^(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.]((19|20)\\d\\d)$", date)
+    def check_date(self, text):
+        """Check the format of date"""
+        while not self.item:
+            self.item = input(Fore.LIGHTYELLOW_EX + text)
+        if "au" in self.item:
+            return self.item
+        x = re.findall("^(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.]((19|20)\\d\\d)$", self.item)
         while not x:
-            date = wrong_entry(date)
-            x = re.findall("^(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.]((19|20)\\d\\d)$", date)
-    return date.replace("-", "/").replace(".", "/").replace(" ", "/")
+            self.item = self.wrong_entry(self.item)
+            x = re.findall("^(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.]((19|20)\\d\\d)$", self.item)
+        return self.item.replace("-", "/").replace(".", "/").replace(" ", "/")
 
-
-def check_ranking(ranking):
-    """Check the format of ranking"""
-    if ranking:
-        ranking = str(ranking)
-        x = re.findall("[0-9]", ranking)
+    def check_number(self, text):
+        """Check the format of number"""
+        while not self.item:
+            self.item = input(Fore.LIGHTYELLOW_EX + text)
+        x = re.findall("[0-9]", self.item)
         while not x:
-            ranking = wrong_entry(ranking)
-            x = re.findall("[0-9]", ranking)
-        ranking = int(ranking)
-    return ranking
+            self.item = self.wrong_entry(self.item)
+            x = re.findall("[0-9]", self.item)
+        return self.item
 
+    def check_sex(self, text):
+        """Check the format of sex"""
+        while not self.item:
+            self.item = input(Fore.LIGHTYELLOW_EX + text)
+        while self.item not in ["h", "f", "H", "F", "homme", "femme"]:
+            self.item = self.wrong_entry(self.item)
+        if self.item in ["f", "F"]:
+            self.item = "femme"
+        elif self.item in ["h", "H"]:
+            self.item = "homme"
+        return self.item
 
-def check_sex(sex):
-    """Check the format of sex"""
-    if sex:
-        while sex not in ["h", "f", "H", "F", "homme", "femme"]:
-            sex = wrong_entry(sex)
-        if sex in ["f", "F"]:
-            return "femme"
-        elif sex in ["h", "H"]:
-            return "homme"
-    return sex
+    def get_choice(self, choices: list) -> str:
+        """Return a choice from a list of choices"""
+        choice = input(Fore.LIGHTBLUE_EX + "Choix: ").lower()
+        while choice not in choices:
+            choice = self.wrong_entry(choice)
+        return choice
 
+    @staticmethod
+    def get_date_now():
+        """Get the live date and hour"""
+        return datetime.datetime.now().strftime("%d/%m/%Y %H:%M")
 
-def get_date_now():
-    """Get the live date and hour"""
-    return datetime.datetime.now().strftime("%d/%m/%Y %H:%M")
-
-
-def get_choice(choices: list) -> str:
-    """Return a choice from a list of choices"""
-    choice = input(Fore.LIGHTBLUE_EX + "Choix: ").lower()
-    while choice not in choices:
-        choice = wrong_entry(choice)
-    return choice
-
-
-def wrong_entry(choice: str):
-    """ Display error message"""
-    value = input(Fore.LIGHTGREEN_EX + f"{choice}"
-                  + Fore.LIGHTRED_EX + " : n' est pas un choix valide.\n Veuillez ressaisir votre choix: \n")
-    return value
+    @staticmethod
+    def wrong_entry(choice: str):
+        """ Display error message"""
+        value = input(Fore.LIGHTGREEN_EX + f"{choice}"
+                      + Fore.LIGHTRED_EX + " : n' est pas un choix valide.\n Veuillez ressaisir votre choix: \n")
+        return value

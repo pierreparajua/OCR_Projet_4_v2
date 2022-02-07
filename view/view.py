@@ -3,7 +3,7 @@ from colorama import init, Fore
 import json
 from pathlib import Path
 
-import utils
+from utils.util import Validator
 
 init(autoreset=True)
 
@@ -58,7 +58,7 @@ class View:
         """Select an item and return it"""
         choice = input(Fore.LIGHTBLUE_EX + "Choix: ").lower()
         while choice not in list(map(str, list(range(1, len(items) + 1)))):
-            choice = utils.util.wrong_entry(choice)
+            choice = Validator.wrong_entry(choice)
         self.display_text("selected_item")
         item = items[int(choice) - 1]
         print(item)

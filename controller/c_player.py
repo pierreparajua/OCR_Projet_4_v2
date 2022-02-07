@@ -15,70 +15,45 @@ class PlayerController:
         self.view = View()
         self.view_player = ViewPlayer()
 
-    def manage_menu(self):
+    def control_menu(self):
         """Manage the player's menu according with the user choice"""
-        self.menu.choice = "0"
-        self.menu = self._create_menu("player_menu")
+        while True:
+            self.menu.choice = "0"
+            self.menu = self._create_menu("player_menu")
+            self.menu.display_menu()
+            self.menu.choice = self.menu.get_choice()
+
+            if self.menu.choice == "1":  # Create players
+                self.add_new_player()
+
+            elif self.menu.choice == "2":  # Display all players
+                self.display_all_players(self.storage.load_all())
+
+            elif self.menu.choice == "3":  # Update a player
+                self.control_update_player()
+
+            elif self.menu.choice == "4":  # Delete a player
+                self.delete_player()
+
+            elif self.menu.choice == "5":  # Return to main menu
+                break
+
+    def add_new_player(self):
+        """Permit to create and save a new player"""
+        player = self.create_player()
+        self.menu = self._create_menu("save_or_cancel")
         self.menu.display_menu()
         self.menu.choice = self.menu.get_choice()
-
-        if self.menu.choice == "1":  # Create player
+        while self.menu.choice == "1":  # Save and create an other player
+            player.id_db = storage_p.save(player)
+            storage_p.update(player)
             player = self.create_player()
-            self.menu = self._create_menu("save_or_cancel")
             self.menu.display_menu()
             self.menu.choice = self.menu.get_choice()
-            while self.menu.choice == "1":  # Save and create an other player
-                player.id_db = storage_p.save(player)
-                storage_p.update(player)
-                player = self.create_player()
-                self.menu.display_menu()
-                self.menu.choice = self.menu.get_choice()
-            if self.menu.choice == "2":  # Save and quit
-                player.id_db = storage_p.save(player)
-                storage_p.update(player)
-                self.manage_menu()
-            elif self.menu.choice == "3":  # Cancel
-                self.manage_menu()
-
-        elif self.menu.choice == "2":  # Display all players
-            self.display_all_players(self.storage.load_all())
-            self.manage_menu()
-
-        elif self.menu.choice == "3":  # Update a player
-            player = self.update_player(self.storage.load_all())
-            self.menu = self._create_menu("update_or_cancel")
-            self.menu.display_menu()
-            self.menu.choice = self.menu.get_choice()
-            while self.menu.choice == "1":  # Save and update an other player
-                storage_p.update(player)
-                player = self.update_player(self.storage.load_all())
-                self.menu.display_menu()
-                self.menu.choice = self.menu.get_choice()
-            if self.menu.choice == "2":  # Save and quit
-                storage_p.update(player)
-                self.manage_menu()
-            elif self.menu.choice == "3":  # Cancel
-                self.manage_menu()
-
-        elif self.menu.choice == "4":  # Delete a player
-            player = self.view.select_item(self.display_all_players(self.storage.load_all()))
-            self.view.display_text("confirm_delete")
-            self.menu = self._create_menu("delete_or_cancel")
-            self.menu.display_menu()
-            self.menu.choice = self.menu.get_choice()
-            while self.menu.choice == "1":  # Delete and delete an other player
-                storage_p.delete(player)
-                player = self.view.select_item(self.display_all_players(self.storage.load_all()))
-                self.view.display_text("confirm_delete")
-                self.menu.display_menu()
-                self.menu.choice = self.menu.get_choice()
-            if self.menu.choice == "2":  # Delete and quit
-                storage_p.delete(player)
-                self.manage_menu()
-            elif self.menu.choice == "3":  # Cancel
-                self.manage_menu()
-
-        elif self.menu.choice == "m":  # Retour MainMenu
+        if self.menu.choice == "2":  # Save and quit
+            player.id_db = storage_p.save(player)
+            storage_p.update(player)
+        elif self.menu.choice == "3":  # Cancel
             pass
 
     def create_player(self) -> Player:
@@ -116,6 +91,22 @@ class PlayerController:
         self.view.display_items("joueurs")
         return players
 
+    def control_update_player(self):
+        """Control the updating of a player """
+        player = self.update_player(self.storage.load_all())
+        self.menu = self._create_menu("update_or_cancel")
+        self.menu.display_menu()
+        self.menu.choice = self.menu.get_choice()
+        while self.menu.choice == "1":  # Save and update an other player
+            storage_p.update(player)
+            player = self.update_player(self.storage.load_all())
+            self.menu.display_menu()
+            self.menu.choice = self.menu.get_choice()
+        if self.menu.choice == "2":  # Save and quit
+            storage_p.update(player)
+        elif self.menu.choice == "3":  # Cancel
+            pass
+
     def update_player(self, dict_players: dict) -> Player:
         """
         Receive a dict from the database with all players.
@@ -134,22 +125,39 @@ class PlayerController:
         self.view.display_item()
         return new_player
 
+    def delete_player(self):
+        """Control the deleting of a player"""
+        player = self.view.select_item(self.display_all_players(self.storage.load_all()))
+        self.view.display_text("confirm_delete")
+        self.menu = self._create_menu("delete_or_cancel")
+        self.menu.display_menu()
+        self.menu.choice = self.menu.get_choice()
+        while self.menu.choice == "1":  # Delete and delete an other player
+            storage_p.delete(player)
+            player = self.view.select_item(self.display_all_players(self.storage.load_all()))
+            self.view.display_text("confirm_delete")
+            self.menu = self._create_menu("delete_or_cancel")
+            self.menu.display_menu()
+            self.menu.choice = self.menu.get_choice()
+        if self.menu.choice == "2":  # Delete and quit
+            storage_p.delete(player)
+        elif self.menu.choice == "3":  # Cancel
+            pass
+
     @staticmethod
     def _create_menu(menu: str):
         """
         Helper method to create a menu.
-        Args:
-            menu: Name of the menu, you want to create"
         Returns:
             An instance of Menu
         """
         player_menu = Menu(title="Menu de gestion des joueurs: ",
-                           add_info="(Tapez le chiffre correspondant à votre choix ou 'm' pour retourner au menu "
-                                    "précédent: )",
+                           add_info="(Tapez le chiffre correspondant à votre choix: )",
                            items=["Ajouter un joueur",
                                   "Afficher les joueurs",
                                   "Modifier un joueur",
-                                  "Supprimer un joueur"],
+                                  "Supprimer un joueur",
+                                  "Retourner au menu principal"],
                            choice="")
 
         save_or_cancel = Menu(title="Souhaitez-vous:",
@@ -162,14 +170,14 @@ class PlayerController:
         update_or_cancel = Menu(title="Souhaitez-vous:",
                                 add_info="",
                                 items=["Confirmer et modifier un autre joueur",
-                                       "Confirmer",
+                                       "Confirmer et retourner au menu",
                                        "Annuler"],
                                 choice="")
 
         delete_or_cancel = Menu(title="Souhaitez-vous:",
                                 add_info="",
                                 items=["Confirmer et supprimer un autre joueur",
-                                       "Confirmer",
+                                       "Confirmer et retourner au menu",
                                        "Annuler"],
                                 choice="")
         players_order = Menu(title="Souhaitez-vous affichez les joueurs par",

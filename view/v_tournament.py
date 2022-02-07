@@ -1,77 +1,57 @@
 from colorama import Fore
 
-import utils
 from model.m_tournament import Tournament
 from model.m_player import Player
-from utils.util import Menu
+from utils.util import Menu, Validator
 from view.view import View
-
-time_control_menu = Menu(title="Choisissez le système de contrôle du temps",
-                         add_info="",
-                         items=["Bullet", "Blitz", "Coup rapide"],
-                         choice="")
 
 
 class ViewTournament(View):
     """Manage the views for the tournaments"""
+    validator = Validator()
+    time_control_menu = Menu(title="Choisissez le système de contrôle du temps",
+                             add_info="",
+                             items=["Bullet", "Blitz", "Coup rapide"],
+                             choice="")
 
-    def __init__(self, name: str = "", place: str = "", date: str = "", rondes: list = None, players: list = None,
-                 time: str = "", description: str = "", nbr_of_rounds=4):
+    def __init__(self):
         super().__init__()
-        self.name = name
-        self.place = place
-        self.date = date
-        self.rondes = rondes
-        self.players = players
-        self.time = time
-        self.description = description
-        self.nbr_of_rounds = nbr_of_rounds
 
     def get_name(self) -> str:
         """Get the name from the user"""
-        self.name = input("Entrez le nom du tournoi: ")
-        while not self.name:
-            self.name = input(Fore.LIGHTYELLOW_EX + "Vous devez saisir un nom de tournois: ")
-        return self.name
+        self.validator.item = input("Entrez le nom du tournoi: ")
+        return self.validator.check_name("Vous devez saisir un nom de tournois")
 
     def get_place(self) -> str:
         """Get the place from the user"""
-        self.place = input("Entrez le lieu du tournoi: ")
-        while not self.place:
-            self.place = input(Fore.LIGHTYELLOW_EX + "Vous devez saisir un lieu de tournois: ")
-        return self.place
+        self.validator.item = input("Entrez le lieu du tournoi: ")
+        return self.validator.check_name("Vous devez saisir un lieu de tournois")
 
     def get_date(self) -> str:
         """Get the date from the user"""
-        self.date = input(f"Date du tournoi: \n"
-                          f"    Tapez sur 'Entrée' pour conserver la date du jour: {utils.util.get_date_now()[0:10]}\n"
-                          f"    Ou saisir la date souhaitée:")
-        if not self.date:
-            self.date = str(utils.util.get_date_now()[0:10])
-        return self.date
+        self.validator.item = input("Entrez le date de début du tournois ou 'Entrée' pour la date du jour: ")
+        if self.validator.item:
+            return self.validator.check_date("Vous devez saisir une date: ")
+        return Validator.get_date_now()
 
     def get_nbr_of_rounds(self):
         """Get the number of rounds from the user"""
-        self.nbr_of_rounds = input("Entrez le nombre de ronde: \n   Tapez sur 'Entrée' pour 4 rondes"
-                                   "\n   ou entrez le nombre de ronde souhaitée: ")
-        return self.nbr_of_rounds
+        self.validator.item = input("Entrez le nombre de ronde: \n   Tapez sur 'Entrée' pour 4 rondes"
+                                    "\n   ou entrez le nombre de ronde souhaitée: ")
+        if self.validator.item:
+            return int(self.validator.check_number("Vous devez saisir un nombre:"))
+        return 4
 
     def get_time(self) -> str:
         """Get the time control method from the user"""
-        time_control_menu.display_menu()
-        choice = time_control_menu.get_choice()
-        if choice == "1":
-            self.time = "Bullet"
-        elif choice == "2":
-            self.time = "Blitz"
-        elif choice == "3":
-            self.time = "Coup rapide"
-        return self.time
-
-    def get_description(self) -> str:
-        """Get description from the user"""
-        self.description = input("Remarques du président de tournoi: ")
-        return self.description
+        self.time_control_menu.display_menu()
+        self.time_control_menu.choice = self.time_control_menu.get_choice()
+        if self.time_control_menu.choice == "1":
+            return "Bullet"
+        elif self.time_control_menu.choice == "2":
+            return "Blitz"
+        elif self.time_control_menu.choice == "3":
+            return "Coup rapide"
 
     def create_tournament(self) -> Tournament:
         """
@@ -79,15 +59,14 @@ class ViewTournament(View):
         Returns:
             tournament: An instance of Tournament
         """
-        tournament = Tournament(self.get_name(),
-                                self.get_place(),
-                                self.get_date(),
-                                [],
-                                [],
-                                self.get_time(),
-                                self.get_description(),
-                                1,
-                                self.get_nbr_of_rounds())
+        tournament = Tournament(name=self.get_name(),
+                                place=self.get_place(),
+                                date=self.get_date(),
+                                rondes=[],
+                                players=[],
+                                time=self.get_time(),
+                                nbr_of_rounds=self.get_nbr_of_rounds(),
+                                description=input("Remarques du président de tournoi: "))
         return tournament
 
     def display_score(self):
@@ -134,6 +113,7 @@ class ViewTournament(View):
         Returns:
             matches: List of matches with score added
         """
+        validator = Validator()
         for match, i in zip(matches, range(len(matches))):
             player1 = Player.player_from_id(match[0])
             player2 = Player.player_from_id(match[1])
@@ -145,7 +125,7 @@ class ViewTournament(View):
                   f"1: pour {player1.full_name()}\n"
                   f"2: pour {player2.full_name()}\n"
                   f"3: pour égalité")
-            choice = utils.util.get_choice(['1', '2', '3'])
+            choice = validator.get_choice(['1', '2', '3'])
             if choice == '1':
                 print(f"{player1.full_name()} :" + Fore.LIGHTGREEN_EX + " 1 point")
                 print(f"{player2.full_name()} :" + Fore.LIGHTRED_EX + " 0 point\n")

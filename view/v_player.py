@@ -1,58 +1,41 @@
-from colorama import Fore
 
-from utils.util import Menu
+from utils.util import Menu, Validator
 from model.m_player import Player
 
 
 class ViewPlayer:
     """Manage the specific views for the players"""
     update_player_menu = Menu(title="Quel attribut souhaitez vous modifier: ",
-                              add_info="(Tapez 'm' pour sortir)",
-                              items=["Prénom", "Nom", "date de naissance", "sexe", "classement"],
+                              add_info="",
+                              items=["Prénom", "Nom", "date de naissance", "sexe", "classement",
+                                     "Fin des modifications"],
                               choice="")
-
-    def __init__(self, first_name: str = "", last_name: str = "", data_of_birth: str = "", sex: str = "",
-                 ranking: int = 0):
-        self.first_name = first_name
-        self.last_name = last_name
-        self.date_of_birth = data_of_birth
-        self.sex = sex
-        self.ranking = ranking
+    validator = Validator()
 
     def get_first_name(self) -> str:
         """Get the first_name from the user"""
-        self.first_name = input("Entrez le prénom: ")
-        while not self.first_name:
-            self.first_name = input(Fore.LIGHTYELLOW_EX + "Vous devez saisir un prénom: ")
-        return self.first_name
+        self.validator.item = input("Entrez le prénom: ")
+        return self.validator.check_name("Vous devez saisir un prénom: ")
 
     def get_last_name(self) -> str:
         """Get the last_name from the user"""
-        self.last_name = input("Entrez le Nom: ")
-        while not self.last_name:
-            self.last_name = input(Fore.LIGHTYELLOW_EX + "Vous devez saisir un nom: ")
-        return self.last_name
+        self.validator.item = input("Entrez le nom: ")
+        return self.validator.check_name("Vous devez saisir un nom: ")
 
     def get_date_of_birth(self) -> str:
         """Get the date_of_birth from the user"""
-        self.date_of_birth = input("Entrez la date de naissance (JJ/MM/AAAA): ")
-        while not self.date_of_birth:
-            self.date_of_birth = input(Fore.LIGHTYELLOW_EX + "Vous devez saisir une date: ")
-        return self.date_of_birth
+        self.validator.item = input("Entrez le date de naissance: ")
+        return self.validator.check_date("Vous devez saisir une date de naissance: ")
 
     def get_sex(self) -> str:
         """Get the sex from the user"""
-        self.sex = input("Entrez le sex( 'h' ou 'f'): ")
-        while not self.sex:
-            self.sex = input(Fore.LIGHTYELLOW_EX + "Vous devez saisir un sex: ")
-        return self.sex
+        self.validator.item = input("Entrez le sexe du joueur('f' ou 'h'): ")
+        return self.validator.check_sex("Vous devez saisir un sexe: ")
 
     def get_ranking(self) -> int:
         """Get the ranking from the user"""
-        self.ranking = input("Entrez le classement: ")
-        while not self.ranking:
-            self.ranking = input(Fore.LIGHTYELLOW_EX + "Vous devez saisir un classement: ")
-        return int(self.ranking)
+        self.validator.item = input("Entrez le classement: ")
+        return int(self.validator.check_number("Vous devez saisir un classement: "))
 
     def create_player(self) -> Player:
         """
@@ -60,11 +43,11 @@ class ViewPlayer:
         Returns:
             player: A Player
         """
-        player = Player(self.get_first_name(),
-                        self.get_last_name(),
-                        self.get_date_of_birth(),
-                        self.get_sex(),
-                        self.get_ranking())
+        player = Player(first_name=self.get_first_name(),
+                        last_name=self.get_last_name(),
+                        date_of_birth=self.get_date_of_birth(),
+                        sex=self.get_sex(),
+                        ranking=self.get_ranking())
         return player
 
     def get_updating(self, updating_player: Player) -> Player:
@@ -81,11 +64,11 @@ class ViewPlayer:
                    "3": [self.get_date_of_birth, "_date_of_birth"],
                    "4": [self.get_sex, "_sex"],
                    "5": [self.get_ranking, "_ranking"],
-                   "m": "break"}
+                   "6": "Fin des modifications"}
         while True:
             self.update_player_menu.display_menu()
             choice = self.update_player_menu.get_choice()
-            if choices.get(choice) == "break":
+            if choices.get(choice) == "Fin des modifications":
                 break
             dict_player[choices.get(choice)[1]] = choices.get(choice)[0]()
             print(updating_player)
